@@ -27,12 +27,12 @@ namespace CompanyProject.Controllers
             {
                 string privilege = reader["user_privilege"].ToString();
 
-                if (privilege == "Employee")
+                if (privilege == "Admin")
                 {
                     conn.Close();
                     return RedirectToAction("Index", "Employee");
                 }
-                else if (privilege == "Admin")
+                else if (privilege == "Employee")
                 {
                     conn.Close();
                     ViewData["LoginFlag"] = "test";
