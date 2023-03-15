@@ -12994,11 +12994,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\maste\\source\\repos\\CompanyProject\\CompanyProject\\CompanyProject.csproj",
+      "projectUniqueName": "C:\\Users\\maste\\OneDrive\\Documents\\GitHub\\databaseWEB\\CompanyProject\\CompanyProject.csproj",
       "projectName": "CompanyProject",
-      "projectPath": "C:\\Users\\maste\\source\\repos\\CompanyProject\\CompanyProject\\CompanyProject.csproj",
+      "projectPath": "C:\\Users\\maste\\OneDrive\\Documents\\GitHub\\databaseWEB\\CompanyProject\\CompanyProject.csproj",
       "packagesPath": "C:\\Users\\maste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\maste\\source\\repos\\CompanyProject\\CompanyProject\\obj\\",
+      "outputPath": "C:\\Users\\maste\\OneDrive\\Documents\\GitHub\\databaseWEB\\CompanyProject\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

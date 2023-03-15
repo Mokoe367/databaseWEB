@@ -10,5 +10,6 @@ namespace CompanyProject.Models
         public int ID { get; set; }
         public string username { get; set; }
         public string password { get; set; }
+        public string privilege { get; set; }
     }
 }

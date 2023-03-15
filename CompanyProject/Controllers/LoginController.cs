@@ -19,14 +19,28 @@ namespace CompanyProject.Controllers
         public ActionResult Verify(Login acc)
         {
             MySqlConnection conn = new MySqlConnection("server = localhost; port=3306;database=target;user=root;password=MonkeysInc7!");
-
+            
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select * from login where username='"+acc.username+"' and user_password='"+acc.password+"'", conn);
             var reader = cmd.ExecuteReader();
-            if(reader.Read() && reader["user_privilege"].ToString() == "Admin")
+            if(reader.Read())
             {
-                conn.Close();
-                return RedirectToAction("Index", "Employee");
+                string privilege = reader["user_privilege"].ToString();
+
+                if (privilege == "Employee")
+                {
+                    conn.Close();
+                    return RedirectToAction("Index", "Employee");
+                }
+                else if (privilege == "Admin")
+                {
+                    conn.Close();
+                    ViewData["LoginFlag"] = "test";
+                    return View("Login");
+                }
+
+                ViewData["LoginFlag"] = "Something went Wrong";
+                return View("Login");
             }
             else
             {
@@ -34,6 +48,8 @@ namespace CompanyProject.Controllers
                 ViewData["LoginFlag"] = "Invalid username or Password";
                 return View("Login");
             }
+           
+           
 
             
         }
