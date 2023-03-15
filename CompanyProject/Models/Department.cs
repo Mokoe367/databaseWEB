@@ -11,9 +11,9 @@ namespace CompanyProject.Models
         public int depID { get; set; }
         public string location { get; set; }
         public string depName { get; set; }
-        public int mgrID { get; set; }
-        public int projID { get; set; }
-        public int mgrSSN { get; set; }
+        public string mgrID { get; set; }
+        public string projID { get; set; }
+        public string mgrSSN { get; set; }
         
 
     }

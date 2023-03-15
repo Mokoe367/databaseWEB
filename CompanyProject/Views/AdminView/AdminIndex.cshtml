@@ -1,0 +1,167 @@
+﻿@model IEnumerable<CompanyProject.Models.AdminViewModel>
+@{
+    ViewData["Title"] = "AdminIndex";
+}
+
+<h2>Admin View</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Fname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Lname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Mname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Sex)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].BirthDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Deleted_flag)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Ssn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].Salary)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].RoleID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].DepID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employees[0].SuperID)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Employees)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sex)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BirthDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Deleted_flag)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ssn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Salary)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoleID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DepID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SuperID)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Departments[0].depID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Departments[0].depName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Departments[0].location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Departments[0].mgrID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Departments[0].projID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Departments[0].mgrSSN)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Departments)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.depID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.depName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mgrID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.projID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mgrSSN)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

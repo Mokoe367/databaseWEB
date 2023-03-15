@@ -30,13 +30,13 @@ namespace CompanyProject.Controllers
                 if (privilege == "Admin")
                 {
                     conn.Close();
-                    return RedirectToAction("Index", "Employee");
+                    return RedirectToAction("Index", "AdminView");
                 }
                 else if (privilege == "Employee")
                 {
                     conn.Close();
                     ViewData["LoginFlag"] = "test";
-                    return View("Login");
+                    return RedirectToAction("Index", "Employee");
                 }
 
                 ViewData["LoginFlag"] = "Something went Wrong";
