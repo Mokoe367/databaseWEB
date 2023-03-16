@@ -15,6 +15,7 @@
     }
 </div>
 <table class="table table-hover col-md-3">
+    <caption>Employees</caption>
     <thead>
         <tr>
             <th>
@@ -24,7 +25,22 @@
                 First Name
             </th>
             <th>
+                Middle Name
+            </th>
+            <th>
                 Last Name
+            </th>
+            <th>
+                SSN
+            </th>
+            <th>
+                Address
+            </th>
+            <th>
+                Gender
+            </th>
+            <th>
+                Birthday
             </th>
             <th>
                 Salary
@@ -38,7 +54,9 @@
             <th>
                 Superviser ID
             </th>
-            <th></th>
+            <th>
+                Deleted Flag
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -52,7 +70,21 @@
                     @Html.DisplayFor(modelItem => item.Fname)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Mname)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Lname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ssn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sex)
+                <td>
+                    @Html.DisplayFor(modelItem => item.BirthDate)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Salary)
@@ -65,6 +97,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.SuperID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Deleted_flag)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
@@ -80,6 +115,7 @@
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table table-hover col-md-3">
+    <caption>Departments</caption>
     <thead>
         <tr>
             <th>
@@ -128,4 +164,174 @@
         }
     </tbody>
 </table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3">
+    <caption>Projects</caption>
+    <thead>
+        <tr>
+            <th>
+                Project ID
+            </th>
+            <th>
+                Project Name
+            </th>
+            <th>
+                Department ID
+            </th>
+            <th>
+                Department Location
+            </th>
+            <th>
+                Base Cost
+            </th>
+            <th>
+                Project Status
+            </th>
+            <th>
+                Project Due Date
+            </th>
+            <th>
+                deleted_flag
+            </th>
+            <th>
+                Field
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Projects)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.projID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.projName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.depID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.projStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.dueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.deleted_flag)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.field)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3">
+    <caption>Suppliers</caption>
+    <thead>
+        <tr>
+            <th>
+                Supplier ID
+            </th>
+            <th>
+                Supplier Name
+            </th>
+            <th>
+                Supplier product
+            </th>
+            <th>
+                Role ID
+            </th>
+            <th>
+                Deleted Flag
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Suppliers)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.product)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.roleID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.deleted_flag)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3">
+    <caption>Roles</caption>
+    <thead>
+        <tr>
+            <th>
+                Role ID
+            </th>
+            <th>
+                Role Name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Roles)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.roleID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.roleName)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
 
