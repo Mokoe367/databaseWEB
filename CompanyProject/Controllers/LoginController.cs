@@ -26,16 +26,18 @@ namespace CompanyProject.Controllers
             if(reader.Read())
             {
                 string privilege = reader["user_privilege"].ToString();
+                int empID = Convert.ToInt32(reader["employeeID"]);
 
                 if (privilege == "Admin")
                 {
                     conn.Close();
+                    TempData["id"] = empID;
                     return RedirectToAction("Index", "AdminView");
                 }
                 else if (privilege == "Employee")
                 {
                     conn.Close();
-                    ViewData["LoginFlag"] = "test";
+                    TempData["id"] = empID;
                     return RedirectToAction("Index", "Employee");
                 }
 

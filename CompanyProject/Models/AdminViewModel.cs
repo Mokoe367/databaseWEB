@@ -7,7 +7,6 @@ namespace CompanyProject.Models
 {
     public class AdminViewModel
     {
-        public Employee emp { get; set; }
         public List<Employee> Employees { get; set; }
         public List<Department> Departments { get; set; }
 

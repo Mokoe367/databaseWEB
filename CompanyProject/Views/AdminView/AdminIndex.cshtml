@@ -8,47 +8,35 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<div>
+    @if (ViewData["userInfo"] != null)
+    {
+        @ViewData["userInfo"];
+    }
+</div>
 <table class="table table-hover col-md-3">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Employees[0].ID)
+                Employee ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Fname)
+                First Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Lname)
+                Last Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Mname)
+                Salary
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Address)
+                Role ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Sex)
+                Department ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Employees[0].BirthDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Deleted_flag)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Ssn)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employees[0].Salary)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employees[0].RoleID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employees[0].DepID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Employees[0].SuperID)
+                Superviser ID
             </th>
             <th></th>
         </tr>
@@ -65,24 +53,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Lname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Mname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Sex)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BirthDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Deleted_flag)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Ssn)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Salary)
@@ -113,22 +83,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Departments[0].depID)
+                Department ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Departments[0].depName)
+                Department Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Departments[0].location)
+                Department Location
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Departments[0].mgrID)
+                Manager ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Departments[0].projID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Departments[0].mgrSSN)
+                Project ID
             </th>
             <th></th>
         </tr>
@@ -151,9 +118,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.projID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.mgrSSN)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |

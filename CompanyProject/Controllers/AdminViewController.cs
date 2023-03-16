@@ -10,10 +10,30 @@ namespace CompanyProject.Controllers
 {
     public class AdminViewController : Controller
     {
+
         public IActionResult Index()
         {
+            int empID = (int)TempData["id"];
+
+            MySqlConnection conn = new MySqlConnection("server = localhost; port=3306;database=target;user=root;password=MonkeysInc7!");
+            conn.Open();
+            Employee user = new Employee();
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.depID from employee as e where e.employeeID = '"+empID+"'", conn);
             
-            return View("AdminIndex", getViewData());
+            var reader = cmd.ExecuteReader();
+
+            if(reader.Read())
+            {
+                user.Fname = getStringValue(reader["Fname"]);
+                user.Lname = getStringValue(reader["Lname"]);
+                user.DepID = getIntValue(reader["depID"]);
+            }
+            conn.Close();
+            string msg = "Signed in as " + user.Fname + " " + user.Lname + " showing department number: " + user.DepID;
+            ViewData["userInfo"] = msg;
+
+
+            return View("AdminIndex", getViewData(empID));
         }
 
         public static string getStringValue(object value)
@@ -28,13 +48,13 @@ namespace CompanyProject.Controllers
             return Convert.ToInt32(value);
         }
 
-        public IEnumerable<AdminViewModel> getViewData()
+        public IEnumerable<AdminViewModel> getViewData(int id)
         {
             List<AdminViewModel> data = new List<AdminViewModel>();
             AdminViewModel model = new AdminViewModel();
 
-            model.Employees = getEmployeeData();
-            model.Departments = getDepartmentData();
+            model.Employees = getEmployeeData(id);
+            model.Departments = getDepartmentData(id);
 
             data.Add(model);
 
@@ -42,34 +62,26 @@ namespace CompanyProject.Controllers
 
         }
 
-        public List<Employee> getEmployeeData()
+        public List<Employee> getEmployeeData(int id)
         {
             MySqlConnection conn = new MySqlConnection("server = localhost; port=3306;database=target;user=root;password=MonkeysInc7!");
             List<Employee> employeeData = new List<Employee>();
             
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from employee;", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.employeeID, e.Fname, e.Lname, e.salary, e.roleID, e.depID, e.SuperID from employee as e, department as d where d.mgrID = '"+id+"' and e.depID = d.depID; ", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
 
-                    DateTime date = Convert.ToDateTime(getStringValue(reader["birthdate"]));
-                    string dateNoTime = date.ToShortDateString();
                     employeeData.Add(new Employee()
                     {
                         ID = getIntValue(reader["employeeID"]),
                         Fname = getStringValue(reader["Fname"]),
                         Lname = getStringValue(reader["Lname"]),
-                        Mname = getStringValue(reader["Mname"]),
-                        Address = getStringValue(reader["address"]),
-                        Sex = getStringValue(reader["sex"]),
-                        BirthDate = dateNoTime,
-                        Deleted_flag = getIntValue(reader["deleted_flag"]),
                         RoleID = getIntValue(reader["roleId"]),
-                        DepID = getIntValue(reader["depId"]),
-                        Ssn = getIntValue(reader["ssn"]),
+                        DepID = getIntValue(reader["depID"]),
                         Salary = getIntValue(reader["salary"]),
                         SuperID = getIntValue(reader["superID"])
 
@@ -80,14 +92,14 @@ namespace CompanyProject.Controllers
             return employeeData;
         }
 
-        public List<Department> getDepartmentData()
+        public List<Department> getDepartmentData(int id)
         {
             MySqlConnection conn = new MySqlConnection("server = localhost; port=3306;database=target;user=root;password=MonkeysInc7!");
             List<Department> departmentData = new List<Department>();
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select * from department;", conn);
+            MySqlCommand cmd = new MySqlCommand("select * from department where department.mgrID = '"+id+"';", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -102,8 +114,7 @@ namespace CompanyProject.Controllers
                         depName = getStringValue(reader["depName"]),
                         mgrID = getStringValue(reader["mgrID"]),
                         projID = getStringValue(reader["projID"]),
-                        mgrSSN = getStringValue(reader["mgrSSN"])
-  
+                     
                     });
                 }
             }

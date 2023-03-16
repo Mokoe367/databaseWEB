@@ -13,8 +13,7 @@ namespace CompanyProject.Models
         public string depName { get; set; }
         public string mgrID { get; set; }
         public string projID { get; set; }
-        public string mgrSSN { get; set; }
-        
+      
 
     }
 }
