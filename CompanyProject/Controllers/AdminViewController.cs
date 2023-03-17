@@ -63,6 +63,12 @@ namespace CompanyProject.Controllers
             model.Projects = getProjectData();
             model.Suppliers = getSupplierData();
             model.Roles = getRoleData();
+            model.Tasks = getTaskData();
+            model.Assets = getAssetsData();
+            model.Locations = getLocationsData();
+            model.Distributions = getDistributionsData();
+            model.UsedBy = getUsedByData();
+            model.Works_Ons = getWorksOnData();
 
             data.Add(model);
 
@@ -229,6 +235,178 @@ namespace CompanyProject.Controllers
             conn.Close();
 
             return RoleData;
+        }
+
+        public List<Tasks> getTaskData()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Tasks> TaskData = new List<Tasks>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from task", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    TaskData.Add(new Tasks()
+                    {
+                        taskID = getIntValue(reader["roleID"]),
+                        taskName = getStringValue(reader["taskName"]),
+                        cost = getIntValue(reader["cost"]),
+                        taskDueDate = getStringValue(reader["taskDueDate"]),
+                        projID = getIntValue(reader["projID"]),
+                        employeeID = getIntValue(reader["employeeID"]),
+                        deleted_flag = getIntValue(reader["deleted_flag"]),
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return TaskData;
+        }
+
+        public List<Asset> getAssetsData()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Asset> AssetsData = new List<Asset>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from assets", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    AssetsData.Add(new Asset()
+                    {
+                        assetID = getIntValue(reader["assetID"]),
+                        type = getStringValue(reader["type"]),
+                        cost = getIntValue(reader["cost"]),
+                        supID = getIntValue(reader["supID"]),
+                        deleted_flag = getIntValue(reader["deleted_flag"])
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return AssetsData;
+        }
+
+        public List<Dep_locations> getLocationsData()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Dep_locations> LocationsData = new List<Dep_locations>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    LocationsData.Add(new Dep_locations()
+                    {
+                        depID = getIntValue(reader["depID"]),
+                        loc_name = getStringValue(reader["loc_name"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return LocationsData;
+        }
+
+        public List<Distributed_to> getDistributionsData()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Distributed_to> DistributionsData = new List<Distributed_to>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from distributed_to", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    DistributionsData.Add(new Distributed_to()
+                    {
+                        depID = getIntValue(reader["depID"]),
+                        supID = getIntValue(reader["supID"]),
+                        assetID = getIntValue(reader["assetID"]),
+                        status = Convert.ToDecimal(reader["status"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return DistributionsData;
+        }
+
+        public List<Used_by> getUsedByData()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Used_by> UsedByData = new List<Used_by>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from used_by", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    UsedByData.Add(new Used_by()
+                    {
+                        employeeID = getIntValue(reader["employeeID"]),
+                        supID = getIntValue(reader["supID"]),
+                        assetID = getIntValue(reader["assetID"]),
+                        status = Convert.ToDecimal(reader["status"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return UsedByData;
+        }
+
+        public List<Works_on> getWorksOnData()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Works_on> WorksOnData = new List<Works_on>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from works_on", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    WorksOnData.Add(new Works_on()
+                    {
+                        employeeID = getIntValue(reader["employeeID"]),
+                        TaskID = getIntValue(reader["taskID"]),
+                        hours = Convert.ToDecimal(reader["hours"])
+                       
+                    });
+                }
+            }
+            conn.Close();
+
+            return WorksOnData;
         }
     }
 }

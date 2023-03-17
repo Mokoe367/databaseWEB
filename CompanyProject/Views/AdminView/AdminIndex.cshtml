@@ -14,7 +14,7 @@
         @ViewData["userInfo"];
     }
 </div>
-<table class="table table-hover col-md-3">
+<table class="table table-hover col-md-3 table-striped table-bordered">
     <caption>Employees</caption>
     <thead>
         <tr>
@@ -114,7 +114,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table table-hover col-md-3">
+<table class="table table-hover col-md-3 table-striped table-bordered">
     <caption>Departments</caption>
     <thead>
         <tr>
@@ -168,7 +168,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table table-hover col-md-3">
+<table class="table table-hover col-md-3 table-striped table-bordered">
     <caption>Projects</caption>
     <thead>
         <tr>
@@ -246,7 +246,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table table-hover col-md-3">
+<table class="table table-hover col-md-3 table-striped table-bordered">
     <caption>Suppliers</caption>
     <thead>
         <tr>
@@ -300,7 +300,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table table-hover col-md-3">
+<table class="table table-hover col-md-3 table-striped table-bordered">
     <caption>Roles</caption>
     <thead>
         <tr>
@@ -333,5 +333,298 @@
     </tbody>
 </table>
 
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3 table-striped table-bordered">
+    <caption>Tasks</caption>
+    <thead>
+        <tr>
+            <th>
+                Task ID
+            </th>
+            <th>
+                Task Name
+            </th>
+            <th>
+                Task Budget
+            </th>
+            <th>
+                Task Due Date
+            </th>
+            <th>
+                Task Project ID
+            </th>
+            <th>
+                Task EmployeeID
+            </th>
+            <th>
+                Deleted Flag
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Tasks)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskDueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.projID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.employeeID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.deleted_flag)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3 table-striped table-bordered">
+    <caption>Assets</caption>
+    <thead>
+        <tr>
+            <th>
+                Asset ID
+            </th>
+            <th>
+                Asset Type
+            </th>
+            <th>
+                Cost
+            </th>
+            <th>
+                Supplier ID
+            </th>
+            <th>
+                Deleted Flag
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Assets)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.deleted_flag)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3 table-striped table-bordered">
+    <caption>Locations</caption>
+    <thead>
+        <tr>
+            <th>
+                Department ID
+            </th>
+            <th>
+                Location Name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Locations)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.depID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.loc_name)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3 table-striped table-bordered">
+    <caption>Supplier Distributions</caption>
+    <thead>
+        <tr>
+            <th>
+                Department ID
+            </th>
+            <th>
+                Supplier ID
+            </th>
+            <th>
+                Asset ID
+            </th>
+            <th>
+                Status
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Distributions)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.depID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3 table-striped table-bordered">
+    <caption>Used By</caption>
+    <thead>
+        <tr>
+            <th>
+                Employee ID
+            </th>
+            <th>
+                Supplier ID
+            </th>
+            <th>
+                Asset ID
+            </th>
+            <th>
+                Status
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().UsedBy)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.employeeID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table table-hover col-md-3 table-striped table-bordered">
+    <caption>Works On</caption>
+    <thead>
+        <tr>
+            <th>
+                Employee ID
+            </th>
+            <th>
+                Task ID
+            </th>
+            <th>
+                Hours
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FirstOrDefault().Works_Ons)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.employeeID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaskID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.hours)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 
