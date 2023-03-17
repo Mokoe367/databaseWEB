@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CompanyProject.Models;
 using MySql.Data.MySqlClient;
+using Microsoft.AspNetCore.Http;
 
 namespace CompanyProject.Controllers
 {
@@ -41,7 +42,7 @@ namespace CompanyProject.Controllers
                 if (privilege == "Admin" && flag == 1)
                 {
                     conn.Close();
-                    TempData["id"] = empID;
+                    HttpContext.Session.SetString("id", empID.ToString());
                     return RedirectToAction("Index", "AdminView");
                 }
                 else if (privilege == "Employee" && flag == 1)

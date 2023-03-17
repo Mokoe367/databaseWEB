@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CompanyProject.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
@@ -18,7 +19,7 @@ namespace CompanyProject.Controllers
 
         public IActionResult Index()
         {
-            int empID = (int)TempData["id"];
+            string empID = HttpContext.Session.GetString("id");
 
             MySqlConnection conn = GetConnection();
             conn.Open();

@@ -36,6 +36,9 @@ namespace CompanyProject
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc();
             services.Add(new ServiceDescriptor(typeof(CompanyContext), new CompanyContext(Configuration.GetConnectionString("DefaultConnection"))));
+
+            services.AddDistributedMemoryCache();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +57,7 @@ namespace CompanyProject
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

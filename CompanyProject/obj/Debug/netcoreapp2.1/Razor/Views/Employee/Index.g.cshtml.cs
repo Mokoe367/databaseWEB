@@ -63,7 +63,7 @@ using CompanyProject.Models;
             WriteLiteral("\r\n<h2>Index</h2>\r\n\r\n<p>\r\n    ");
             EndContext();
             BeginContext(124, 37, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "161774c99134427a9dbb38372aee580e", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "72173cc051eb43f0ace83c612f805bb9", async() => {
                 BeginContext(147, 10, true);
                 WriteLiteral("Create New");
                 EndContext();
