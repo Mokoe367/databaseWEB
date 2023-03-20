@@ -131,6 +131,7 @@ namespace CompanyProject.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditEmployee(Employee employee)
         {
             
@@ -143,7 +144,41 @@ namespace CompanyProject.Controllers
             {
                 ModelState.AddModelError("Ssn", "No Duplicate SSN");
             }
+
             reader.Close();
+            cmd2 = new MySqlCommand("select depID from department where depID = "+employee.DepID+";", conn);
+            reader = cmd2.ExecuteReader();
+            if(!reader.Read() && employee.DepID != 0)
+            {
+                ModelState.AddModelError("DepId","Department number doesn't exist");
+            }
+            reader.Close();
+
+            cmd2 = new MySqlCommand("select roleId from roles where roleId = " + employee.RoleID + ";", conn);
+            reader = cmd2.ExecuteReader();
+            if (!reader.Read() && employee.RoleID != 0)
+            {
+                ModelState.AddModelError("RoleId", "Role number doesn't exist");
+            }
+            reader.Close();
+
+            cmd2 = new MySqlCommand("select employeeID from employee where employeeID = " + employee.SuperID + ";", conn);
+            reader = cmd2.ExecuteReader();
+            if (!reader.HasRows && employee.SuperID != 0)
+            {
+                ModelState.AddModelError("superID", "superviser Id number doesn't exist");
+            }
+            if(reader.Read())
+            {
+                int id = getIntValue(reader["employeeID"]);
+                if(id == employee.ID)
+                {
+                    ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                }
+                
+            }
+            reader.Close();
+
             if (employee.Sex != "M" && employee.Sex != "F")
             {
                 ModelState.AddModelError("Sex", "Gender Must be either M or F");
@@ -189,7 +224,7 @@ namespace CompanyProject.Controllers
                 }
                 else
                 {
-                    cmd.Parameters.AddWithValue("@roleId", employee.SuperID);
+                    cmd.Parameters.AddWithValue("@superID", employee.SuperID);
                 }
 
                 cmd.Connection = conn;
