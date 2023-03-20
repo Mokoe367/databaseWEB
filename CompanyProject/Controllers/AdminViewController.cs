@@ -24,11 +24,11 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
             Employee user = new Employee();
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.depID from employee as e where e.employeeID = '"+empID+"'", conn);
-            
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.depID from employee as e where e.employeeID = '" + empID + "'", conn);
+
             var reader = cmd.ExecuteReader();
 
-            if(reader.Read())
+            if (reader.Read())
             {
                 user.Fname = getStringValue(reader["Fname"]);
                 user.Lname = getStringValue(reader["Lname"]);
@@ -40,6 +40,221 @@ namespace CompanyProject.Controllers
 
 
             return View("AdminIndex", getViewData());
+        }
+
+        //GET
+        public IActionResult AddEmployee()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddEmployee(Employee obj)
+        {
+          
+           MySqlConnection conn = GetConnection();
+           conn.Open();
+           MySqlCommand cmd = new MySqlCommand("select employee.ssn from employee where employee.ssn = " + obj.Ssn + "; ", conn);
+
+           var reader = cmd.ExecuteReader();
+
+           if (reader.Read())
+           {
+                ModelState.AddModelError("Ssn", "No Duplicate SSN");
+
+           }
+           reader.Close();
+           if(obj.Sex != "M" && obj.Sex != "F")
+           {
+                ModelState.AddModelError("Sex", "Gender Must be either M or F");
+           }
+           if (ModelState.IsValid)
+           {
+                MySqlCommand insert = new MySqlCommand("insert into employee(Fname, Lname, Mname, salary, ssn, address, birthDate, sex) Values('"+obj.Fname+"', '"+obj.Lname+"', '"+obj.Mname+"', "+obj.Salary+", "+obj.Ssn+", '"+obj.Address+"', '"+obj.BirthDate+"', '"+obj.Sex+"');", conn);
+
+                var reader2 = insert.ExecuteReader();
+                conn.Close();
+                ViewData["success"] = "Employee added successfully";
+                return RedirectToAction("Index");
+
+             
+           }
+            
+                  
+            return View(obj);
+        }
+
+        public IActionResult EditEmployee(int id)
+        {
+      
+            var emp = new Employee();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from employee where employeeID = " + id + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            DateTime date = Convert.ToDateTime(getStringValue(reader["birthdate"]));
+            string dateNoTime = date.ToShortDateString();
+            string[] dateTemp = dateNoTime.Split('/');
+            int month = Int32.Parse(dateTemp[0]);
+            int day = Int32.Parse(dateTemp[1]);
+            if (month < 10)
+            {
+                dateTemp[0] = "0" + dateTemp[0];
+            }
+            if (day < 10)
+            {
+                dateTemp[1] = "0" + dateTemp[1];
+            }
+            string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+
+            emp.Fname = getStringValue(reader["Fname"]);
+            emp.ID = getIntValue(reader["employeeID"]);
+            emp.Fname = getStringValue(reader["Fname"]);
+            emp.Lname = getStringValue(reader["Lname"]);
+            emp.Mname = getStringValue(reader["Mname"]);
+            emp.Address = getStringValue(reader["address"]);
+            emp.Sex = getStringValue(reader["sex"]);
+            emp.BirthDate = sqlDate;                
+            emp.RoleID = getIntValue(reader["roleId"]);
+            emp.DepID = getIntValue(reader["depId"]);
+            emp.Ssn = getIntValue(reader["ssn"]);
+            emp.Salary = getIntValue(reader["salary"]);
+            emp.SuperID = getIntValue(reader["superID"]);
+
+            
+            return View(emp);
+            
+        }
+
+        [HttpPost]
+        public IActionResult EditEmployee(Employee employee)
+        {
+            
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd2 = new MySqlCommand("select employee.ssn from employee where employee.employeeID != "+employee.ID+" and employee.ssn = " + employee.Ssn + "; ", conn);
+            var reader = cmd2.ExecuteReader();
+
+            if (reader.Read())
+            {
+                ModelState.AddModelError("Ssn", "No Duplicate SSN");
+            }
+            reader.Close();
+            if (employee.Sex != "M" && employee.Sex != "F")
+            {
+                ModelState.AddModelError("Sex", "Gender Must be either M or F");
+            }
+
+            if (ModelState.IsValid)
+            {
+                
+                string query = "UPDATE employee SET Fname=@Fname, Mname=Mname, Lname=@Lname, sex=@sex , birthdate=@birthdate , salary=@salary, ssn=@ssn, address=@address " +
+                    ", depId=@depId, roleId=@roleId, superID=@superID where employeeID = " + employee.ID + ";";
+              
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@Fname", employee.Fname);
+                cmd.Parameters.AddWithValue("@Mname", employee.Mname);
+                cmd.Parameters.AddWithValue("@Lname", employee.Lname);
+                cmd.Parameters.AddWithValue("@sex", employee.Sex);
+                cmd.Parameters.AddWithValue("@birthdate", employee.BirthDate);
+                cmd.Parameters.AddWithValue("@salary", employee.Salary);
+                cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
+                cmd.Parameters.AddWithValue("@address", employee.Address);
+                if (employee.DepID == 0)
+                {
+                    cmd.Parameters.AddWithValue("@depId", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@depId", employee.DepID);
+                }
+
+                if (employee.RoleID == 0)
+                {
+                    cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@roleId", employee.RoleID);
+                }
+
+                if (employee.SuperID == 0)
+                {
+                    cmd.Parameters.AddWithValue("@superID", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@roleId", employee.SuperID);
+                }
+
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+
+                return RedirectToAction("Index");
+
+            }
+           
+            
+            return View(employee);
+        }
+
+        public IActionResult LoginDetails(int id)
+        {
+            var login = new Login();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select l.username, l.user_password, l.user_privilege from employee as e, login as l where l.employeeID = e.employeeID and e.employeeID ='" + id + "'", conn);
+            var reader = cmd.ExecuteReader();
+            if(reader.Read())
+            {
+                login.username = getStringValue(reader["username"]);
+                login.password = getStringValue(reader["user_password"]);
+                login.privilege = getStringValue(reader["user_privilege"]);
+                return View(login);
+            }
+            else
+            {
+                return RedirectToAction("AddLogin", new { loginId = id});
+            }
+            
+        }
+
+        public IActionResult AddLogin(int loginId)
+        {
+            TempData["loginID"] = loginId;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddLogin(Login login)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            if(login.privilege != "Admin" && login.privilege != "Employee" && login.privilege != "Manager")
+            {
+                ModelState.AddModelError("privilege", "Privilege must be either Admin, Employee, or Manager");
+            }
+            if (ModelState.IsValid)
+            {
+                MySqlCommand insert = new MySqlCommand("insert into login(employeeID, username, user_password, user_privilege) Values("+ login.ID + ", '" + login.username + "', '" + login.password + "', '" + login.privilege + "');", conn);
+
+                var reader2 = insert.ExecuteReader();
+                conn.Close();
+                ViewData["success"] = "Login added successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(login);
+            }
+                  
         }
 
         public static string getStringValue(object value)
@@ -92,6 +307,18 @@ namespace CompanyProject.Controllers
 
                     DateTime date = Convert.ToDateTime(getStringValue(reader["birthdate"]));
                     string dateNoTime = date.ToShortDateString();
+                    string[] dateTemp = dateNoTime.Split('/');
+                    int month = Int32.Parse(dateTemp[0]);
+                    int day = Int32.Parse(dateTemp[1]);
+                    if (month < 10)
+                    {
+                        dateTemp[0] = "0" + dateTemp[0];
+                    }
+                    if (day < 10)
+                    {
+                        dateTemp[1] = "0" + dateTemp[1];
+                    }
+                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
                     employeeData.Add(new Employee()
                     {
                         ID = getIntValue(reader["employeeID"]),
@@ -100,7 +327,7 @@ namespace CompanyProject.Controllers
                         Mname = getStringValue(reader["Mname"]),
                         Address = getStringValue(reader["address"]),
                         Sex = getStringValue(reader["sex"]),
-                        BirthDate = dateNoTime,
+                        BirthDate = sqlDate,
                         Deleted_flag = getIntValue(reader["deleted_flag"]),
                         RoleID = getIntValue(reader["roleId"]),
                         DepID = getIntValue(reader["depId"]),
