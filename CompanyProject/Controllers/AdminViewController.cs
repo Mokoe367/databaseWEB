@@ -75,7 +75,7 @@ namespace CompanyProject.Controllers
 
                 var reader2 = insert.ExecuteReader();
                 conn.Close();
-                ViewData["success"] = "Employee added successfully";
+                TempData["success"] = "Employee added successfully";
                 return RedirectToAction("Index");
 
              
@@ -187,7 +187,7 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
                 
-                string query = "UPDATE employee SET Fname=@Fname, Mname=Mname, Lname=@Lname, sex=@sex , birthdate=@birthdate , salary=@salary, ssn=@ssn, address=@address " +
+                string query = "UPDATE employee SET Fname=@Fname, Mname=@Mname, Lname=@Lname, sex=@sex , birthdate=@birthdate , salary=@salary, ssn=@ssn, address=@address " +
                     ", depId=@depId, roleId=@roleId, superID=@superID where employeeID = " + employee.ID + ";";
               
                 MySqlCommand cmd = new MySqlCommand();
@@ -229,7 +229,7 @@ namespace CompanyProject.Controllers
 
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
-
+                TempData["success"] = "Employee edited successfully";
                 return RedirectToAction("Index");
 
             }
@@ -282,7 +282,7 @@ namespace CompanyProject.Controllers
 
                 var reader2 = insert.ExecuteReader();
                 conn.Close();
-                ViewData["success"] = "Login added successfully";
+                TempData["success"] = "Login added successfully";
                 return RedirectToAction("Index");
             }
             else
@@ -290,6 +290,173 @@ namespace CompanyProject.Controllers
                 return View(login);
             }
                   
+        }
+
+        public IActionResult AddDepartment()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddDepartment(Department obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select mgrID from department where mgrID = " + obj.mgrID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && obj.mgrID != 0)
+            {
+                ModelState.AddModelError("mgrID", "EmployeeID doesn't exist");
+            }
+            reader.Close();
+            
+            if (ModelState.IsValid)
+            {
+
+                string query;
+                if (obj.mgrID == 0)
+                {
+                    query = "insert into department(location, depName) Values('" + obj.location + "', '" + obj.depName + "');";
+                }
+                else
+                {
+                    query = "insert into department(location, depName, mgrID) Values('" + obj.location + "', '" + obj.depName + "', '" + obj.mgrID + "');";
+                }
+               
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();               
+                conn.Close();
+                TempData["success"] = "Department succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+
+
+            
+        }
+
+        public IActionResult EditDepartment(int id)
+        {
+            Department dep = new Department();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from department where depID = " + id + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+
+            dep.depID = getIntValue(reader["depID"]);
+            dep.location = getStringValue(reader["location"]);
+            dep.depName = getStringValue(reader["depName"]);
+            dep.mgrID = getIntValue(reader["mgrID"]);
+       
+            return View(dep);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditDepartment(Department dep)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select mgrID from department where mgrID = " + dep.mgrID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && dep.mgrID != 0)
+            {
+                ModelState.AddModelError("mgrID", "EmployeeID doesn't exist");
+            }
+            reader.Close();
+
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE department SET depName=@depName, location=@location, mgrID=@mgrID where depID = " + dep.depID + ";";
+
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@depName", dep.depName);
+                cmd2.Parameters.AddWithValue("@location", dep.location);
+                if(dep.mgrID == 0)
+                {
+                    cmd2.Parameters.AddWithValue("@mgrID", DBNull.Value);
+                }
+                else
+                {
+                    cmd2.Parameters.AddWithValue("@mgrID", dep.mgrID);
+                }
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+                
+                TempData["success"] = "Department edited successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(dep);
+            }           
+        }
+
+        public IActionResult DeleteEmployee(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select employee.deleted_flag from employee where employee.employeeID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE employee SET deleted_flag=@deleted_flag where employeeID = " + id + ";";
+            cmd.CommandText = query;
+            if(flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DeleteDepartment(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select department.deleted_flag from department where department.depID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE department SET deleted_flag=@deleted_flag where depID = " + id + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("Index");       
         }
 
         public static string getStringValue(object value)
@@ -397,9 +564,8 @@ namespace CompanyProject.Controllers
                         depID = getIntValue(reader["depID"]),
                         location = getStringValue(reader["location"]),
                         depName = getStringValue(reader["depName"]),
-                        mgrID = getStringValue(reader["mgrID"]),
-                        projID = getStringValue(reader["projID"]),
-                     
+                        mgrID = getIntValue(reader["mgrID"]),
+                        deleted_flag = getIntValue(reader["deleted_flag"])                    
                     });
                 }
             }

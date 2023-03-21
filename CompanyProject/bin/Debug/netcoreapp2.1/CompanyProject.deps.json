@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.1",
-    "signature": "0a5e07fadcb27da2bb5a115b8359a162ebd98d25"
+    "signature": "75241ad2e0f5f2eb6e7e8cfda8814b73da159112"
   },
   "compilationOptions": {
     "defines": [
@@ -28,7 +28,8 @@
           "Microsoft.AspNetCore.Razor.Design": "2.1.2",
           "Microsoft.NETCore.App": "2.1.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.1.9",
-          "MySql.Data": "8.0.32.1"
+          "MySql.Data": "8.0.32.1",
+          "bootstrap": "5.3.0-alpha1"
         },
         "runtime": {
           "CompanyProject.dll": {}
@@ -37,6 +38,7 @@
           "CompanyProject.dll": {}
         }
       },
+      "bootstrap/5.3.0-alpha1": {},
       "Google.Protobuf/3.21.9": {
         "dependencies": {
           "System.Memory": "4.5.4",
@@ -3658,6 +3660,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "bootstrap/5.3.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TSX+o7P7IqJiiqllLYt6BuOp3E6aRulpLHRci7/KIPyfXjcnulSh8NVgdbFzM/bNldrZ/Wuzsg0eX7I4WM9pqw==",
+      "path": "bootstrap/5.3.0-alpha1",
+      "hashPath": "bootstrap.5.3.0-alpha1.nupkg.sha512"
     },
     "Google.Protobuf/3.21.9": {
       "type": "package",

@@ -19,16 +19,19 @@
         @ViewData["userInfo"];
 
     }
-    @if (ViewData["success"] != null)
+</div>
+
+<div style="margin: 25px">
+    @if (TempData["success"] != null)
     {
-        @ViewData["success"];
+        @TempData["success"];
 
     }
 </div>
 
 <div id="table-div">
-    <a asp-controller="AdminView" asp-action="AddEmployee">Add Employee</a>
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddEmployee">Add Employee</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Employees</caption>
         <thead>
             <tr>
@@ -70,6 +73,9 @@
                 </th>
                 <th>
                     Deleted Flag
+                </th>
+                <th>
+
                 </th>
             </tr>
         </thead>
@@ -116,9 +122,9 @@
                         @Html.DisplayFor(modelItem => item.Deleted_flag)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit","EditEmployee", new { id=item.ID}) |
-                        @Html.ActionLink("Details", "LoginDetails", new {  id=item.ID }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                        @Html.ActionLink("Edit", "EditEmployee", new { id = item.ID }) |
+                        @Html.ActionLink("Login Details", "LoginDetails", new { id = item.ID }) |
+                        @Html.ActionLink("Delete/Restore", "DeleteEmployee", new { id = item.ID })
                     </td>
                 </tr>
             }
@@ -127,7 +133,8 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddDepartment">Add Department</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Departments</caption>
         <thead>
             <tr>
@@ -144,7 +151,7 @@
                     Manager ID
                 </th>
                 <th>
-                    Project ID
+                    Deleted Flag
                 </th>
                 <th></th>
             </tr>
@@ -166,22 +173,19 @@
                         @Html.DisplayFor(modelItem => item.mgrID)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.projID)
+                        @Html.DisplayFor(modelItem => item.deleted_flag)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                        @Html.ActionLink("Edit", "EditDepartment", new { id = item.depID }) |
+                        @Html.ActionLink("Delete/Restore", "DeleteDepartment", new { id = item.depID })
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Projects</caption>
         <thead>
             <tr>
@@ -258,7 +262,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Suppliers</caption>
         <thead>
             <tr>
@@ -311,7 +315,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Roles</caption>
         <thead>
             <tr>
@@ -346,7 +350,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Tasks</caption>
         <thead>
             <tr>
@@ -411,7 +415,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Assets</caption>
         <thead>
             <tr>
@@ -464,7 +468,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Locations</caption>
         <thead>
             <tr>
@@ -499,7 +503,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Supplier Distributions</caption>
         <thead>
             <tr>
@@ -546,7 +550,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Used By</caption>
         <thead>
             <tr>
@@ -593,7 +597,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Works On</caption>
         <thead>
             <tr>
@@ -633,3 +637,8 @@
     </table>
 </div>
 
+<script>
+    $(document).ready(function () {
+        $('table').DataTable();
+    });
+</script>
