@@ -406,6 +406,491 @@ namespace CompanyProject.Controllers
             }           
         }
 
+        public IActionResult AddSupplier()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddSupplier(Supplier obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select roleID from roles where roleID = " + obj.roleID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && obj.roleID != 0)
+            {
+                ModelState.AddModelError("roleID", "RoleID doesn't exist");
+            }
+            reader.Close();
+
+            if (ModelState.IsValid)
+            {
+
+                string query;
+                if (obj.roleID == 0)
+                {
+                    query = "insert into suppliers(product, name) Values('" + obj.product + "', '" + obj.name + "');";
+                }
+                else
+                {
+                    query = "insert into suppliers(product, name, roleID) Values('" + obj.product + "', '" + obj.name + "', '" + obj.roleID + "');";
+                }
+
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Supplier succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+          
+        }
+
+        public IActionResult EditSupplier(int id)
+        {
+            Supplier sup = new Supplier();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from suppliers where supID = " + id + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+
+            sup.supID = getIntValue(reader["supID"]);
+            sup.product = getStringValue(reader["product"]);
+            sup.name = getStringValue(reader["name"]);
+            sup.roleID = getIntValue(reader["roleID"]);
+
+            return View(sup);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditSupplier(Supplier sup)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select roleID from roles where roleID = " + sup.roleID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && sup.roleID != 0)
+            {
+                ModelState.AddModelError("roleID", "RoleID doesn't exist");
+            }
+            reader.Close();
+
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE suppliers SET product=@product, name=@name, roleID=@roleID where supID = " + sup.supID + ";";
+
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@product", sup.product);
+                cmd2.Parameters.AddWithValue("@name", sup.name);
+                if (sup.roleID == 0)
+                {
+                    cmd2.Parameters.AddWithValue("@roleID", DBNull.Value);
+                }
+                else
+                {
+                    cmd2.Parameters.AddWithValue("@roleID", sup.roleID);
+                }
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                TempData["success"] = "Supplier edited successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(sup);
+            }
+        }
+
+        public IActionResult AddProject()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddProject(Project obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + obj.depID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && obj.depID != 0)
+            {
+                ModelState.AddModelError("depID", "DepartmentID doesn't exist");
+            }
+            reader.Close();
+
+            string query = "select projName from project where projName = '" + obj.projName + "';";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            reader = cmd.ExecuteReader();
+            if(reader.HasRows)
+            {
+                ModelState.AddModelError("projName", "Duplicate project name not allowed");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+               
+                if (obj.depID == 0)
+                {
+                    query = "insert into project (dueDate, projName, location, cost, field, projStatus) VALUES ('" + obj.dueDate + "', '" + obj.projName + "', '" + obj.location +
+                        "', '" + obj.cost + "', '" + obj.field + "', '" + obj.projStatus + "');";
+                }
+                else
+                {
+                    query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) VALUES ('" + obj.dueDate + "', '" + obj.projName + "', '" + obj.location +
+                        "', '" + obj.cost + "', '" + obj.field + "', '" + obj.projStatus + "', '" + obj.depID + "');";
+                }
+
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Project succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+
+        }
+
+        public IActionResult EditProject(int id)
+        {
+            Project proj = new Project();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from project where projID = " + id + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            DateTime date = Convert.ToDateTime(getStringValue(reader["dueDate"]));
+            string dateNoTime = date.ToShortDateString();
+            string[] dateTemp = dateNoTime.Split('/');
+            int month = Int32.Parse(dateTemp[0]);
+            int day = Int32.Parse(dateTemp[1]);
+            if (month < 10)
+            {
+                dateTemp[0] = "0" + dateTemp[0];
+            }
+            if (day < 10)
+            {
+                dateTemp[1] = "0" + dateTemp[1];
+            }
+            string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+            
+            proj.projID = getIntValue(reader["projID"]);
+            proj.dueDate = sqlDate;
+            proj.depID = getIntValue(reader["depID"]);
+            proj.projName = getStringValue(reader["projName"]);
+            proj.location = getStringValue(reader["location"]);
+            proj.cost = getIntValue(reader["cost"]);
+            proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
+            proj.field = getStringValue(reader["field"]);
+           
+            return View(proj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditProject(Project proj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + proj.depID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && proj.depID != 0)
+            {
+                ModelState.AddModelError("depID", "DepartmentID doesn't exist");
+            }
+            reader.Close();
+
+            string query = "select projName from project where projName = '" + proj.projName + "' and projID != " + proj.projID + ";";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("projName", "Duplicate project name not allowed");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                query = "UPDATE project SET dueDate=@dueDate, projName=@projName, location=@location, cost=@cost, field=@field, " +
+                    "projStatus=@projStatus, depID=@depID where projID = " + proj.projID + ";";
+
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@projName", proj.projName);
+                cmd2.Parameters.AddWithValue("@dueDate", proj.dueDate);
+                if (proj.depID == 0)
+                {
+                    cmd2.Parameters.AddWithValue("@depID", DBNull.Value);
+                }
+                else
+                {
+                    cmd2.Parameters.AddWithValue("@depID", proj.depID);
+                }
+                cmd2.Parameters.AddWithValue("@location", proj.location);
+                cmd2.Parameters.AddWithValue("@cost", proj.cost);
+                cmd2.Parameters.AddWithValue("@field", proj.field);
+                cmd2.Parameters.AddWithValue("@projStatus", proj.projStatus);
+            
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                TempData["success"] = "Project edited successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(proj);
+            }
+        }
+
+        public IActionResult AddRole()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddRole(Role obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+           
+            string query = "select roleName from roles where roleName = '" + obj.roleName + "';";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("roleName", "Duplicate role name not allowed");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {                           
+                query = "insert into roles (roleName) VALUES ('" + obj.roleName + "');";
+                
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Role succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+        }
+
+        public IActionResult EditRole(int id)
+        {
+            Role role = new Role();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from roles where roleID = " + id + "; ", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            role.roleID = getIntValue(reader["roleID"]);
+            role.roleName = getStringValue(reader["rolename"]);
+            reader.Close();
+            return View(role);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditRole(Role role)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+
+            string query = "select roleName from roles where roleName = '" + role.roleName + "' and roleID != " + role.roleID + ";";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("roleName", "Duplicate role name not allowed");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                query = "UPDATE roles SET roleName=@roleName where roleID = " + role.roleID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@roleName", role.roleName);
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Role edited added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(role);
+            }
+        }
+
+        public IActionResult AddTask()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddTask(Tasks obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();          
+            MySqlCommand cmd = new MySqlCommand("select projID from task where projID = " + obj.projID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && obj.projID != 0)
+            {
+                ModelState.AddModelError("projID", "Project ID doesn't exist");
+            }
+            reader.Close();           
+            if (ModelState.IsValid)
+            {
+                string query;
+                if (obj.projID == 0)
+                {
+                    query = "insert into task (taskName, cost, taskDueDate) VALUES ('" + obj.taskName + "', '" + obj.cost + "', '" + obj.taskDueDate +"');";
+                }
+                else
+                {
+                    query = "insert into task (taskName, cost, taskDueDate, projID) VALUES ('" + obj.taskName + "', '" + obj.cost + "', '"
+                        + obj.taskDueDate + "', '" + obj.projID + "');";
+                }
+
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Task succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+        }
+
+        public IActionResult EditTask(int id)
+        {
+            Tasks task = new Tasks();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from task where taskID = " + id + "; ", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
+            string dateNoTime = date.ToShortDateString();
+            string[] dateTemp = dateNoTime.Split('/');
+            int month = Int32.Parse(dateTemp[0]);
+            int day = Int32.Parse(dateTemp[1]);
+            if (month < 10)
+            {
+                dateTemp[0] = "0" + dateTemp[0];
+            }
+            if (day < 10)
+            {
+                dateTemp[1] = "0" + dateTemp[1];
+            }
+            string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+            task.taskID = getIntValue(reader["taskID"]);
+            task.taskName = getStringValue(reader["taskName"]);
+            task.cost = getIntValue(reader["cost"]);
+            task.taskDueDate = sqlDate;
+            task.projID = getIntValue(reader["projID"]);
+            task.deleted_flag = getIntValue(reader["deleted_flag"]);
+
+            return View(task);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditTask(Tasks task)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select projID from task where projID = " + task.projID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && task.projID != 0)
+            {
+                ModelState.AddModelError("projID", "Project ID doesn't exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@taskName", task.taskName);
+                cmd2.Parameters.AddWithValue("@cost", task.cost);
+                cmd2.Parameters.AddWithValue("@date", task.taskDueDate);
+                if (task.projID == 0)
+                {
+                    cmd2.Parameters.AddWithValue("@projID", DBNull.Value);
+                }
+                else
+                {
+                    cmd2.Parameters.AddWithValue("@projID", task.projID);
+                }
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Task edited added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(task);
+            }
+        }
+
         public IActionResult DeleteEmployee(int id)
         {
             MySqlConnection conn = GetConnection();
@@ -457,6 +942,139 @@ namespace CompanyProject.Controllers
             cmd.ExecuteNonQuery();
 
             return RedirectToAction("Index");       
+        }
+
+        public IActionResult DeleteSupplier(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select suppliers.deleted_flag from suppliers where suppliers.supID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE suppliers SET deleted_flag=@deleted_flag where supID = " + id + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DeleteProject(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select project.deleted_flag from project where project.projID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE project SET deleted_flag=@deleted_flag where projID = " + id + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DeleteRole(int id)
+        {
+            Role role = new Role();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from roles where roleID = " + id + "; ", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            role.roleID = getIntValue(reader["roleID"]);
+            role.roleName = getStringValue(reader["rolename"]);
+            reader.Close();
+            return View(role);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteRole(Role role)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+
+            string query = "select e.roleID from employee as e where e.roleID = " + role.roleID +
+                " Union select s.roleID from suppliers as s where s.roleID = " + role.roleID + ";";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("roleID", "Employees or Suppliers still assigned this role");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                query = "delete from roles where roleID = " + role.roleID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;               
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Role successfully deleted";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(role);
+            }           
+        }
+
+        public IActionResult DeleteTask(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select task.deleted_flag from task where task.taskID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE task SET deleted_flag=@deleted_flag where taskID = " + id + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("Index");
         }
 
         public static string getStringValue(object value)
@@ -591,15 +1209,27 @@ namespace CompanyProject.Controllers
                 {
                     DateTime date = Convert.ToDateTime(getStringValue(reader["dueDate"]));
                     string dateNoTime = date.ToShortDateString();
+                    string[] dateTemp = dateNoTime.Split('/');
+                    int month = Int32.Parse(dateTemp[0]);
+                    int day = Int32.Parse(dateTemp[1]);
+                    if (month < 10)
+                    {
+                        dateTemp[0] = "0" + dateTemp[0];
+                    }
+                    if (day < 10)
+                    {
+                        dateTemp[1] = "0" + dateTemp[1];
+                    }
+                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
                     projectData.Add(new Project()
                     {
                         projID = getIntValue(reader["projID"]),
-                        dueDate = getStringValue(reader["dueDate"]),
+                        dueDate = sqlDate,
                         depID = getIntValue(reader["depID"]),
                         projName = getStringValue(reader["projName"]),
                         location = getStringValue(reader["location"]),
                         cost = getIntValue(reader["cost"]),
-                        projStatus = Convert.ToDecimal(reader["projID"]),
+                        projStatus = Convert.ToDecimal(reader["projStatus"]),
                         field = getStringValue(reader["field"]),
                         deleted_flag = getIntValue(reader["deleted_flag"])
                     });
@@ -679,15 +1309,27 @@ namespace CompanyProject.Controllers
             {
                 while (reader.Read())
                 {
-
+                    DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
+                    string dateNoTime = date.ToShortDateString();
+                    string[] dateTemp = dateNoTime.Split('/');
+                    int month = Int32.Parse(dateTemp[0]);
+                    int day = Int32.Parse(dateTemp[1]);
+                    if (month < 10)
+                    {
+                        dateTemp[0] = "0" + dateTemp[0];
+                    }
+                    if (day < 10)
+                    {
+                        dateTemp[1] = "0" + dateTemp[1];
+                    }
+                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
                     TaskData.Add(new Tasks()
                     {
-                        taskID = getIntValue(reader["roleID"]),
+                        taskID = getIntValue(reader["taskID"]),
                         taskName = getStringValue(reader["taskName"]),
                         cost = getIntValue(reader["cost"]),
-                        taskDueDate = getStringValue(reader["taskDueDate"]),
-                        projID = getIntValue(reader["projID"]),
-                        employeeID = getIntValue(reader["employeeID"]),
+                        taskDueDate = sqlDate,
+                        projID = getIntValue(reader["projID"]),                       
                         deleted_flag = getIntValue(reader["deleted_flag"]),
 
                     });

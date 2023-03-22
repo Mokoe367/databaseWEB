@@ -110,13 +110,22 @@
                         @Html.DisplayFor(modelItem => item.Salary)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.RoleID)
+                        @if (item.RoleID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.RoleID)
+                        }                        
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.DepID)
+                        @if (item.DepID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.DepID)
+                        }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.SuperID)
+                        @if (item.SuperID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.SuperID)
+                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Deleted_flag)
@@ -170,7 +179,10 @@
                         @Html.DisplayFor(modelItem => item.location)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.mgrID)
+                        @if (item.mgrID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.mgrID)
+                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.deleted_flag)
@@ -183,8 +195,10 @@
             }
         </tbody>
     </table>
+</div>
 
-
+<div id="table-div">
+    <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddProject">Add Project</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Projects</caption>
         <thead>
@@ -202,7 +216,7 @@
                     Department Location
                 </th>
                 <th>
-                    Base Cost
+                    Budget
                 </th>
                 <th>
                     Project Status
@@ -230,7 +244,10 @@
                         @Html.DisplayFor(modelItem => item.projName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.depID)
+                        @if (item.depID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.depID)
+                        }                        
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.location)
@@ -251,9 +268,8 @@
                         @Html.DisplayFor(modelItem => item.field)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                        @Html.ActionLink("Edit", "EditProject", new { id = item.projID }) |
+                        @Html.ActionLink("Delete/Restore", "DeleteProject", new { id = item.projID })
                     </td>
                 </tr>
             }
@@ -262,6 +278,7 @@
 </div>
 
 <div id="table-div">
+    <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddSupplier">Add Supplier</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Suppliers</caption>
         <thead>
@@ -298,15 +315,17 @@
                         @Html.DisplayFor(modelItem => item.product)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.roleID)
+                        @if (item.roleID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.roleID)
+                        }                        
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.deleted_flag)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                        @Html.ActionLink("Edit", "EditSupplier", new {  id=item.supID  }) |                       
+                        @Html.ActionLink("Delete/Restore", "DeleteSupplier", new { id = item.supID })
                     </td>
                 </tr>
             }
@@ -315,6 +334,7 @@
 </div>
 
 <div id="table-div">
+    <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddRole">Add Role</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Roles</caption>
         <thead>
@@ -339,9 +359,8 @@
                         @Html.DisplayFor(modelItem => item.roleName)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                        @Html.ActionLink("Edit", "EditRole", new { id=item.roleID }) |                        
+                        @Html.ActionLink("Delete", "DeleteRole", new { id = item.roleID })
                     </td>
                 </tr>
             }
@@ -350,6 +369,7 @@
 </div>
 
 <div id="table-div">
+    <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddTask">Add Task</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Tasks</caption>
         <thead>
@@ -368,9 +388,6 @@
                 </th>
                 <th>
                     Task Project ID
-                </th>
-                <th>
-                    Task EmployeeID
                 </th>
                 <th>
                     Deleted Flag
@@ -395,18 +412,17 @@
                         @Html.DisplayFor(modelItem => item.taskDueDate)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.projID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.employeeID)
-                    </td>
+                        @if (item.projID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.projID)
+                        }
+                    </td>                    
                     <td>
                         @Html.DisplayFor(modelItem => item.deleted_flag)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                        @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |                   
+                        @Html.ActionLink("Delete/Restore", "DeleteTask", new { id = item.taskID })
                     </td>
                 </tr>
             }
