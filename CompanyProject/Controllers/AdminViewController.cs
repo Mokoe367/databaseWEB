@@ -778,7 +778,7 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();          
-            MySqlCommand cmd = new MySqlCommand("select projID from task where projID = " + obj.projID + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select projID from project where projID = " + obj.projID + "; ", conn);
 
             var reader = cmd.ExecuteReader();
 
@@ -852,7 +852,7 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select projID from task where projID = " + task.projID + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select projID from project where projID = " + task.projID + "; ", conn);
 
             var reader = cmd.ExecuteReader();
 
@@ -890,6 +890,620 @@ namespace CompanyProject.Controllers
                 return View(task);
             }
         }
+
+        public IActionResult AddAsset()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddAsset(Asset obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select supID from suppliers where supID = " + obj.supID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && obj.supID != 0)
+            {
+                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query;
+                if (obj.supID == 0)
+                {
+                    query = "insert into assets (type, cost) VALUES ('" + obj.type + "', '" + obj.cost + "');";
+                }
+                else
+                {
+                    query = "insert into assets (type, cost, supID) VALUES ('" + obj.type + "', '" + obj.cost + "', '" + obj.supID + "');";
+                }
+
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Asset succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+        }
+
+        public IActionResult EditAsset(int id)
+        {
+            Asset asset = new Asset();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from assets where assetID = " + id + "; ", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            asset.assetID = getIntValue(reader["assetID"]);
+            asset.type = getStringValue(reader["type"]);
+            asset.cost = getIntValue(reader["cost"]);
+            asset.supID = getIntValue(reader["supID"]);                    
+
+            return View(asset);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditAsset(Asset asset)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select supID from suppliers where supID = " + asset.supID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows && asset.supID != 0)
+            {
+                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE assets SET type=@type, cost=@cost, supID=@supID where assetID = " + asset.assetID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@type", asset.type);
+                cmd2.Parameters.AddWithValue("@cost", asset.cost);               
+                if (asset.supID == 0)
+                {
+                    cmd2.Parameters.AddWithValue("@supID", DBNull.Value);
+                }
+                else
+                {
+                    cmd2.Parameters.AddWithValue("@supID", asset.supID);
+                }
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Asset edited added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(asset);
+            }
+        }
+
+        public IActionResult AddLocations()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddLocations(Dep_locations obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + obj.depID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("depID", "Department ID doesn't exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "insert into dep_locations (loc_name, depID) VALUES ('" + obj.loc_name + "', '" + obj.depID + "');"; ;
+               
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Location succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+        }
+
+        public IActionResult EditLocation(int id, string name)
+        {
+            Dep_locations location = new Dep_locations();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = '" + name +"';", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            location.depID = getIntValue(reader["depID"]);
+            location.loc_name = getStringValue(reader["loc_name"]);
+            location.pastDepID = getIntValue(reader["depID"]);
+            location.pastLoc_name = getStringValue(reader["loc_name"]);
+
+            return View(location);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditLocation(Dep_locations location)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + location.depID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("depID", "Department ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select depID, loc_name from dep_locations where loc_name = '" + location.loc_name + "' " +
+                    "and depID = " + location.depID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                if (location.loc_name == location.pastLoc_name && location.depID == location.pastDepID)
+                {
+                    ModelState.AddModelError("loc_name", "No changes made");
+                }
+                else
+                {
+                    ModelState.AddModelError("loc_name", "Department ID, Supplier ID, and Asset ID already exist");
+                }
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                
+                string query = "UPDATE dep_locations SET loc_name = @name, depID = @depID  WHERE loc_name = '"+location.pastLoc_name+"' " +
+                    "and depID = " + location.pastDepID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@depID", location.depID);
+                cmd2.Parameters.AddWithValue("@name", location.loc_name);               
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Location successfully edited";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(location);
+            }
+           
+        }
+
+        public IActionResult AddDistribution()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddDistribution(Distributed_to obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + obj.depID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("depID", "Department ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select supID from suppliers where supID = " + obj.supID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+            }
+            reader.Close();
+            test = "select assetID from assets where assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "insert into distributed_to (depID, supID, assetID, status) VALUES ('" + obj.depID + 
+                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.status + "');"; ;
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Distribution succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+        }       
+
+        public IActionResult EditDistribution(int depId, int supId, int assetId)
+        {
+            Distributed_to distribution = new Distributed_to();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from distributed_to where depID = " + depId + " and " +
+                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            distribution.depID = getIntValue(reader["depID"]);
+            distribution.supID = getIntValue(reader["supID"]);
+            distribution.assetID = getIntValue(reader["assetID"]);
+            distribution.tempDepID = getIntValue(reader["depID"]);
+            distribution.tempSupID = getIntValue(reader["supID"]);
+            distribution.tempAssetID = getIntValue(reader["assetID"]);
+            distribution.status = Convert.ToDecimal(reader["status"]);
+
+            return View(distribution);
+        }
+
+        public IActionResult AddUse()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddUse(Used_by obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.employeeID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select supID from suppliers where supID = " + obj.supID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+            }
+            reader.Close();
+            test = "select assetID from assets where assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "insert into used_by (employeeID, supID, assetID, status) VALUES ('" + obj.employeeID +
+                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.status + "');"; ;
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Used By succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+        }
+
+        public IActionResult EditUse(int empId, int supId, int assetId)
+        {
+            Used_by use = new Used_by();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from used_by where employeeID = " + empId + " and " +
+                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            use.employeeID = getIntValue(reader["employeeID"]);
+            use.supID = getIntValue(reader["supID"]);
+            use.assetID = getIntValue(reader["assetID"]);
+            use.tempemployeeID = getIntValue(reader["employeeID"]);
+            use.tempsupID = getIntValue(reader["supID"]);
+            use.tempassetID = getIntValue(reader["assetID"]);
+            use.status = Convert.ToDecimal(reader["status"]);
+
+            return View(use);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditUse(Used_by use)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + use.employeeID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select supID from suppliers where supID = " + use.supID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+            }
+            reader.Close();
+            test = "select assetID from assets where assetID = " + use.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+            }
+            reader.Close();
+            test = "select employeeID, supID, assetID from used_by where employeeID = '" + use.employeeID + "' " +
+                    "and supID = " + use.supID + " and assetID = " + use.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows && (use.assetID != use.tempassetID || use.employeeID != use.tempemployeeID || use.supID != use.tempsupID))
+            {
+               
+                ModelState.AddModelError("status", "Employee ID, Supplier ID, and Asset ID already exist");
+               
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE used_by SET employeeID=@emp, supID=@sup, assetID=@asset, status=@status WHERE employeeID = '" + use.tempemployeeID + "' " +
+                    "and supID = " + use.tempsupID + " and assetID = " + use.tempassetID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@emp", use.employeeID);
+                cmd2.Parameters.AddWithValue("@sup", use.supID);
+                cmd2.Parameters.AddWithValue("@asset", use.assetID);
+                cmd2.Parameters.AddWithValue("@status", use.status);
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Used By successfully edited";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(use);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditDistribution(Distributed_to distribution)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + distribution.depID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("depID", "Department ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select supID from suppliers where supID = " + distribution.supID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+            }
+            reader.Close();
+            test = "select assetID from assets where assetID = " + distribution.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+            }
+            reader.Close();
+            test = "select depID, supID, assetID from distributed_to where depID = '" + distribution.depID + "' " +
+                    "and supID = " + distribution.supID + " and assetID = " + distribution.assetID +";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows && (distribution.tempAssetID != distribution.assetID || distribution.tempDepID != distribution.depID || distribution.tempSupID != distribution.supID))
+            {              
+               ModelState.AddModelError("status", "Department ID, Supplier ID, and Asset ID already exist");                         
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE distributed_to SET depID=@dep, supID=@sup, assetID=@asset, status=@status WHERE depID = '" + distribution.tempDepID + "' " +
+                    "and supID = " + distribution.tempSupID + " and assetID = " + distribution.tempAssetID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@dep", distribution.depID);
+                cmd2.Parameters.AddWithValue("@sup", distribution.supID);
+                cmd2.Parameters.AddWithValue("@asset", distribution.assetID);
+                cmd2.Parameters.AddWithValue("@status", distribution.status);
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Distribution successfully edited";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(distribution);
+            }
+        }
+
+        public IActionResult AddWork()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddWork(Works_on obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.employeeID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select taskID from task where taskID = " + obj.TaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("TaskID", "Task ID doesn't exist");
+            }
+            reader.Close();           
+            if (ModelState.IsValid)
+            {
+                string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
+                    "', '" + obj.TaskID + "', '" + obj.hours + "');"; 
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Works On succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(obj);
+            }
+        }
+
+        public IActionResult EditWork(int empid, int taskid)
+        {
+            Works_on work = new Works_on();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from works_on where employeeID = " + empid + " and " +
+                "taskID = " + taskid + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            work.employeeID = getIntValue(reader["employeeID"]);
+            work.TaskID = getIntValue(reader["taskID"]);           
+            work.tempemployeeID = getIntValue(reader["employeeID"]);
+            work.tempTaskID = getIntValue(reader["taskID"]);
+            work.hours = getIntValue(reader["hours"]);
+            
+            return View(work);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditWork(Works_on work)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + work.employeeID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select taskID from task where taskID = " + work.TaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("TaskID", "Task ID doesn't exist");
+            }
+            reader.Close();
+            test = "select employeeID, taskID from works_on where employeeID = '" + work.employeeID + "' " +
+                    "and taskID = " + work.TaskID + " and employeeID != '" + work.tempemployeeID + "' " +
+                    "and taskID = " + work.tempTaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows && (work.employeeID != work.tempemployeeID || work.TaskID != work.tempTaskID))
+            {               
+               ModelState.AddModelError("hours", "Employee ID and Task ID already exist");               
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours WHERE employeeID = '" + work.tempemployeeID + "' " +
+                    "and taskID = " + work.tempTaskID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@emp", work.employeeID);
+                cmd2.Parameters.AddWithValue("@task", work.TaskID);
+                cmd2.Parameters.AddWithValue("@hours", work.hours);
+             
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Works on successfully edited";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(work);
+            }
+        }
+
 
         public IActionResult DeleteEmployee(int id)
         {
@@ -1013,6 +1627,33 @@ namespace CompanyProject.Controllers
             return View(role);
         }
 
+        public IActionResult DeleteAsset(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select assets.deleted_flag from assets where assets.assetID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE assets SET deleted_flag=@deleted_flag where assetID = " + id + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("Index");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteRole(Role role)
@@ -1074,6 +1715,137 @@ namespace CompanyProject.Controllers
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
 
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DeleteLocation(int id, string name)
+        {
+            Dep_locations location = new Dep_locations();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = '" + name + "';", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            location.depID = getIntValue(reader["depID"]);
+            location.loc_name = getStringValue(reader["loc_name"]);
+            location.pastDepID = getIntValue(reader["depID"]);
+            location.pastLoc_name = getStringValue(reader["loc_name"]);
+
+            return View(location);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteLocation(Dep_locations location)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+                        
+           
+            if (ModelState.IsValid)
+            {
+                string query = "delete from dep_locations where depID = " + location.depID + " and loc_name = '" + location.loc_name + "';";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Location successfully deleted";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(location);
+            }
+        }
+
+        public IActionResult DeleteDistribution(int depId, int supId, int assetId)
+        {
+            Distributed_to distribution = new Distributed_to();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select deleted_flag from distributed_to where depID = " + depId + " and " +
+                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE distributed_to SET deleted_flag=@deleted_flag where depID = " + depId + " and " +
+                "supID = " + supId + " and assetID = " + assetId + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DeleteUse(int empId, int supId, int assetId)
+        {
+            Used_by distribution = new Used_by();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select deleted_flag from used_by where employeeID = " + empId + " and " +
+                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE used_by SET deleted_flag=@deleted_flag where employeeID = " + empId + " and " +
+                "supID = " + supId + " and assetID = " + assetId + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DeleteWork(int empid, int taskid)
+        {
+            Works_on work = new Works_on();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select deleted_flag from works_on where employeeID = " + empid + " and " +
+                "taskID = " + taskid + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            int flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+
+            string query = "UPDATE works_on SET deleted_flag=@deleted_flag where employeeID = " + empid + " and " +
+                "taskID = " + taskid + ";";
+            cmd.CommandText = query;
+            if (flag == 1)
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+            }
+            cmd.Connection = conn;
+            cmd.ExecuteNonQuery();
             return RedirectToAction("Index");
         }
 
@@ -1415,7 +2187,8 @@ namespace CompanyProject.Controllers
                         depID = getIntValue(reader["depID"]),
                         supID = getIntValue(reader["supID"]),
                         assetID = getIntValue(reader["assetID"]),
-                        status = Convert.ToDecimal(reader["status"])
+                        status = Convert.ToDecimal(reader["status"]),
+                        deleted_flag = getIntValue(reader["deleted_flag"])
                     });
                 }
             }
@@ -1443,7 +2216,8 @@ namespace CompanyProject.Controllers
                         employeeID = getIntValue(reader["employeeID"]),
                         supID = getIntValue(reader["supID"]),
                         assetID = getIntValue(reader["assetID"]),
-                        status = Convert.ToDecimal(reader["status"])
+                        status = Convert.ToDecimal(reader["status"]),
+                        deleted_flag = getIntValue(reader["deleted_flag"])
                     });
                 }
             }
@@ -1470,8 +2244,8 @@ namespace CompanyProject.Controllers
                     {
                         employeeID = getIntValue(reader["employeeID"]),
                         TaskID = getIntValue(reader["taskID"]),
-                        hours = Convert.ToDecimal(reader["hours"])
-                       
+                        hours = Convert.ToDecimal(reader["hours"]),
+                        deleted_flag = getIntValue(reader["deleted_flag"])
                     });
                 }
             }

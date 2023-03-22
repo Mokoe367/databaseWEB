@@ -83,3 +83,14 @@ C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\ne
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\DeleteRole.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\AddTask.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\EditTask.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\AddAsset.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\EditAsset.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\AddLocations.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\EditLocation.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\DeleteLocation.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\AddDistribution.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\EditDistribution.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\AddUse.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\EditUse.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\AddWork.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\EditWork.g.cshtml.cs
