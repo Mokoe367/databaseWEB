@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using CompanyProject.Models;
 using Microsoft.AspNetCore.Http;
@@ -244,10 +246,11 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select l.username, l.user_password, l.user_privilege from employee as e, login as l where l.employeeID = e.employeeID and e.employeeID ='" + id + "'", conn);
+            MySqlCommand cmd = new MySqlCommand("select l.username, l.user_password, l.user_privilege, l.employeeID from employee as e, login as l where l.employeeID = e.employeeID and e.employeeID ='" + id + "'", conn);
             var reader = cmd.ExecuteReader();
             if(reader.Read())
             {
+                login.ID = getIntValue(reader["employeeID"]);
                 login.username = getStringValue(reader["username"]);
                 login.password = getStringValue(reader["user_password"]);
                 login.privilege = getStringValue(reader["user_privilege"]);
@@ -258,6 +261,52 @@ namespace CompanyProject.Controllers
                 return RedirectToAction("AddLogin", new { loginId = id});
             }
             
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult LoginDetails(Login login)
+        {
+            MySqlConnection conn = GetConnection();
+            MySqlCommand cmd = new MySqlCommand();
+            conn.Open();
+            if (login.privilege != "Admin" && login.privilege != "Employee" && login.privilege != "Manager")
+            {
+                ModelState.AddModelError("privilege", "Privilege must be either Admin, Employee, or Manager");
+            }
+            string query = "select username from login where username = '" + login.username + "' and employeeID != " + login.ID + " ;";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("username", "Username already exists");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                var salt = DateTime.Now.ToString();
+                var hash = HashPassword($"{login.password}{salt}");
+              
+                query = "UPDATE login SET username=@username, user_password=@password, user_privilege=@priv, hash=@hash, salt=@salt where employeeID = " + login.ID + ";";
+                MySqlCommand update = new MySqlCommand();
+                update.CommandText = query;
+                update.Parameters.AddWithValue("@username", login.username);
+                update.Parameters.AddWithValue("@password", login.password);
+                update.Parameters.AddWithValue("@priv", login.privilege);
+                update.Parameters.AddWithValue("@hash", hash);
+                update.Parameters.AddWithValue("@salt", salt);
+
+                update.Connection = conn;
+                update.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Login added successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(login);
+            }
         }
 
         public IActionResult AddLogin(int loginId)
@@ -271,14 +320,29 @@ namespace CompanyProject.Controllers
         public IActionResult AddLogin(Login login)
         {
             MySqlConnection conn = GetConnection();
+            MySqlCommand cmd = new MySqlCommand();
             conn.Open();
             if(login.privilege != "Admin" && login.privilege != "Employee" && login.privilege != "Manager")
             {
                 ModelState.AddModelError("privilege", "Privilege must be either Admin, Employee, or Manager");
             }
+            string query = "select username from login where username = '" + login.username + "' ;";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if(reader.HasRows)
+            {
+                ModelState.AddModelError("username", "Username already exists");
+            }
+            reader.Close();
             if (ModelState.IsValid)
             {
-                MySqlCommand insert = new MySqlCommand("insert into login(employeeID, username, user_password, user_privilege) Values("+ login.ID + ", '" + login.username + "', '" + login.password + "', '" + login.privilege + "');", conn);
+           
+                var salt = DateTime.Now.ToString();
+                var hash = HashPassword($"{login.password}{salt}");
+
+                MySqlCommand insert = new MySqlCommand("insert into login(employeeID, username, user_password, user_privilege, hash, salt) Values("+ login.ID + ", '" + login.username + "', '" +
+                    login.password + "', '" + login.privilege + "', '" + hash + "', '" + salt + "');", conn);
 
                 var reader2 = insert.ExecuteReader();
                 conn.Close();
@@ -1017,9 +1081,17 @@ namespace CompanyProject.Controllers
                 ModelState.AddModelError("depID", "Department ID doesn't exist");
             }
             reader.Close();
+            string query = "select loc_name from dep_locations where loc_name = '" + obj.loc_name + "' and depID = " + obj.depID + ";";
+            cmd.CommandText = query;
+            reader = cmd.ExecuteReader();
+            if(reader.HasRows)
+            {
+                ModelState.AddModelError("loc_name", "Department ID and Location name already exist");
+            }
+            reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into dep_locations (loc_name, depID) VALUES ('" + obj.loc_name + "', '" + obj.depID + "');"; ;
+                query = "insert into dep_locations (loc_name, depID) VALUES ('" + obj.loc_name + "', '" + obj.depID + "');"; ;
                
                 cmd.CommandText = query;
                 cmd.Connection = conn;
@@ -1070,16 +1142,11 @@ namespace CompanyProject.Controllers
                     "and depID = " + location.depID + ";";
             cmd.CommandText = test;
             reader = cmd.ExecuteReader();
-            if (reader.HasRows)
+            if (reader.HasRows && (location.loc_name != location.pastLoc_name && location.depID != location.pastDepID))
             {
-                if (location.loc_name == location.pastLoc_name && location.depID == location.pastDepID)
-                {
-                    ModelState.AddModelError("loc_name", "No changes made");
-                }
-                else
-                {
-                    ModelState.AddModelError("loc_name", "Department ID, Supplier ID, and Asset ID already exist");
-                }
+               
+                ModelState.AddModelError("loc_name", "Department ID, Supplier ID, and Asset ID already exist");
+                
             }
             reader.Close();
             if (ModelState.IsValid)
@@ -1140,6 +1207,14 @@ namespace CompanyProject.Controllers
             if (!reader.HasRows)
             {
                 ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+            }
+            reader.Close();
+            test = "select * from distributed_to where depID = " + obj.depID + " and supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("status", "Asset ID, Department ID, and Supplier ID already exist");
             }
             reader.Close();
             if (ModelState.IsValid)
@@ -1214,6 +1289,14 @@ namespace CompanyProject.Controllers
             if (!reader.HasRows)
             {
                 ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+            }
+            reader.Close();
+            test = "select * from used_by where employeeID = " + obj.employeeID + " and supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("status", "Asset ID, Employee ID, and Supplier ID already exist");
             }
             reader.Close();
             if (ModelState.IsValid)
@@ -1410,7 +1493,15 @@ namespace CompanyProject.Controllers
             {
                 ModelState.AddModelError("TaskID", "Task ID doesn't exist");
             }
-            reader.Close();           
+            reader.Close();
+            test = "select * from works_on where employeeID = " + obj.employeeID + " and taskID = " + obj.TaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("hours", "Task ID and Employee ID already exist");
+            }
+            reader.Close();
             if (ModelState.IsValid)
             {
                 string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
@@ -1503,7 +1594,6 @@ namespace CompanyProject.Controllers
                 return View(work);
             }
         }
-
 
         public IActionResult DeleteEmployee(int id)
         {
@@ -2252,6 +2342,15 @@ namespace CompanyProject.Controllers
             conn.Close();
 
             return WorksOnData;
+        }
+
+        public string HashPassword(string password)
+        {
+            SHA256 hash = SHA256.Create();
+            var passwordBytes = Encoding.Default.GetBytes(password);
+            var hashedpassword = hash.ComputeHash(passwordBytes);
+
+            return BitConverter.ToString(hashedpassword).Replace("-","");
         }
     }
 }

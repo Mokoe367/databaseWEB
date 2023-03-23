@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    ViewBag.Title = "Manager View";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<style>
+    #table-div {
+        margin: 25px;
+    }
+</style>
+
+
+<div style="margin: 25px">
+    <h2>Admin View</h2>
+    @if (ViewData["userInfo"] != null)
+    {
+        @ViewData["userInfo"];
+
+    }
+</div>
+
+<h2>Index</h2>
+
