@@ -11,6 +11,9 @@ namespace CompanyProject.Controllers
 {
     public class ManagerController : Controller
     {
+        private int userDepID { get; set; }
+        private int userEmpID { get; set; }
+
         private MySqlConnection GetConnection()
         {
             return new MySqlConnection("server = localhost; port=3306;database=target;user=root;password=MonkeysInc7!");
@@ -27,10 +30,13 @@ namespace CompanyProject.Controllers
             if (value == DBNull.Value) return 0;
             return Convert.ToInt32(value);
         }
+       
 
         public IActionResult Index()
         {
             string empID = HttpContext.Session.GetString("id");
+            this.userEmpID = Convert.ToInt32(empID);
+
 
             MySqlConnection conn = GetConnection();
             conn.Open();
@@ -46,9 +52,9 @@ namespace CompanyProject.Controllers
                 user.DepID = getIntValue(reader["depID"]);
             }
             conn.Close();
-            string msg = "Signed in as " + user.Fname + " " + user.Lname;
+            string msg = "Signed in as " + user.Fname + " " + user.Lname + " showing Department " + user.DepID;
             ViewData["userInfo"] = msg;
-
+            this.userDepID = user.DepID;
 
             return View();       
         }
