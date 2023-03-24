@@ -12,4 +12,10 @@
     <PackageReference Include="MySql.Data" Version="8.0.32.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Manager\AddEmployee.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>

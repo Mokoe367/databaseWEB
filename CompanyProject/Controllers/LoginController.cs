@@ -14,8 +14,12 @@ namespace CompanyProject.Controllers
     public class LoginController : Controller
     {
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string error = "")
         {
+            if(error != "")
+            {
+                ViewData["LoginFlag"] = error;
+            }            
             return View();
         }
 
