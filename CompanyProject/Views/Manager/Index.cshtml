@@ -102,8 +102,8 @@
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "EditEmployee", new { id = item.ID }) |
-                    @Html.ActionLink("Login Details", "LoginDetails", new { id = item.ID }) |
-                    @Html.ActionLink("Delete/Restore", "DeleteEmployee", new { id = item.ID })
+                    @Html.ActionLink("Task Details", "TaskDetails", new { id = item.ID }) |
+                    @Html.ActionLink("Fire", "FireEmployee", new { id = item.ID })
                 </td>
             </tr>
             }
@@ -178,7 +178,7 @@
 
 <!--Table that shows each product's id, name, due date, field, and budget.
 
-Table that shows task id, name, due date, budget, prodID or Projname, and the employee that is working on it.employee role can be included
+Table that shows task id, name, due date, budget, projD or Projname, and the employee that is working on it.employee role can be included
 
 Table shows department distributions
 

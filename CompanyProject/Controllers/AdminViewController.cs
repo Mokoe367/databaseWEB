@@ -66,6 +66,7 @@ namespace CompanyProject.Controllers
                 ModelState.AddModelError("Ssn", "No Duplicate SSN");
 
            }
+           
            reader.Close();
            if(obj.Sex != "M" && obj.Sex != "F")
            {
