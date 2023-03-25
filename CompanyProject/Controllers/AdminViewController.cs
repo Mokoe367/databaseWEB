@@ -44,6 +44,11 @@ namespace CompanyProject.Controllers
             return View("AdminIndex", getViewData());
         }
 
+        public IActionResult DeletedLogs()
+        {
+            return View(getLogs());
+        }
+
         //GET
         public IActionResult AddEmployee()
         {
@@ -1215,13 +1220,13 @@ namespace CompanyProject.Controllers
             reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
-                ModelState.AddModelError("status", "Asset ID, Department ID, and Supplier ID already exist");
+                ModelState.AddModelError("field", "Asset ID, Department ID, and Supplier ID already exist");
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into distributed_to (depID, supID, assetID, status) VALUES ('" + obj.depID + 
-                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.status + "');"; ;
+                string query = "insert into distributed_to (depID, supID, assetID, field) VALUES ('" + obj.depID + 
+                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.field + "');"; ;
                 cmd.CommandText = query;
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
@@ -1251,7 +1256,7 @@ namespace CompanyProject.Controllers
             distribution.tempDepID = getIntValue(reader["depID"]);
             distribution.tempSupID = getIntValue(reader["supID"]);
             distribution.tempAssetID = getIntValue(reader["assetID"]);
-            distribution.status = Convert.ToDecimal(reader["status"]);
+            distribution.field = getStringValue(reader["field"]);
 
             return View(distribution);
         }
@@ -1297,13 +1302,13 @@ namespace CompanyProject.Controllers
             reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
-                ModelState.AddModelError("status", "Asset ID, Employee ID, and Supplier ID already exist");
+                ModelState.AddModelError("field", "Asset ID, Employee ID, and Supplier ID already exist");
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into used_by (employeeID, supID, assetID, status) VALUES ('" + obj.employeeID +
-                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.status + "');"; ;
+                string query = "insert into used_by (employeeID, supID, assetID, field) VALUES ('" + obj.employeeID +
+                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.field + "');"; ;
                 cmd.CommandText = query;
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
@@ -1333,7 +1338,7 @@ namespace CompanyProject.Controllers
             use.tempemployeeID = getIntValue(reader["employeeID"]);
             use.tempsupID = getIntValue(reader["supID"]);
             use.tempassetID = getIntValue(reader["assetID"]);
-            use.status = Convert.ToDecimal(reader["status"]);
+            use.field = getStringValue(reader["field"]);
 
             return View(use);
         }
@@ -1375,13 +1380,13 @@ namespace CompanyProject.Controllers
             if (reader.HasRows && (use.assetID != use.tempassetID || use.employeeID != use.tempemployeeID || use.supID != use.tempsupID))
             {
                
-                ModelState.AddModelError("status", "Employee ID, Supplier ID, and Asset ID already exist");
+                ModelState.AddModelError("field", "Employee ID, Supplier ID, and Asset ID already exist");
                
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE used_by SET employeeID=@emp, supID=@sup, assetID=@asset, status=@status WHERE employeeID = '" + use.tempemployeeID + "' " +
+                string query = "UPDATE used_by SET employeeID=@emp, supID=@sup, assetID=@asset, field=@field WHERE employeeID = '" + use.tempemployeeID + "' " +
                     "and supID = " + use.tempsupID + " and assetID = " + use.tempassetID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
@@ -1389,7 +1394,7 @@ namespace CompanyProject.Controllers
                 cmd2.Parameters.AddWithValue("@emp", use.employeeID);
                 cmd2.Parameters.AddWithValue("@sup", use.supID);
                 cmd2.Parameters.AddWithValue("@asset", use.assetID);
-                cmd2.Parameters.AddWithValue("@status", use.status);
+                cmd2.Parameters.AddWithValue("@field", use.field);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
 
@@ -1440,12 +1445,12 @@ namespace CompanyProject.Controllers
             reader = cmd.ExecuteReader();
             if (reader.HasRows && (distribution.tempAssetID != distribution.assetID || distribution.tempDepID != distribution.depID || distribution.tempSupID != distribution.supID))
             {              
-               ModelState.AddModelError("status", "Department ID, Supplier ID, and Asset ID already exist");                         
+               ModelState.AddModelError("field", "Department ID, Supplier ID, and Asset ID already exist");                         
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE distributed_to SET depID=@dep, supID=@sup, assetID=@asset, status=@status WHERE depID = '" + distribution.tempDepID + "' " +
+                string query = "UPDATE distributed_to SET depID=@dep, supID=@sup, assetID=@asset, field=@field WHERE depID = '" + distribution.tempDepID + "' " +
                     "and supID = " + distribution.tempSupID + " and assetID = " + distribution.tempAssetID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
@@ -1453,7 +1458,7 @@ namespace CompanyProject.Controllers
                 cmd2.Parameters.AddWithValue("@dep", distribution.depID);
                 cmd2.Parameters.AddWithValue("@sup", distribution.supID);
                 cmd2.Parameters.AddWithValue("@asset", distribution.assetID);
-                cmd2.Parameters.AddWithValue("@status", distribution.status);
+                cmd2.Parameters.AddWithValue("@field", distribution.field);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
 
@@ -1859,55 +1864,74 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select deleted_flag from distributed_to where depID = " + depId + " and " +
+            MySqlCommand cmd = new MySqlCommand("select * from distributed_to where depID = " + depId + " and " +
                 "supID = " + supId + " and assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
-            reader.Close();
 
-            string query = "UPDATE distributed_to SET deleted_flag=@deleted_flag where depID = " + depId + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";";
-            cmd.CommandText = query;
-            if (flag == 1)
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
-            }
-            else
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
-            }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
+            distribution.depID = getIntValue(reader["depID"]);
+            distribution.supID = getIntValue(reader["supID"]);
+            distribution.assetID = getIntValue(reader["assetID"]);
+            distribution.field = getStringValue(reader["field"]);
+
+            return View(distribution);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteDistribution(Distributed_to distribution)
+        {          
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            string query = "delete from distributed_to where depID = " + distribution.depID + " and " +
+                "supID = " + distribution.supID + " and assetID = " + distribution.assetID + ";";
+            MySqlCommand cmd2 = new MySqlCommand();
+
+            cmd2.CommandText = query;
+            cmd2.Connection = conn;
+            cmd2.ExecuteNonQuery();
+
+            conn.Close();
+            TempData["success"] = "Distribution successfully deleted";
             return RedirectToAction("Index");
         }
 
         public IActionResult DeleteUse(int empId, int supId, int assetId)
         {
-            Used_by distribution = new Used_by();
+            Used_by use = new Used_by();
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select deleted_flag from used_by where employeeID = " + empId + " and " +
+            MySqlCommand cmd = new MySqlCommand("select * from used_by where employeeID = " + empId + " and " +
                 "supID = " + supId + " and assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
-            reader.Close();
+            use.employeeID = getIntValue(reader["employeeID"]);
+            use.supID = getIntValue(reader["supID"]);
+            use.assetID = getIntValue(reader["assetID"]);
+            use.field = getStringValue(reader["field"]);
 
-            string query = "UPDATE used_by SET deleted_flag=@deleted_flag where employeeID = " + empId + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";";
-            cmd.CommandText = query;
-            if (flag == 1)
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
-            }
-            else
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
-            }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
+            return View(use);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteUse(Used_by use)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            string query = "delete from used_by where employeeID = " + use.employeeID + " and supID = " + use.supID + " and assetID = " + use.assetID + ";";
+            MySqlCommand cmd2 = new MySqlCommand();
+
+            cmd2.CommandText = query;
+            cmd2.Connection = conn;
+            cmd2.ExecuteNonQuery();
+
+            conn.Close();
+            TempData["success"] = "Used_by successfully deleted";
             return RedirectToAction("Index");
         }
 
@@ -1917,26 +1941,32 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select deleted_flag from works_on where employeeID = " + empid + " and " +
-                "taskID = " + taskid + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select * from works_on where employeeID = " + empid + " and taskID = '" + taskid + "';", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
-            reader.Close();
+            work.employeeID = getIntValue(reader["employeeID"]);
+            work.TaskID = getIntValue(reader["TaskID"]);
+            work.hours = getIntValue(reader["hours"]);          
 
-            string query = "UPDATE works_on SET deleted_flag=@deleted_flag where employeeID = " + empid + " and " +
-                "taskID = " + taskid + ";";
-            cmd.CommandText = query;
-            if (flag == 1)
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
-            }
-            else
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
-            }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
+            return View(work);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteWork(Works_on work)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            string query = "delete from works_on where employeeID = " + work.employeeID + " and taskID = '" + work.TaskID + "';";
+            MySqlCommand cmd2 = new MySqlCommand();
+
+            cmd2.CommandText = query;
+            cmd2.Connection = conn;
+            cmd2.ExecuteNonQuery();
+
+            conn.Close();
+            TempData["success"] = "Works_on successfully deleted";
             return RedirectToAction("Index");
         }
 
@@ -1972,6 +2002,21 @@ namespace CompanyProject.Controllers
             data.Add(model);
 
             return data;
+
+        }
+
+        public IEnumerable<Logs> getLogs()
+        {
+            List<Logs> logs = new List<Logs>();
+            Logs model = new Logs();
+
+            model.distributed_To_Audits = getDeletedDistribution();
+            model.used_By_Audits = getDeletedUsedBy();
+            model.works_On_Audits = getDeletedWorksOn();
+
+            logs.Add(model);
+
+            return logs;
 
         }
 
@@ -2278,8 +2323,7 @@ namespace CompanyProject.Controllers
                         depID = getIntValue(reader["depID"]),
                         supID = getIntValue(reader["supID"]),
                         assetID = getIntValue(reader["assetID"]),
-                        status = Convert.ToDecimal(reader["status"]),
-                        deleted_flag = getIntValue(reader["deleted_flag"])
+                        field = getStringValue(reader["field"])                       
                     });
                 }
             }
@@ -2307,8 +2351,8 @@ namespace CompanyProject.Controllers
                         employeeID = getIntValue(reader["employeeID"]),
                         supID = getIntValue(reader["supID"]),
                         assetID = getIntValue(reader["assetID"]),
-                        status = Convert.ToDecimal(reader["status"]),
-                        deleted_flag = getIntValue(reader["deleted_flag"])
+                        field = getStringValue(reader["field"])
+                       
                     });
                 }
             }
@@ -2335,14 +2379,105 @@ namespace CompanyProject.Controllers
                     {
                         employeeID = getIntValue(reader["employeeID"]),
                         TaskID = getIntValue(reader["taskID"]),
-                        hours = Convert.ToDecimal(reader["hours"]),
-                        deleted_flag = getIntValue(reader["deleted_flag"])
+                        hours = Convert.ToDecimal(reader["hours"])                      
                     });
                 }
             }
             conn.Close();
 
             return WorksOnData;
+        }
+
+        public List<distributed_to_audit> getDeletedDistribution()
+        {
+            MySqlConnection conn = GetConnection();
+            List<distributed_to_audit> WorksOnData = new List<distributed_to_audit>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from distributed_to_audits", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    WorksOnData.Add(new distributed_to_audit()
+                    {
+                        id = getIntValue(reader["id"]),
+                        assetID = getIntValue(reader["assetID"]),
+                        depID = getIntValue(reader["depID"]),
+                        supID = getIntValue(reader["supID"]),
+                        field = getStringValue(reader["field"]),
+                        deleted_at = getStringValue(reader["deleted_at"])
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return WorksOnData;
+        }
+
+        public List<Used_by_audit> getDeletedUsedBy()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Used_by_audit> UseOnData = new List<Used_by_audit>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from used_by_audits", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    UseOnData.Add(new Used_by_audit()
+                    {
+                        id = getIntValue(reader["id"]),
+                        assetID = getIntValue(reader["assetID"]),
+                        empID = getIntValue(reader["employeeID"]),
+                        supID = getIntValue(reader["supID"]),
+                        field = getStringValue(reader["field"]),
+                        deleted_at = getStringValue(reader["deleted_at"])
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return UseOnData;
+        }
+
+        public List<works_on_audit> getDeletedWorksOn()
+        {
+            MySqlConnection conn = GetConnection();
+            List<works_on_audit> WorkOnData = new List<works_on_audit>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from works_on_audits", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    WorkOnData.Add(new works_on_audit()
+                    {
+                        id = getIntValue(reader["id"]),
+                        taskID = getIntValue(reader["taskID"]),
+                        empID = getIntValue(reader["employeeID"]),                        
+                        hours = Convert.ToDecimal(reader["hours"]),
+                        deleted_at = getStringValue(reader["deleted_at"])
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return WorkOnData;
         }
 
         public string HashPassword(string password)

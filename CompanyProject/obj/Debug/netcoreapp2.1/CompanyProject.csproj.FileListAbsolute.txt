@@ -239,3 +239,8 @@ C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\ne
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\Enlist.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\FireEmployee.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\TaskDetails.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\DeleteWork.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\DeleteUse.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\DeleteDistribution.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\AdminView\DeletedLogs.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\Unlist.g.cshtml.cs

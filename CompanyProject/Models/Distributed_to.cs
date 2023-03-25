@@ -13,11 +13,10 @@ namespace CompanyProject.Models
         [Required(ErrorMessage = "Asset ID required")]
         public int assetID { get; set; }
         [Required(ErrorMessage = "Department ID required")]
-        public int depID { get; set; }
-        public int deleted_flag { get; set; }
+        public int depID { get; set; }     
         public int tempSupID { get; set; }
         public int tempAssetID { get; set; }
         public int tempDepID { get; set; }
-        public decimal status { get; set; }
+        public string field { get; set; }
     }
 }

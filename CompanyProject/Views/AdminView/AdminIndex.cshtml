@@ -537,11 +537,8 @@
                     Asset ID
                 </th>
                 <th>
-                    Status
-                </th>
-                <th>
-                    Deleted Flag
-                </th>
+                    Field
+                </th>                
                 <th></th>
             </tr>
         </thead>
@@ -559,14 +556,11 @@
                     @Html.DisplayFor(modelItem => item.assetID)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.status)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.deleted_flag)
-                </td>
+                    @Html.DisplayFor(modelItem => item.field)
+                </td>             
                 <td>
                     @Html.ActionLink("Edit", "EditDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID }) |
-                    @Html.ActionLink("Delete/Restore", "DeleteDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID })
+                    @Html.ActionLink("Delete", "DeleteDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID })
                 </td>
             </tr>
             }
@@ -590,11 +584,8 @@
                     Asset ID
                 </th>
                 <th>
-                    Status
-                </th>
-                <th>
-                    Deleted Flag
-                </th>
+                    Field
+                </th>                
                 <th></th>
             </tr>
         </thead>
@@ -612,14 +603,11 @@
                     @Html.DisplayFor(modelItem => item.assetID)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.status)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.deleted_flag)
-                </td>
+                    @Html.DisplayFor(modelItem => item.field)
+                </td>               
                 <td>
                     @Html.ActionLink("Edit", "EditUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID }) |
-                    @Html.ActionLink("Delete/Restore", "DeleteUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID })
+                    @Html.ActionLink("Delete", "DeleteUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID })
                 </td>
             </tr>
             }
@@ -641,10 +629,7 @@
                 </th>
                 <th>
                     Hours
-                </th>
-                <th>
-                    Deleted Flag
-                </th>
+                </th>               
                 <th></th>
             </tr>
         </thead>
@@ -660,13 +645,10 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.hours)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.deleted_flag)
-                </td>
+                </td>               
                 <td>
                     @Html.ActionLink("Edit", "EditWork", new { empid = item.employeeID, taskid = item.TaskID }) |                   
-                    @Html.ActionLink("Delete/Restore", "DeleteWork", new { empid = item.employeeID, taskid = item.TaskID })
+                    @Html.ActionLink("Delete", "DeleteWork", new { empid = item.employeeID, taskid = item.TaskID })
                 </td>
             </tr>
             }

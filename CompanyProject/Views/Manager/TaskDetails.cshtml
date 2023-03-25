@@ -16,8 +16,8 @@
     <h2 style="margin: 25px">@ViewData["TaskInfo"].ToString()</h2>
 }
 
-<p>
-    <a asp-action="Enlist" asp-controller="Manager" asp-route-id="@ViewData["employee"]">
+<p style="margin:25px">
+    <a asp-action="Enlist" class="btn btn-primary" asp-controller="Manager" asp-route-id="@ViewData["employee"]">
         Enlist To A New Task
     </a>
 </p>

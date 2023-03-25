@@ -30,7 +30,7 @@ namespace CompanyProject.Controllers
             if (value == DBNull.Value) return 0;
             return Convert.ToInt32(value);
         }
-       
+
         public IActionResult Index()
         {
             string empID = HttpContext.Session.GetString("id");
@@ -40,7 +40,7 @@ namespace CompanyProject.Controllers
                 return RedirectToAction("Login", "Login", new { error = "Session Timed out" });
             }
             else
-            {               
+            {
                 MySqlConnection conn = GetConnection();
                 conn.Open();
                 Employee user = new Employee();
@@ -55,14 +55,14 @@ namespace CompanyProject.Controllers
                     user.DepID = getIntValue(reader["depID"]);
                 }
                 conn.Close();
-                HttpContext.Session.SetString("depID", user.DepID.ToString());               
+                HttpContext.Session.SetString("depID", user.DepID.ToString());
                 userDepID = user.DepID;
                 userEmpID = Convert.ToInt32(empID);
                 string msg = "Signed in as " + user.Fname + " " + user.Lname + " showing Department " + user.DepID;
-                ViewData["userInfo"] = msg;               
+                ViewData["userInfo"] = msg;
                 return View(getViewData());
             }
-                         
+
         }
 
         public IActionResult AddEmployee()
@@ -112,14 +112,14 @@ namespace CompanyProject.Controllers
             emp.SuperID = getIntValue(reader["superID"]);
 
 
-            return View(emp);         
+            return View(emp);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddEmployee(Employee obj)
         {
-            
+
             MySqlConnection conn = GetConnection();
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select employee.ssn from employee where employee.ssn = " + obj.Ssn + "; ", conn);
@@ -213,7 +213,7 @@ namespace CompanyProject.Controllers
                 return View(obj);
             }
 
-            
+
         }
 
         [HttpPost]
@@ -223,7 +223,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-                        
+
             MySqlCommand cmd2 = new MySqlCommand("select depID from department where depID = " + employee.DepID + ";", conn);
             var reader = cmd2.ExecuteReader();
             if (!reader.Read() && employee.DepID != 0)
@@ -269,8 +269,8 @@ namespace CompanyProject.Controllers
                     " roleId=@roleId, superID=@superID where employeeID = " + employee.ID + ";";
 
                 MySqlCommand cmd = new MySqlCommand();
-                cmd.CommandText = query;               
-                cmd.Parameters.AddWithValue("@salary", employee.Salary);                              
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@salary", employee.Salary);
                 if (employee.RoleID == 0)
                 {
                     cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
@@ -373,28 +373,28 @@ namespace CompanyProject.Controllers
 
         public IActionResult TaskDetails(int id)
         {
-            IEnumerable<TaskDetails> list = getTaskDetails(id);                    
+            IEnumerable<TaskDetails> list = getTaskDetails(id);
 
-            
+
             MySqlConnection conn = GetConnection();
-                conn.Open();
-                Employee user = new Employee();
-                MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname from employee as e where e.employeeID = '" + id + "'", conn);
-                var reader = cmd.ExecuteReader();               
-                reader.Read();
-                user.Fname = getStringValue(reader["Fname"]);
-                user.Lname = getStringValue(reader["Lname"]);
+            conn.Open();
+            Employee user = new Employee();
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname from employee as e where e.employeeID = '" + id + "'", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            user.Fname = getStringValue(reader["Fname"]);
+            user.Lname = getStringValue(reader["Lname"]);
 
-                conn.Close();
+            conn.Close();
 
-                string msg = "Task Data for " + user.Fname + " " + user.Lname;
-                ViewData["TaskInfo"] = msg;
+            string msg = "Task Data for " + user.Fname + " " + user.Lname;
+            ViewData["TaskInfo"] = msg;
 
-                ViewData["employee"] = id;
+            ViewData["employee"] = id;
 
-                return View(list);
-           
-           
+            return View(list);
+
+
         }
 
         public IActionResult Unlist(int empid, int taskid)
@@ -403,34 +403,91 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select deleted_flag from works_on where employeeID = " + empid + " and " +
-                "taskID = " + taskid + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select * from works_on where employeeID = " + empid + " and taskID = '" + taskid + "';", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
-            reader.Close();
+            work.employeeID = getIntValue(reader["employeeID"]);
+            work.TaskID = getIntValue(reader["TaskID"]);
+            work.hours = getIntValue(reader["hours"]);
 
-            string query = "UPDATE works_on SET deleted_flag=@deleted_flag where employeeID = " + empid + " and " +
-                "taskID = " + taskid + ";";
-            cmd.CommandText = query;
-            if (flag == 1)
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
-            }
-            else
-            {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
-            }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
-            return RedirectToAction("TaskDetails", new { id=empid });
+            ViewData["employee"] = empid;
+
+            return View(work);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Unlist(Works_on work)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            string query = "delete from works_on where employeeID = " + work.employeeID + " and taskID = '" + work.TaskID + "';";
+            MySqlCommand cmd2 = new MySqlCommand();
+
+            cmd2.CommandText = query;
+            cmd2.Connection = conn;
+            cmd2.ExecuteNonQuery();
+
+            conn.Close();
+            TempData["success"] = "Works_on successfully deleted";
+            return RedirectToAction("TaskDetails", new { id = work.employeeID });
+        }
+
 
         public IActionResult Enlist(int id)
         {
             Works_on work = new Works_on();
             work.employeeID = id;
             return View(work);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Enlist(Works_on obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.employeeID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select taskID from task where taskID = " + obj.TaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("TaskID", "Task ID doesn't exist");
+            }
+            reader.Close();
+            test = "select * from works_on where employeeID = " + obj.employeeID + " and taskID = " + obj.TaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("hours", "Task ID and Employee ID already exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
+                    "', '" + obj.TaskID + "', '" + obj.hours + "');";
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Works On succesfully added";
+                return RedirectToAction("TaskDetails", new { id = obj.employeeID });
+            }
+            else
+            {
+                return View(obj);
+            }
         }
 
         public IEnumerable<ManagerViewModel> getViewData()
@@ -549,7 +606,7 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, t.taskName, t.cost, t.taskDueDate, t.projID " +
-                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + " and w.deleted_flag = 1;", conn);
+                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
 
             using(var reader = cmd.ExecuteReader())
             {
