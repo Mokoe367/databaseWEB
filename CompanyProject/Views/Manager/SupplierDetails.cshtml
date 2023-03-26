@@ -1,0 +1,119 @@
+﻿@model IEnumerable<CompanyProject.Models.SupplierDetailsView>
+
+@{
+    ViewData["Title"] = "SupplierDetails";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<style>
+    #table-div {
+        margin: 25px;
+    }
+</style>
+
+@if (ViewData["SupplierInfo"] != null)
+{
+    <h2 style="margin: 25px">@ViewData["SupplierInfo"].ToString()</h2>
+}
+
+
+<h5 style="margin: 25px">Assets Distributed by this supplier</h5>
+<div id="table-div">
+    <a asp-action="RequestAssets" class="btn btn-primary" asp-controller="Manager" asp-route-id="@ViewData["supplier"]">
+        Request Assets
+    </a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <thead>
+            <tr>
+                <th>
+                    AssetID
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Cost
+                </th>
+                <th>
+                    Field
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().supplierDetails)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.assetID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.type)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.field)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "EditDistribution", new { supId = ViewData["supplier"], assetId = item.assetID }) |
+                        @Html.ActionLink("Delete", "DeleteDistribution", new { supId = ViewData["supplier"], assetId = item.assetID })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
+    <a asp-controller="Manager" class="btn btn-primary" asp-action="AddAsset" asp-route-id="@ViewData["supplier"]">Add Asset</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Assets</caption>
+        <thead>
+            <tr>
+                <th>
+                    Asset ID
+                </th>
+                <th>
+                    Asset Type
+                </th>
+                <th>
+                    Cost
+                </th>
+                <th>
+                    Supplier ID
+                </th>                
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().assets)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.assetID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.type)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>
+                    <td>
+                        @if (item.supID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.supID)
+                        }
+                    </td>                   
+                    <td>
+                        @Html.ActionLink("Edit", "EditAsset", new { id = item.assetID }) |
+                        @Html.ActionLink("Delete", "DeleteAsset", new { id = item.assetID })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

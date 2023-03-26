@@ -1,0 +1,80 @@
+﻿@model IEnumerable<CompanyProject.Models.ProjectDetails>
+
+@{
+    ViewData["Title"] = "ProjectDetails";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<style>
+    #table-div {
+        margin: 25px;
+    }
+</style>
+
+@if (ViewData["ProjectInfo"] != null)
+{
+    <h2 style="margin: 25px">@ViewData["ProjectInfo"].ToString()</h2>
+}
+<div id="table-div">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    First Name
+                </th>
+                <th>
+                    Last Name
+                </th>
+                <th>
+                    Role Name
+                </th>
+                <th>
+                    Task ID
+                </th>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Hours
+                </th>
+                <th>
+                    TaskDueDate
+                </th>
+                <th>
+                    Task Budget
+                </th>             
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.roleName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.hours)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskDueDate)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>                    
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

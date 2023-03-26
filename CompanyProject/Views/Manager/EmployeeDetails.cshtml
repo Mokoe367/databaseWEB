@@ -1,7 +1,7 @@
-﻿@model IEnumerable<CompanyProject.Models.TaskDetails>
+﻿@model IEnumerable<CompanyProject.Models.EmployeeDetails>
 
 @{
-    ViewData["Title"] = "TaskDetails";
+    ViewData["Title"] = "EmployeeDetails";
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
 }
 
@@ -51,7 +51,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.FirstOrDefault().taskDetails)
             {
                 <tr>
                     <td>
@@ -79,6 +79,65 @@
                         @Html.ActionLink("Unlist", "Unlist", new { empid = item.empID, taskid = item.taskID })
                     </td>
                 </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
+    <a asp-controller="Manager" class="btn btn-primary" asp-action="AddUse" asp-route-id="@ViewData["employee"]">Give Assets</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Used By</caption>
+        <thead>
+            <tr>
+                <th>
+                    Employee ID
+                </th>
+                <th>
+                    Supplier ID
+                </th>
+                <th>
+                    Asset ID
+                </th>
+                <th>
+                    Field
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Cost
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().UsedBy)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.employeeID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.field)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.type)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID }) |
+                    @Html.ActionLink("Delete", "DeleteUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID })
+                </td>
+            </tr>
             }
         </tbody>
     </table>

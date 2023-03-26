@@ -478,7 +478,6 @@ namespace CompanyProject.Controllers
 
         public IActionResult AddSupplier()
         {
-
             return View();
         }
 

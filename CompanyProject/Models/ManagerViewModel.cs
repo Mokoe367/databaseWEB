@@ -9,6 +9,9 @@ namespace CompanyProject.Models
     {
         public List<Employee> Employees { get; set; }
         public List<Project> Projects { get; set; }
+        public List<Tasks> tasks { get; set; }
+        public List<Supplier> Suppliers { get; set; }
+        public List<Role> Roles { get; set; }
         
     }
 }

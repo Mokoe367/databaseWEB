@@ -20,6 +20,14 @@
     }
 </div>
 
+<div style="margin: 25px">
+    @if (TempData["success"] != null)
+    {
+        @TempData["success"];
+
+    }
+</div>
+
 <div id="table-div">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddEmployee">Add Employee</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
@@ -102,7 +110,7 @@
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "EditEmployee", new { id = item.ID }) |
-                    @Html.ActionLink("Task Details", "TaskDetails", new { id = item.ID }) |
+                    @Html.ActionLink("Employee Details", "EmployeeDetails", new { id = item.ID }) |
                     @Html.ActionLink("Fire", "FireEmployee", new { id = item.ID })
                 </td>
             </tr>
@@ -155,7 +163,7 @@
                         @Html.DisplayFor(modelItem => item.location)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.cost)
+                        $@Html.DisplayFor(modelItem => item.cost)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.projStatus)%
@@ -168,7 +176,152 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditProject", new { id = item.projID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteProject", new { id = item.projID })
+                        @Html.ActionLink("Project Details", "ProjectDetails", new { id = item.projID }) |
+                        @Html.ActionLink("Delete", "DeleteProject", new { id = item.projID })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
+    <a asp-controller="Manager" class="btn btn-primary" asp-action="AddTask">Add Task</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Tasks</caption>
+        <thead>
+            <tr>
+                <th>
+                    Task ID
+                </th>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Task Budget
+                </th>
+                <th>
+                    Task Due Date
+                </th>
+                <th>
+                    Task Project ID
+                </th>
+                <th>                   
+                </th>           
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().tasks)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskName)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskDueDate)
+                    </td>
+                    <td>
+                        @if (item.projID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.projID)
+                        }
+                    </td>                    
+                    <td>
+                        @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |
+                        @Html.ActionLink("Task Information", "TaskInformation", new { id = item.taskID }) |
+                        @Html.ActionLink("Delete", "DeleteTask", new { id = item.taskID })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
+    <a asp-controller="Manager" class="btn btn-primary" asp-action="AddSupplier">Add Supplier</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Suppliers</caption>
+        <thead>
+            <tr>
+                <th>
+                    Supplier ID
+                </th>
+                <th>
+                    Supplier Name
+                </th>
+                <th>
+                    Supplier product
+                </th>
+                <th>
+                    Role ID
+                </th>               
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().Suppliers)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.supID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.product)
+                    </td>
+                    <td>
+                        @if (item.roleID != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.roleID)
+                        }
+                    </td>                   
+                    <td>
+                        @Html.ActionLink("Edit", "EditSupplier", new { id = item.supID }) |
+                        @Html.ActionLink("Supplier Details", "SupplierDetails", new { id = item.supID }) |
+                        @Html.ActionLink("Delete", "DeleteSupplier", new { id = item.supID })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
+    <a asp-controller="Manager" class="btn btn-primary" asp-action="AddRole">Add Role</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Roles</caption>
+        <thead>
+            <tr>
+                <th>
+                    Role ID
+                </th>
+                <th>
+                    Role Name
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().Roles)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.roleID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.roleName)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "EditRole", new { id = item.roleID }) |
+                        @Html.ActionLink("Delete", "DeleteRole", new { id = item.roleID })
                     </td>
                 </tr>
             }

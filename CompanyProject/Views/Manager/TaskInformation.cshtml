@@ -1,0 +1,56 @@
+﻿@model IEnumerable<CompanyProject.Models.TaskInformation>
+
+@{
+    ViewData["Title"] = "TaskInformation";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<style>
+    #table-div {
+        margin: 25px;
+    }
+</style>
+
+@if (ViewData["TaskInfo"] != null)
+{
+    <h2 style="margin: 25px">@ViewData["TaskInfo"].ToString()</h2>
+}
+    <div id="table-div">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Fname)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Lname)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.hours)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.roleName)
+                    </th>                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Fname)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Lname)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.hours)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.roleName)
+                        </td>                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
