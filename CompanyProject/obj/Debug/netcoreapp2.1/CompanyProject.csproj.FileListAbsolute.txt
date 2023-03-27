@@ -268,3 +268,8 @@ C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\ne
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\AddUse.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\EditUse.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\DeleteUse.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\AddLocations.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\DeleteLocation.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\EditLocation.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\CostReport.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\CostReportList.g.cshtml.cs

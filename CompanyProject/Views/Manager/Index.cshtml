@@ -120,6 +120,41 @@
 </div>
 
 <div id="table-div">
+    <a asp-controller="Manager" class="btn btn-primary" asp-action="AddLocations">Add Locations</a>
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Locations</caption>
+        <thead>
+            <tr>
+                <th>
+                    Department ID
+                </th>
+                <th>
+                    Location Name
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().locations)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.depID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.loc_name)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "EditLocation", new { id = item.depID, name = item.loc_name }) |
+                        @Html.ActionLink("Delete", "DeleteLocation", new { id = item.depID, name = item.loc_name })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddProject">Add Project</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Projects</caption>

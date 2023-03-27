@@ -25,6 +25,9 @@
     <Content Update="Views\Manager\DeleteDistribution.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Manager\DeleteLocation.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Manager\DeleteRole.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -41,6 +44,9 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Manager\EditDistribution.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Manager\EditLocation.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Manager\EditRole.cshtml">

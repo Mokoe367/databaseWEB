@@ -1143,6 +1143,15 @@ namespace CompanyProject.Controllers
                 ModelState.AddModelError("depID", "Department ID doesn't exist");
             }
             reader.Close();
+            string query = "select loc_name from dep_locations where loc_name = '" + location.loc_name + "' and depID = " + location.depID + ";";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("loc_name", "Department ID and Location name already exist");
+            }
+            reader.Close();
             string test = "select depID, loc_name from dep_locations where loc_name = '" + location.loc_name + "' " +
                     "and depID = " + location.depID + ";";
             cmd.CommandText = test;
@@ -1157,7 +1166,7 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
                 
-                string query = "UPDATE dep_locations SET loc_name = @name, depID = @depID  WHERE loc_name = '"+location.pastLoc_name+"' " +
+                query = "UPDATE dep_locations SET loc_name = @name, depID = @depID  WHERE loc_name = '"+location.pastLoc_name+"' " +
                     "and depID = " + location.pastDepID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
@@ -1220,6 +1229,14 @@ namespace CompanyProject.Controllers
             if (reader.HasRows)
             {
                 ModelState.AddModelError("field", "Asset ID, Department ID, and Supplier ID already exist");
+            }
+            reader.Close();
+            test = "select assetID from assets where supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "assetID not associated with supplier");
             }
             reader.Close();
             if (ModelState.IsValid)
@@ -1302,6 +1319,14 @@ namespace CompanyProject.Controllers
             if (reader.HasRows)
             {
                 ModelState.AddModelError("field", "Asset ID, Employee ID, and Supplier ID already exist");
+            }
+            reader.Close();
+            test = "select assetID from assets where supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "assetID not associated with supplier");
             }
             reader.Close();
             if (ModelState.IsValid)
@@ -1829,6 +1854,7 @@ namespace CompanyProject.Controllers
 
             return View(location);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteLocation(Dep_locations location)

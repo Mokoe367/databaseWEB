@@ -1,0 +1,32 @@
+﻿@model CompanyProject.Models.Dep_locations
+
+@{
+    ViewData["Title"] = "AddLocations";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+@if (ViewData["AddInfo"] != null)
+{
+    <h2 style="margin: 25px">@ViewData["AddInfo"].ToString()</h2>
+}
+
+<div class="row" style="margin: 25px;">
+    <div class="col-md-4">
+        <form asp-action="AddLocations">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="loc_name" class="control-label">Locations</label>
+                <input asp-for="loc_name" class="form-control" />
+                <span asp-validation-for="loc_name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="mb-3">
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+

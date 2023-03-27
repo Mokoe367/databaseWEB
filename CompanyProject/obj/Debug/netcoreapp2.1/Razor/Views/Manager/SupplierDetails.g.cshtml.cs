@@ -94,7 +94,7 @@ using CompanyProject.Models;
             WriteLiteral("\r\n\r\n<h5 style=\"margin: 25px\">Assets Distributed by this supplier</h5>\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(456, 150, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b017b7d209134481b649ab6c6f6dee2f", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d04087da7d2049d9b6e95abc1958859b", async() => {
                 BeginContext(572, 30, true);
                 WriteLiteral("\r\n        Request Assets\r\n    ");
                 EndContext();
@@ -231,7 +231,7 @@ using CompanyProject.Models;
             WriteLiteral("        </tbody>\r\n    </table>\r\n</div>\r\n\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(2143, 124, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "158984c954424aaca99c99bf3818495a", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "329035123cbd4b83b4e7821260e1b7f1", async() => {
                 BeginContext(2254, 9, true);
                 WriteLiteral("Add Asset");
                 EndContext();

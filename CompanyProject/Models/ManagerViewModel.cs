@@ -12,6 +12,7 @@ namespace CompanyProject.Models
         public List<Tasks> tasks { get; set; }
         public List<Supplier> Suppliers { get; set; }
         public List<Role> Roles { get; set; }
+        public List<Dep_locations> locations { get; set; }
         
     }
 }

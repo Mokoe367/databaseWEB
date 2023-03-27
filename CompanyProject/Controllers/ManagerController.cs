@@ -112,6 +112,13 @@ namespace CompanyProject.Controllers
             return View(use);
         }
 
+        public IActionResult AddLocations()
+        {
+            string depID = "Adding Location into Department number " + HttpContext.Session.GetString("depID");
+            ViewData["AddInfo"] = depID;
+            return View();
+        }
+
         public IActionResult EditEmployee(int id)
         {
             var emp = new Employee();
@@ -323,6 +330,23 @@ namespace CompanyProject.Controllers
             ViewData["use"] = empId;
 
             return View(use);
+        }
+
+        public IActionResult EditLocation(int id, string name)
+        {
+            Dep_locations location = new Dep_locations();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = '" + name + "';", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            location.depID = getIntValue(reader["depID"]);
+            location.loc_name = getStringValue(reader["loc_name"]);
+            location.pastDepID = getIntValue(reader["depID"]);
+            location.pastLoc_name = getStringValue(reader["loc_name"]);
+
+            return View(location);
         }
 
         public IActionResult DeleteDistribution(int supId, int assetId)
@@ -658,6 +682,75 @@ namespace CompanyProject.Controllers
 
         }
 
+        public IActionResult DeleteLocation(int id, string name)
+        {
+            Dep_locations location = new Dep_locations();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = '" + name + "';", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            location.depID = getIntValue(reader["depID"]);
+            location.loc_name = getStringValue(reader["loc_name"]);
+            location.pastDepID = getIntValue(reader["depID"]);
+            location.pastLoc_name = getStringValue(reader["loc_name"]);
+
+            return View(location);
+        }
+
+        public IActionResult CostReport()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CostReport(CostReport obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from project where projID = " + obj.projectID + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            string depID = HttpContext.Session.GetString("depID");
+            int department = Convert.ToInt32(depID);
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("projectID", "projectID doesn't exist");               
+            }
+            else if(getIntValue(reader["depID"]) != department)
+            {
+                ModelState.AddModelError("projectID", "projectID not in this department");
+            }
+            reader.Close();
+            if(ModelState.IsValid)
+            {
+                IEnumerable<CostReport> list = GetCostReport(obj.projectID);
+                string query = "select projName, cost from project where projID = " + obj.projectID + ";";
+                cmd.CommandText = query;
+                reader = cmd.ExecuteReader();
+                reader.Read();               
+                string msg = "Project Details for " + getStringValue(reader["projName"]);
+                list.FirstOrDefault().projectBudget = getIntValue(reader["cost"]);
+
+                conn.Close();
+
+                ViewData["ProjectInfo"] = msg;
+
+                ViewData["project"] = obj.projectID;
+                decimal total = list.FirstOrDefault().projectBudget - list.FirstOrDefault().taskCost;
+                ViewData["remaining"] = total.ToString();
+
+                return View("CostReportList", list);
+            }
+            else
+            {
+                return View(obj);
+            }
+                                        
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddEmployee(Employee obj)
@@ -876,6 +969,8 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                string depID = "Adding Project into Department number " + HttpContext.Session.GetString("depID");
+                ViewData["AddInfo"] = depID;
                 return View(obj);
             }
 
@@ -1002,6 +1097,8 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                string info = "Adding Task for Department number " + department;
+                ViewData["AddInfo"] = info;
                 return View(obj);
             }
         }
@@ -1686,6 +1783,133 @@ namespace CompanyProject.Controllers
             TempData["success"] = "Used_by successfully deleted";
             return RedirectToAction("EmployeeDetails", new { id = use.employeeID });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddLocations(Dep_locations obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+
+            string depID = HttpContext.Session.GetString("depID");
+            int department = Convert.ToInt32(depID);
+
+            string query = "select loc_name from dep_locations where loc_name = '" + obj.loc_name + "' and depID = " + department + ";";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("loc_name", "Department ID and Location name already exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                query = "insert into dep_locations (loc_name, depID) VALUES ('" + obj.loc_name + "', '" + department + "');"; ;
+
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Location succesfully added";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                string info = "Adding Location into Department number " + department;
+                ViewData["AddInfo"] = info;
+                return View(obj);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditLocation(Dep_locations location)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + location.depID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("depID", "Department ID doesn't exist");
+            }
+            reader.Close();
+            string query = "select loc_name from dep_locations where loc_name = '" + location.loc_name + "' and depID = " + location.depID + ";";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("loc_name", "Department ID and Location name already exist");
+            }
+            reader.Close();
+            string test = "select depID, loc_name from dep_locations where loc_name = '" + location.loc_name + "' " +
+                    "and depID = " + location.depID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows && (location.loc_name != location.pastLoc_name && location.depID != location.pastDepID))
+            {
+
+                ModelState.AddModelError("loc_name", "Location already exist");
+
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+
+                query = "UPDATE dep_locations SET loc_name = @name, depID = @depID  WHERE loc_name = '" + location.pastLoc_name + "' " +
+                    "and depID = " + location.pastDepID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@depID", location.depID);
+                cmd2.Parameters.AddWithValue("@name", location.loc_name);
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Location successfully edited";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(location);
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteLocation(Dep_locations location)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+
+
+            if (ModelState.IsValid)
+            {
+                string query = "delete from dep_locations where depID = " + location.depID + " and loc_name = '" + location.loc_name + "';";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Location successfully deleted";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(location);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult FireEmployee(Employee employee)
@@ -1792,6 +2016,7 @@ namespace CompanyProject.Controllers
             model.tasks = getTaskData();
             model.Suppliers = getSupplierData();
             model.Roles = getRoleData();
+            model.locations = getLocationsData();
 
             data.Add(model);
 
@@ -1819,6 +2044,32 @@ namespace CompanyProject.Controllers
             model.assets = getAssetsData(id);
 
             data.Add(model);
+            return data;
+        }
+
+        public IEnumerable<CostReport> GetCostReport(int id)
+        {
+            List<CostReport> data = new List<CostReport>();
+            CostReport model = new CostReport();
+
+            string depID = HttpContext.Session.GetString("depID");
+            int department = Convert.ToInt32(depID);
+            decimal total = 0;
+            model.projectID = id;
+            model.tasks = getTaskInfo(id);
+            model.taskCost = model.tasks.Sum(item => item.cost);
+            model.taskReports = GetTaskReports(id);
+            foreach(var item in model.taskReports)
+            {
+                total += item.pay;
+            }
+            model.employeeSalary = total;            
+            model.departmentAssets = GetDepartmentAssets(department);
+            model.departmentCost = model.departmentAssets.Sum(item => item.cost);
+            model.employeeAssets = GetEmployeeAssets(department);
+            model.employeeCost = model.employeeAssets.Sum(item => item.cost);
+            data.Add(model);
+
             return data;
         }
 
@@ -2046,6 +2297,32 @@ namespace CompanyProject.Controllers
             return AssetsData;
         }
 
+        public List<Dep_locations> getLocationsData()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Dep_locations> LocationsData = new List<Dep_locations>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + userDepID + ";", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    LocationsData.Add(new Dep_locations()
+                    {
+                        depID = getIntValue(reader["depID"]),
+                        loc_name = getStringValue(reader["loc_name"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return LocationsData;
+        }
+
         public List<TaskDetails> getTaskDetails(int id)
         {
             List<TaskDetails> TaskData = new List<TaskDetails>();
@@ -2229,5 +2506,125 @@ namespace CompanyProject.Controllers
 
             return UsedByData;
         }
+
+        public List<Tasks> getTaskInfo(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<Tasks> TaskData = new List<Tasks>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.cost " +
+                "from task as t where t.projID = "+ id + " and t.deleted_flag = 1;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {                    
+                    TaskData.Add(new Tasks()
+                    {
+                        taskID = getIntValue(reader["taskID"]),
+                        taskName = getStringValue(reader["taskName"]),
+                        cost = getIntValue(reader["cost"]),                      
+                       
+                    });
+                }
+            }
+            conn.Close();
+
+            return TaskData;
+        }
+
+        public List<TaskReport> GetTaskReports(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<TaskReport> TaskData = new List<TaskReport>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select t.taskName, e.Fname, e.Lname, w.hours as 'hours', e.salary, (round((w.hours / 8), 2) * e.salary) as pay " +
+                "from employee as e, works_on as w, task as t " +
+                "where t.projID = " + id + " and e.employeeID = w.employeeID and w.taskID = t.taskID and t.deleted_flag = 1;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    TaskData.Add(new TaskReport()
+                    {
+                        Fname = getStringValue(reader["Fname"]),
+                        Lname = getStringValue(reader["Lname"]),
+                        taskName = getStringValue(reader["taskName"]),
+                        salary = getIntValue(reader["salary"]),
+                        hours = Convert.ToDecimal(reader["hours"]),
+                        pay = Convert.ToDecimal(reader["pay"])
+                       
+                    });
+                }
+            }
+            conn.Close();
+
+            return TaskData;
+        }
+
+        public List<DepartmentAssetsReport> GetDepartmentAssets(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<DepartmentAssetsReport> Report = new List<DepartmentAssetsReport>();
+
+            conn.Open();
+         
+            MySqlCommand cmd = new MySqlCommand("select s.name, a.type, a.cost " +
+                "from assets as a, distributed_to as d, suppliers as s " +
+                "where d.depID = " + id + " and a.assetID = d.assetID  and s.supID = a.supID and a.deleted_flag = 1;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Report.Add(new DepartmentAssetsReport()
+                    {
+                        name = getStringValue(reader["name"]),
+                        type = getStringValue(reader["type"]),                       
+                        cost = getIntValue(reader["cost"])                      
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
+        }
+
+        public List<EmployeeAssetReport> GetEmployeeAssets(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<EmployeeAssetReport> Report = new List<EmployeeAssetReport>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, a.type, a.cost " +
+                "from assets as a, used_by as u, employee as e " +
+                "where e.depID = " + id + " and a.assetID = u.assetID and u.employeeID = e.employeeID and a.deleted_flag = 1;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Report.Add(new EmployeeAssetReport()
+                    {
+                        Fname = getStringValue(reader["Fname"]),
+                        Lname = getStringValue(reader["Lname"]),
+                        type = getStringValue(reader["type"]),
+                        cost = getIntValue(reader["cost"])
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
+        }
+
     }
 }
