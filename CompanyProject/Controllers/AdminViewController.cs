@@ -16,7 +16,7 @@ namespace CompanyProject.Controllers
  
         private MySqlConnection GetConnection()
         {
-            return new MySqlConnection("server = localhost; port=3306;database=target;user=root;password=MonkeysInc7!");
+            return new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
         }
 
         public IActionResult Index()

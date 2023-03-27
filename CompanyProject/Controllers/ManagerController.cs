@@ -16,7 +16,7 @@ namespace CompanyProject.Controllers
 
         private MySqlConnection GetConnection()
         {
-            return new MySqlConnection("server = localhost; port=3306;database=target;user=root;password=MonkeysInc7!");
+            return new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
         }
 
         public static string getStringValue(object value)
@@ -1084,16 +1084,26 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                            
-                query = "insert into task (taskName, cost, taskDueDate, projID) VALUES ('" + obj.taskName + "', '" + obj.cost + "', '"
+                try
+                {
+                    query = "insert into task (taskName, cost, taskDueDate, projID) VALUES ('" + obj.taskName + "', '" + obj.cost + "', '"
                         + obj.taskDueDate + "', '" + obj.projID + "');";
-                
-                cmd.CommandText = query;
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Task succesfully added";
-                return RedirectToAction("Index");
+
+                    cmd.CommandText = query;
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Task succesfully added";
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("projID", e.Message);
+                    string info = "Adding Task for Department number " + department;
+                    ViewData["AddInfo"] = info;
+                    return View(obj);
+                }
+               
             }
             else
             {
@@ -1135,20 +1145,28 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
-                MySqlCommand cmd2 = new MySqlCommand();
+                try
+                {
+                    query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
+                    MySqlCommand cmd2 = new MySqlCommand();
 
-                cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@taskName", task.taskName);
-                cmd2.Parameters.AddWithValue("@cost", task.cost);
-                cmd2.Parameters.AddWithValue("@date", task.taskDueDate);                
-                cmd2.Parameters.AddWithValue("@projID", task.projID);                
-                cmd2.Connection = conn;
-                cmd2.ExecuteNonQuery();
+                    cmd2.CommandText = query;
+                    cmd2.Parameters.AddWithValue("@taskName", task.taskName);
+                    cmd2.Parameters.AddWithValue("@cost", task.cost);
+                    cmd2.Parameters.AddWithValue("@date", task.taskDueDate);
+                    cmd2.Parameters.AddWithValue("@projID", task.projID);
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
 
-                conn.Close();
-                TempData["success"] = "Task edited added";
-                return RedirectToAction("Index");
+                    conn.Close();
+                    TempData["success"] = "Task edited added";
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("projID", e.Message);
+                    return View(task);
+                }                
             }
             else
             {
