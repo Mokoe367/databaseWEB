@@ -14,12 +14,8 @@ namespace CompanyProject.Controllers
     public class LoginController : Controller
     {
         [HttpGet]
-        public IActionResult Login(string error = "")
+        public IActionResult Login()
         {
-            if(error != "")
-            {
-                ViewData["LoginFlag"] = error;
-            }            
             return View();
         }
 
@@ -29,21 +25,21 @@ namespace CompanyProject.Controllers
             var passwordBytes = Encoding.Default.GetBytes(password);
             var hashedpassword = hash.ComputeHash(passwordBytes);
 
-            return BitConverter.ToString(hashedpassword).Replace("-","");
+            return BitConverter.ToString(hashedpassword).Replace("-", "");
         }
 
         [HttpPost]
         public ActionResult Verify(Login acc)
         {
-            MySqlConnection conn = new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
-            
+            MySqlConnection conn = new MySqlConnection("server = 127.0.0.1; port=3306;database=company_project;user=root;password=Ram1500trx@mopar");
+
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from login where username='"+acc.username+"';", conn);
+            MySqlCommand cmd = new MySqlCommand("select * from login where username='" + acc.username + "';", conn);
             var reader = cmd.ExecuteReader();
-            if(reader.Read())
+            if (reader.Read())
             {
                 string salt = reader["salt"].ToString();
-                if (HashPassword($"{acc.password}{salt}") == reader["hash"].ToString()) 
+                if (HashPassword($"{acc.password}{salt}") == reader["hash"].ToString())
                 {
                     string privilege = reader["user_privilege"].ToString();
                     int empID = Convert.ToInt32(reader["employeeID"]);
@@ -67,7 +63,8 @@ namespace CompanyProject.Controllers
                     else if (privilege == "Employee" && flag == 1)
                     {
                         conn.Close();
-                        TempData["id"] = empID;
+                        HttpContext.Session.SetString("id", empID.ToString());
+                        //TempData["id"] = empID;
                         return RedirectToAction("Index", "Employee");
                     }
                     else if (privilege == "Manager" && flag == 1)
@@ -97,9 +94,9 @@ namespace CompanyProject.Controllers
                 conn.Close();
                 ViewData["LoginFlag"] = "Unregistered User";
                 return View("Login");
-            }                     
-                             
+            }
+
         }
-        
+
     }
 }
