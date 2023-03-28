@@ -63,7 +63,7 @@ using CompanyProject.Models;
             WriteLiteral("<!DOCTYPE html>\r\n\r\n<html>\r\n");
             EndContext();
             BeginContext(27, 922, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "661e05b8349042a184892efc32ae4c72", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e792b812b30f4ca5aed25760d3c16816", async() => {
                 BeginContext(33, 72, true);
                 WriteLiteral("\r\n    <meta name=\"viewport\" content=\"width=device-width\" />\r\n    <title>");
                 EndContext();
@@ -103,12 +103,12 @@ using CompanyProject.Models;
             WriteLiteral("\r\n");
             EndContext();
             BeginContext(951, 1138, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "060df0dffe1846a6b5ae3292713a4136", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c5b08737467b4ae2a28d396b62b50a1f", async() => {
                 BeginContext(957, 116, true);
                 WriteLiteral("\r\n    <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">\r\n        <div class=\"container-fluid\">\r\n            ");
                 EndContext();
                 BeginContext(1073, 90, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5bc2007c74294b8f9e4e971a97c6ded7", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e58ad3344b2d487ba9da18585dd9ca27", async() => {
                     BeginContext(1155, 4, true);
                     WriteLiteral("Home");
                     EndContext();
@@ -142,7 +142,7 @@ using CompanyProject.Models;
                         ");
                 EndContext();
                 BeginContext(1634, 100, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "4793689ee674491f8d06bd7d08d415d3", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e7dc4760d2394f59bedeb783e52b279d", async() => {
                     BeginContext(1718, 12, true);
                     WriteLiteral("Deleted Logs");
                     EndContext();
@@ -169,7 +169,7 @@ using CompanyProject.Models;
                 WriteLiteral("\r\n                    </li>\r\n                    <li class=\"nav-item\">\r\n                        ");
                 EndContext();
                 BeginContext(1830, 84, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d17947867b4f45f7bfd6ce3a9788456c", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "9f136d41f2d64d11a47c489c8f5bc471", async() => {
                     BeginContext(1904, 6, true);
                     WriteLiteral("Logout");
                     EndContext();

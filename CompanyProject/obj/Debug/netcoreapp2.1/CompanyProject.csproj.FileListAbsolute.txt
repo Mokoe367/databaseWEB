@@ -273,3 +273,7 @@ C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\ne
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\EditLocation.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\CostReport.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\CostReportList.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Employee\Detail.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Employee\Edit.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\ProjectHours\Index.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\ProjectHours\ProjectHoursList.g.cshtml.cs

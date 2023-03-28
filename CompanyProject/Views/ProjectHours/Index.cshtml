@@ -1,0 +1,29 @@
+﻿@model CompanyProject.Models.ProjectHoursReport
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<h2 style="margin: 25px;">Project Hours Report</h2>
+
+<div class="row" style="margin: 25px;">
+    <div class="col-md-4">
+        <form asp-action="Index">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="projID" class="control-label">Input Project ID</label>
+                <input asp-for="projID" class="form-control" />
+                <span asp-validation-for="projID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Generate" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="mb-3">
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+

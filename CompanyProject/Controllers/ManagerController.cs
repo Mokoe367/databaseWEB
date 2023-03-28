@@ -59,7 +59,7 @@ namespace CompanyProject.Controllers
                 userDepID = user.DepID;
                 userEmpID = Convert.ToInt32(empID);
                 string msg = "Signed in as " + user.Fname + " " + user.Lname + " showing Department " + user.DepID;
-                ViewData["userInfo"] = msg;
+                ViewData["userInfo"] = msg;              
                 return View(getViewData());
             }
 
