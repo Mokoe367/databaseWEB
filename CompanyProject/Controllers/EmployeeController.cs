@@ -270,7 +270,6 @@ namespace CompanyProject.Controllers
             return View(employee);
         }
 
-
         public IActionResult Delete(int id)
         {
             MySqlConnection conn = GetConnection();
@@ -340,6 +339,203 @@ namespace CompanyProject.Controllers
             return View(emp);
 
 
+        }
+
+        public IActionResult TaskReport()
+        {
+            string empID = HttpContext.Session.GetString("id");
+            int id = Convert.ToInt32(empID);
+            return View(GetEmployeeTaskReportViews(id));
+        }
+
+        public IActionResult EditWork(int empid, int taskid)
+        {
+            Works_on work = new Works_on();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select * from works_on where employeeID = " + empid + " and " +
+                "taskID = " + taskid + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            work.employeeID = getIntValue(reader["employeeID"]);
+            work.TaskID = getIntValue(reader["taskID"]);
+            work.tempemployeeID = getIntValue(reader["employeeID"]);
+            work.tempTaskID = getIntValue(reader["taskID"]);
+            work.hours = getIntValue(reader["hours"]);
+
+            return View(work);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditWork(Works_on work)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + work.employeeID + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
+            }
+            reader.Close();
+            string test = "select taskID from task where taskID = " + work.TaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("TaskID", "Task ID doesn't exist");
+            }
+            reader.Close();
+            test = "select employeeID, taskID from works_on where employeeID = '" + work.employeeID + "' " +
+                    "and taskID = " + work.TaskID + " and employeeID != '" + work.tempemployeeID + "' " +
+                    "and taskID = " + work.tempTaskID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (reader.HasRows && (work.employeeID != work.tempemployeeID || work.TaskID != work.tempTaskID))
+            {
+                ModelState.AddModelError("hours", "Employee ID and Task ID already exist");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours WHERE employeeID = '" + work.tempemployeeID + "' " +
+                    "and taskID = " + work.tempTaskID + ";";
+                MySqlCommand cmd2 = new MySqlCommand();
+
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@emp", work.employeeID);
+                cmd2.Parameters.AddWithValue("@task", work.TaskID);
+                cmd2.Parameters.AddWithValue("@hours", work.hours);
+
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+
+                conn.Close();
+                TempData["success"] = "Works on successfully edited";
+                return RedirectToAction("TaskReport");
+            }
+            else
+            {
+                return View(work);
+            }
+        }
+
+        public IEnumerable<EmployeeTaskReportView> GetEmployeeTaskReportViews(int id)
+        {
+            string empID = HttpContext.Session.GetString("id");
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            int depID;
+            MySqlCommand cmd = new MySqlCommand("select e.depID from employee as e where e.employeeID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();                      
+            depID = getIntValue(reader["depID"]);         
+            conn.Close();
+
+            List<EmployeeTaskReportView> data = new List<EmployeeTaskReportView>();
+            EmployeeTaskReportView model = new EmployeeTaskReportView();
+
+            model.taskDetails = getTaskDetails(id);
+            model.projects = getProjectData(depID);
+
+            data.Add(model);
+            return data;
+            
+        }
+
+        public List<TaskDetails> getTaskDetails(int id)
+        {
+            List<TaskDetails> TaskData = new List<TaskDetails>();
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, t.taskName, t.cost, t.taskDueDate, t.projID " +
+                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
+                    string dateNoTime = date.ToShortDateString();
+                    string[] dateTemp = dateNoTime.Split('/');
+                    int month = Int32.Parse(dateTemp[0]);
+                    int day = Int32.Parse(dateTemp[1]);
+                    if (month < 10)
+                    {
+                        dateTemp[0] = "0" + dateTemp[0];
+                    }
+                    if (day < 10)
+                    {
+                        dateTemp[1] = "0" + dateTemp[1];
+                    }
+                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+
+                    TaskData.Add(new TaskDetails()
+                    {
+                        empID = getIntValue(reader["employeeID"]),
+                        taskID = getIntValue(reader["taskID"]),
+                        projID = getIntValue(reader["projID"]),
+                        dueDate = sqlDate,
+                        hours = getIntValue(reader["hours"]),
+                        taskName = getStringValue(reader["taskName"]),
+                        budget = getIntValue(reader["cost"])
+                    });
+
+                }
+            }
+            conn.Close();
+
+            return TaskData;
+        }
+
+        public List<Project> getProjectData(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<Project> projectData = new List<Project>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from project where project.depID = " + id + " and project.deleted_flag != 0;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    DateTime date = Convert.ToDateTime(getStringValue(reader["dueDate"]));
+                    string dateNoTime = date.ToShortDateString();
+                    string[] dateTemp = dateNoTime.Split('/');
+                    int month = Int32.Parse(dateTemp[0]);
+                    int day = Int32.Parse(dateTemp[1]);
+                    if (month < 10)
+                    {
+                        dateTemp[0] = "0" + dateTemp[0];
+                    }
+                    if (day < 10)
+                    {
+                        dateTemp[1] = "0" + dateTemp[1];
+                    }
+                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+                    projectData.Add(new Project()
+                    {
+                        projID = getIntValue(reader["projID"]),
+                        dueDate = sqlDate,
+                        depID = getIntValue(reader["depID"]),
+                        projName = getStringValue(reader["projName"]),
+                        location = getStringValue(reader["location"]),
+                        cost = getIntValue(reader["cost"]),
+                        projStatus = Convert.ToDecimal(reader["projStatus"]),
+                        field = getStringValue(reader["field"]),
+                        deleted_flag = getIntValue(reader["deleted_flag"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return projectData;
         }
     }
 }

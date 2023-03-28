@@ -1,0 +1,137 @@
+﻿@model IEnumerable<CompanyProject.Models.EmployeeTaskReportView>
+
+@{
+    ViewData["Title"] = "TaskReport";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<style>
+    #table-div {
+        margin: 25px;
+    }
+</style>
+
+<h2 style="margin: 25px">Task Report</h2>
+
+<div id="table-div">    
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Projects</caption>
+        <thead>
+            <tr>
+                <th>
+                    Project ID
+                </th>
+                <th>
+                    Project Name
+                </th>
+                <th>
+                    Department Location
+                </th>
+                <th>
+                    Budget
+                </th>
+                <th>
+                    Project Status
+                </th>
+                <th>
+                    Project Due Date
+                </th>
+                <th>
+                    Field
+                </th>              
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().projects)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.projID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.projName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.location)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.projStatus)%
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.dueDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.field)
+                    </td>                  
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Employee ID
+                </th>
+                <th>
+                    Project ID
+                </th>
+                <th>
+                    Task ID
+                </th>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Hours
+                </th>
+                <th>
+                    Task Budget
+                </th>
+                <th>
+                    Task Due Date
+                </th>  
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().taskDetails)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.empID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.projID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.hours)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.budget)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.dueDate)
+                    </td>   
+                    <td>
+                        @Html.ActionLink("Edit", "EditWork", new { empid = item.empID, taskid = item.taskID })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -22,7 +22,7 @@ namespace CompanyProject.Models
         public string location { get; set; }
 
         [Required(ErrorMessage = "Budget Required")]
-        [Range(0, int.MaxValue, ErrorMessage = "Range should be between 0 and 100k")]
+        [Range(0, int.MaxValue, ErrorMessage = "Range should be above 0 or more")]
         public int cost { get; set; }
 
         [Required(ErrorMessage = "Status Required")]

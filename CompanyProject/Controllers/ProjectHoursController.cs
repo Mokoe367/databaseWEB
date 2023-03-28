@@ -34,7 +34,9 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select p.projID, p.projName, w.employeeID, w.hours, t.taskID " + "from task as t, works_on as w, project as p " + "where t.projID = p.projID and w.taskID = t.taskID " + "order by projID;", conn);
+            MySqlCommand cmd = new MySqlCommand("select p.projID, p.projName, w.employeeID, w.hours, t.taskID " +
+                "from task as t, works_on as w, project as p " + "where t.projID = p.projID and w.taskID = t.taskID " + "and p.projID = " + id 
+                 + " order by projID;", conn);
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -45,7 +47,7 @@ namespace CompanyProject.Controllers
                         projID = getIntValue(reader["projID"]),
                         projName = getStringValue(reader["projName"]),
                         employeeID = getIntValue(reader["employeeID"]),
-                        hours = getIntValue(reader["hours"]),
+                        hours = Convert.ToDecimal(reader["hours"]),
                         taskID = getIntValue(reader["taskID"])
 
                     });

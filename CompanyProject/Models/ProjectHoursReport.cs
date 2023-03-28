@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +14,8 @@ namespace CompanyProject.Models
 
             public int employeeID { get; set; }
 
-            public int hours { get; set; }
+            [Range(0.0, double.MaxValue, ErrorMessage = "0.0 and 100.0")]
+            public decimal hours { get; set; }
             
             public int taskID { get; set; }
         
