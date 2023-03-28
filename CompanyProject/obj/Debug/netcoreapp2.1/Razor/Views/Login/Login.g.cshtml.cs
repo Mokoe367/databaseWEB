@@ -65,7 +65,7 @@ using CompanyProject.Models;
             WriteLiteral("\r\n");
             EndContext();
             BeginContext(45, 809, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48eb1266819140efbb3e82b64a307527", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "247b1588e2e449f6870bb6dc08bb4f71", async() => {
                 BeginContext(85, 38, true);
                 WriteLiteral("\r\n   \r\n    <h1>LOGIN</h1>\r\n    <div>\r\n");
                 EndContext();

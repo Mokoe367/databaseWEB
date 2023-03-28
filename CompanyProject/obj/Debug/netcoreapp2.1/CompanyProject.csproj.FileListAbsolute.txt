@@ -280,3 +280,4 @@ C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\ne
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Shared\_EmployeeLayout.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Employee\TaskReport.g.cshtml.cs
 C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Employee\EditWork.g.cshtml.cs
+C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Employee\LoginDetails.g.cshtml.cs

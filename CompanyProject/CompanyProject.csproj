@@ -16,6 +16,9 @@
     <Content Update="Views\Employee\EditWork.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Employee\LoginDetails.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Manager\AddEmployee.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -62,6 +65,9 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Manager\EditUse.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Manager\LoginDetails.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Manager\Unlist.cshtml">

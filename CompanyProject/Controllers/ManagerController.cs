@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using CompanyProject.Models;
 using Microsoft.AspNetCore.Http;
@@ -702,6 +704,25 @@ namespace CompanyProject.Controllers
         public IActionResult CostReport()
         {
             return View();
+        }
+
+        public IActionResult LoginDetails()
+        {
+            var login = new Login();
+            string empID = HttpContext.Session.GetString("id");
+            int id = Convert.ToInt32(empID);
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select l.username, l.user_password, l.user_privilege, l.employeeID from employee as e, login as l where l.employeeID = e.employeeID and e.employeeID ='" + id + "'", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+
+            login.ID = getIntValue(reader["employeeID"]);
+            login.username = getStringValue(reader["username"]);
+            login.password = getStringValue(reader["user_password"]);
+            login.privilege = getStringValue(reader["user_privilege"]);
+            return View(login);
+
         }
 
         [HttpPost]
@@ -2024,6 +2045,52 @@ namespace CompanyProject.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult LoginDetails(Login login)
+        {
+            MySqlConnection conn = GetConnection();
+            MySqlCommand cmd = new MySqlCommand();
+            conn.Open();
+            if (login.privilege != "Admin" && login.privilege != "Employee" && login.privilege != "Manager")
+            {
+                ModelState.AddModelError("privilege", "Privilege must be either Admin, Employee, or Manager");
+            }
+            string query = "select username from login where username = '" + login.username + "' and employeeID != " + login.ID + " ;";
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("username", "Username already exists");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                var salt = DateTime.Now.ToString();
+                var hash = HashPassword($"{login.password}{salt}");
+
+                query = "UPDATE login SET username=@username, user_password=@password, user_privilege=@priv, hash=@hash, salt=@salt where employeeID = " + login.ID + ";";
+                MySqlCommand update = new MySqlCommand();
+                update.CommandText = query;
+                update.Parameters.AddWithValue("@username", login.username);
+                update.Parameters.AddWithValue("@password", login.password);
+                update.Parameters.AddWithValue("@priv", login.privilege);
+                update.Parameters.AddWithValue("@hash", hash);
+                update.Parameters.AddWithValue("@salt", salt);
+
+                update.Connection = conn;
+                update.ExecuteNonQuery();
+                conn.Close();
+                TempData["success"] = "Login edited successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(login);
+            }
+        }
+
         public IEnumerable<ManagerViewModel> getViewData()
         {
             List<ManagerViewModel> data = new List<ManagerViewModel>();
@@ -2642,6 +2709,15 @@ namespace CompanyProject.Controllers
             conn.Close();
 
             return Report;
+        }
+
+        public string HashPassword(string password)
+        {
+            SHA256 hash = SHA256.Create();
+            var passwordBytes = Encoding.Default.GetBytes(password);
+            var hashedpassword = hash.ComputeHash(passwordBytes);
+
+            return BitConverter.ToString(hashedpassword).Replace("-", "");
         }
 
     }
