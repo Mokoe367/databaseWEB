@@ -6,9 +6,18 @@
 
 <h2>Company Members</h2>
 
-<p>
+@*<p>
     <a asp-action="Create">Create New</a>
-</p>
+</p>*@
+
+<div style="margin: 25px">
+    @*<h2>Admin View</h2>*@
+    @if (ViewData["userInfo"] != null)
+    {
+        @ViewData["userInfo"];
+
+    }
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -36,12 +45,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Deleted_flag)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ssn)
+            @*<th>
+            @Html.DisplayNameFor(model => model.Ssn)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Salary)
-            </th>
+            @Html.DisplayNameFor(model => model.Salary)
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.RoleID)
             </th>
@@ -55,53 +64,59 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sex)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BirthDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Deleted_flag)
+                </td>
+                @*<td>
+            @Html.DisplayFor(modelItem => item.Ssn)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Fname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Lname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Mname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sex)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BirthDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Deleted_flag)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ssn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Salary)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoleID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DepID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SuperID)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+            @Html.DisplayFor(modelItem => item.Salary)
+            </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoleID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DepID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SuperID)
+                </td>
+                <td>
+                    @if (item.ID == ViewBag.ID) {
+                    <p>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                        @Html.ActionLink("Details", "Detail", new { id = item.ID }) |
+                        @Html.ActionLink("Delete", "Delete", new {id = item.ID })
+                    </p>
+                    }
+
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
