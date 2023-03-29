@@ -32,7 +32,20 @@ namespace CompanyProject
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+              
+                options.CheckConsentNeeded = (context => false);
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc();
             services.Add(new ServiceDescriptor(typeof(CompanyContext), new CompanyContext(Configuration.GetConnectionString("DefaultConnection"))));
@@ -53,12 +66,11 @@ namespace CompanyProject
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
-            app.UseHttpsRedirection();
+            app.UseSession();
+            app.UseHttpsRedirection();        
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseSession();
-
+         
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

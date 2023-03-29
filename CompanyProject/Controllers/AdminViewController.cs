@@ -79,9 +79,19 @@ namespace CompanyProject.Controllers
            }
            if (ModelState.IsValid)
            {
-                MySqlCommand insert = new MySqlCommand("insert into employee(Fname, Lname, Mname, salary, ssn, address, birthDate, sex) Values('"+obj.Fname+"', '"+obj.Lname+"', '"+obj.Mname+"', "+obj.Salary+", "+obj.Ssn+", '"+obj.Address+"', '"+obj.BirthDate+"', '"+obj.Sex+"');", conn);
-
-                var reader2 = insert.ExecuteReader();
+                MySqlCommand insert = new MySqlCommand(); 
+                string query = "insert into employee(Fname, Lname, Mname, salary, ssn, address, birthDate, sex) Values(@Fname, @Lname, @Mname, @salary, @ssn, @address, @birthDate, @sex);";
+                insert.CommandText = query;
+                insert.Parameters.AddWithValue("@Fname", obj.Fname);
+                insert.Parameters.AddWithValue("@Mname", obj.Mname);
+                insert.Parameters.AddWithValue("@Lname", obj.Lname);
+                insert.Parameters.AddWithValue("@sex", obj.Sex);
+                insert.Parameters.AddWithValue("@birthdate", obj.BirthDate);
+                insert.Parameters.AddWithValue("@salary", obj.Salary);
+                insert.Parameters.AddWithValue("@ssn", obj.Ssn);
+                insert.Parameters.AddWithValue("@address", obj.Address);
+                insert.Connection = conn;
+                insert.ExecuteNonQuery();
                 conn.Close();
                 TempData["success"] = "Employee added successfully";
                 return RedirectToAction("Index");
@@ -280,7 +290,8 @@ namespace CompanyProject.Controllers
             {
                 ModelState.AddModelError("privilege", "Privilege must be either Admin, Employee, or Manager");
             }
-            string query = "select username from login where username = '" + login.username + "' and employeeID != " + login.ID + " ;";
+            string query = "select username from login where username = @username and employeeID != " + login.ID + " ;";
+            cmd.Parameters.AddWithValue("@username", login.username);
             cmd.CommandText = query;
             cmd.Connection = conn;
             var reader = cmd.ExecuteReader();
@@ -306,7 +317,7 @@ namespace CompanyProject.Controllers
                 update.Connection = conn;
                 update.ExecuteNonQuery();
                 conn.Close();
-                TempData["success"] = "Login added successfully";
+                TempData["success"] = "Login edited successfully";
                 return RedirectToAction("Index");
             }
             else
@@ -332,7 +343,8 @@ namespace CompanyProject.Controllers
             {
                 ModelState.AddModelError("privilege", "Privilege must be either Admin, Employee, or Manager");
             }
-            string query = "select username from login where username = '" + login.username + "' ;";
+            string query = "select username from login where username = @username;";
+            cmd.Parameters.AddWithValue("@username", login.username);
             cmd.CommandText = query;
             cmd.Connection = conn;
             var reader = cmd.ExecuteReader();
@@ -347,10 +359,18 @@ namespace CompanyProject.Controllers
                 var salt = DateTime.Now.ToString();
                 var hash = HashPassword($"{login.password}{salt}");
 
-                MySqlCommand insert = new MySqlCommand("insert into login(employeeID, username, user_password, user_privilege, hash, salt) Values("+ login.ID + ", '" + login.username + "', '" +
-                    login.password + "', '" + login.privilege + "', '" + hash + "', '" + salt + "');", conn);
-
-                var reader2 = insert.ExecuteReader();
+                MySqlCommand insert = new MySqlCommand();
+                query = "insert into login(employeeID, username, user_password, user_privilege, hash, salt) " +
+                    "Values(@employeeID, @username, @user_password, @user_privilege, @hash, @salt);";
+                insert.CommandText = query;
+                insert.Parameters.AddWithValue("@employeeID", login.ID);
+                insert.Parameters.AddWithValue("@username", login.username);
+                insert.Parameters.AddWithValue("@user_password", login.password);
+                insert.Parameters.AddWithValue("@user_privilege", login.privilege);
+                insert.Parameters.AddWithValue("@hash", hash);
+                insert.Parameters.AddWithValue("@salt", salt);
+                insert.Connection = conn;
+                insert.ExecuteNonQuery();
                 conn.Close();
                 TempData["success"] = "Login added successfully";
                 return RedirectToAction("Index");
@@ -373,7 +393,7 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select mgrID from department where mgrID = " + obj.mgrID + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.mgrID + "; ", conn);
 
             var reader = cmd.ExecuteReader();
 
@@ -386,19 +406,23 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
 
-                string query;
+                string query;                           
+                query = "insert into department(location, depName, mgrID) Values(@location, @depName, @mgrID);";
+                MySqlCommand cmd2 = new MySqlCommand();
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@depName", obj.depName);
+                cmd2.Parameters.AddWithValue("@location", obj.location);
                 if (obj.mgrID == 0)
                 {
-                    query = "insert into department(location, depName) Values('" + obj.location + "', '" + obj.depName + "');";
+                    cmd2.Parameters.AddWithValue("@mgrID", DBNull.Value);
                 }
                 else
                 {
-                    query = "insert into department(location, depName, mgrID) Values('" + obj.location + "', '" + obj.depName + "', '" + obj.mgrID + "');";
+                    cmd2.Parameters.AddWithValue("@mgrID", obj.mgrID);
                 }
-               
-                cmd.CommandText = query;
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();               
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
+                  
                 conn.Close();
                 TempData["success"] = "Department succesfully added";
                 return RedirectToAction("Index");
@@ -437,7 +461,7 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select mgrID from department where mgrID = " + dep.mgrID + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + dep.mgrID + "; ", conn);
 
             var reader = cmd.ExecuteReader();
 
@@ -500,16 +524,20 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
 
-                string query;
+                string query;               
+                query = "insert into suppliers(product, name, roleID) Values(@product, @name, @roleID);";
+
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@product", obj.product);
+                cmd.Parameters.AddWithValue("@name", obj.name);
                 if (obj.roleID == 0)
                 {
-                    query = "insert into suppliers(product, name) Values('" + obj.product + "', '" + obj.name + "');";
+                    cmd.Parameters.AddWithValue("@roleID", DBNull.Value);
                 }
                 else
                 {
-                    query = "insert into suppliers(product, name, roleID) Values('" + obj.product + "', '" + obj.name + "', '" + obj.roleID + "');";
-                }
-
+                    cmd.Parameters.AddWithValue("@roleID", obj.roleID);
+                }              
                 cmd.CommandText = query;
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
@@ -609,7 +637,8 @@ namespace CompanyProject.Controllers
             }
             reader.Close();
 
-            string query = "select projName from project where projName = '" + obj.projName + "';";
+            string query = "select projName from project where projName = @projName;";
+            cmd.Parameters.AddWithValue("@projName", obj.projName);
             cmd.CommandText = query;
             cmd.Connection = conn;
             reader = cmd.ExecuteReader();
@@ -620,21 +649,29 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-               
+                             
+               query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) " +
+                        "VALUES (@dueDate, @projName, @location, @cost, @field, @projStatus, @depID);";
+
+                MySqlCommand cmd2 = new MySqlCommand();
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@projName", obj.projName);
+                cmd2.Parameters.AddWithValue("@dueDate", obj.dueDate);
                 if (obj.depID == 0)
                 {
-                    query = "insert into project (dueDate, projName, location, cost, field, projStatus) VALUES ('" + obj.dueDate + "', '" + obj.projName + "', '" + obj.location +
-                        "', '" + obj.cost + "', '" + obj.field + "', '" + obj.projStatus + "');";
+                    cmd2.Parameters.AddWithValue("@depID", DBNull.Value);
                 }
                 else
                 {
-                    query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) VALUES ('" + obj.dueDate + "', '" + obj.projName + "', '" + obj.location +
-                        "', '" + obj.cost + "', '" + obj.field + "', '" + obj.projStatus + "', '" + obj.depID + "');";
+                    cmd2.Parameters.AddWithValue("@depID", obj.depID);
                 }
+                cmd2.Parameters.AddWithValue("@location", obj.location);
+                cmd2.Parameters.AddWithValue("@cost", obj.cost);
+                cmd2.Parameters.AddWithValue("@field", obj.field);
+                cmd2.Parameters.AddWithValue("@projStatus", obj.projStatus);
 
-                cmd.CommandText = query;
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
                 conn.Close();
                 TempData["success"] = "Project succesfully added";
                 return RedirectToAction("Index");
@@ -699,7 +736,8 @@ namespace CompanyProject.Controllers
             }
             reader.Close();
 
-            string query = "select projName from project where projName = '" + proj.projName + "' and projID != " + proj.projID + ";";
+            string query = "select projName from project where projName = @projName and projID != " + proj.projID + ";";
+            cmd.Parameters.AddWithValue("@projName", proj.projName);
             cmd.CommandText = query;
             cmd.Connection = conn;
             reader = cmd.ExecuteReader();
@@ -756,10 +794,10 @@ namespace CompanyProject.Controllers
             conn.Open();
             MySqlCommand cmd = new MySqlCommand();
            
-            string query = "select roleName from roles where roleName = '" + obj.roleName + "';";
+            string query = "select roleName from roles where roleName = @roleName ;";           
             cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@roleName", obj.roleName);
             cmd.Connection = conn;
-
             var reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
@@ -768,9 +806,9 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {                           
-                query = "insert into roles (roleName) VALUES ('" + obj.roleName + "');";
-                
+                query = "insert into roles(roleName) VALUES (@Name);";
                 cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@Name", obj.roleName);               
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -806,7 +844,8 @@ namespace CompanyProject.Controllers
             conn.Open();
             MySqlCommand cmd = new MySqlCommand();
 
-            string query = "select roleName from roles where roleName = '" + role.roleName + "' and roleID != " + role.roleID + ";";
+            string query = "select roleName from roles where roleName = @roleName and roleID != " + role.roleID + ";";
+            cmd.Parameters.AddWithValue("@roleName", role.roleName);
             cmd.CommandText = query;
             cmd.Connection = conn;
 
@@ -858,23 +897,38 @@ namespace CompanyProject.Controllers
             reader.Close();           
             if (ModelState.IsValid)
             {
-                string query;
-                if (obj.projID == 0)
+                try
                 {
-                    query = "insert into task (taskName, cost, taskDueDate) VALUES ('" + obj.taskName + "', '" + obj.cost + "', '" + obj.taskDueDate +"');";
-                }
-                else
-                {
-                    query = "insert into task (taskName, cost, taskDueDate, projID) VALUES ('" + obj.taskName + "', '" + obj.cost + "', '"
-                        + obj.taskDueDate + "', '" + obj.projID + "');";
-                }
+                    string query;
 
-                cmd.CommandText = query;
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Task succesfully added";
-                return RedirectToAction("Index");
+                    query = "insert into task (taskName, cost, taskDueDate, projID) VALUES (@taskName, @cost, @date, @projID);";
+
+                    MySqlCommand cmd2 = new MySqlCommand();
+
+                    cmd2.CommandText = query;
+                    cmd2.Parameters.AddWithValue("@taskName", obj.taskName);
+                    cmd2.Parameters.AddWithValue("@cost", obj.cost);
+                    cmd2.Parameters.AddWithValue("@date", obj.taskDueDate);
+                    if (obj.projID == 0)
+                    {
+                        cmd2.Parameters.AddWithValue("@projID", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd2.Parameters.AddWithValue("@projID", obj.projID);
+                    }
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
+
+                    conn.Close();
+                    TempData["success"] = "Task succesfully added";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    ModelState.AddModelError("projID", e.Message);
+                    return View(obj);
+                }
             }
             else
             {
@@ -932,27 +986,35 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
-                MySqlCommand cmd2 = new MySqlCommand();
-
-                cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@taskName", task.taskName);
-                cmd2.Parameters.AddWithValue("@cost", task.cost);
-                cmd2.Parameters.AddWithValue("@date", task.taskDueDate);
-                if (task.projID == 0)
+                try
                 {
-                    cmd2.Parameters.AddWithValue("@projID", DBNull.Value);
-                }
-                else
-                {
-                    cmd2.Parameters.AddWithValue("@projID", task.projID);
-                }
-                cmd2.Connection = conn;
-                cmd2.ExecuteNonQuery();
+                    string query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
+                    MySqlCommand cmd2 = new MySqlCommand();
 
-                conn.Close();
-                TempData["success"] = "Task edited added";
-                return RedirectToAction("Index");
+                    cmd2.CommandText = query;
+                    cmd2.Parameters.AddWithValue("@taskName", task.taskName);
+                    cmd2.Parameters.AddWithValue("@cost", task.cost);
+                    cmd2.Parameters.AddWithValue("@date", task.taskDueDate);
+                    if (task.projID == 0)
+                    {
+                        cmd2.Parameters.AddWithValue("@projID", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd2.Parameters.AddWithValue("@projID", task.projID);
+                    }
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
+
+                    conn.Close();
+                    TempData["success"] = "Task edited added";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    ModelState.AddModelError("projID", e.Message);
+                    return View(task);
+                }
             }
             else
             {
@@ -983,18 +1045,22 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
                 string query;
+                
+                query = "insert into assets (type, cost, supID) VALUES (@type, @cost, @supID);";
+                MySqlCommand cmd2 = new MySqlCommand();
+                cmd2.CommandText = query;
+                cmd2.Parameters.AddWithValue("@type", obj.type);
+                cmd2.Parameters.AddWithValue("@cost", obj.cost);
                 if (obj.supID == 0)
                 {
-                    query = "insert into assets (type, cost) VALUES ('" + obj.type + "', '" + obj.cost + "');";
+                    cmd2.Parameters.AddWithValue("@supID", DBNull.Value);
                 }
                 else
                 {
-                    query = "insert into assets (type, cost, supID) VALUES ('" + obj.type + "', '" + obj.cost + "', '" + obj.supID + "');";
+                    cmd2.Parameters.AddWithValue("@supID", obj.supID);
                 }
-
-                cmd.CommandText = query;
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
+                cmd2.Connection = conn;
+                cmd2.ExecuteNonQuery();
                 conn.Close();
                 TempData["success"] = "Asset succesfully added";
                 return RedirectToAction("Index");
@@ -1086,8 +1152,9 @@ namespace CompanyProject.Controllers
                 ModelState.AddModelError("depID", "Department ID doesn't exist");
             }
             reader.Close();
-            string query = "select loc_name from dep_locations where loc_name = '" + obj.loc_name + "' and depID = " + obj.depID + ";";
+            string query = "select loc_name from dep_locations where loc_name = @name and depID = " + obj.depID + ";";
             cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@name", obj.loc_name);           
             reader = cmd.ExecuteReader();
             if(reader.HasRows)
             {
@@ -1096,9 +1163,10 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                query = "insert into dep_locations (loc_name, depID) VALUES ('" + obj.loc_name + "', '" + obj.depID + "');"; ;
+                query = "insert into dep_locations (loc_name, depID) VALUES (@loc_name, '" + obj.depID + "');"; ;
                
                 cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@loc_name", obj.loc_name);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1117,7 +1185,8 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = '" + name +"';", conn);
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = @name;", conn);
+            cmd.Parameters.AddWithValue("@name", name);
             var reader = cmd.ExecuteReader();
             reader.Read();
             location.depID = getIntValue(reader["depID"]);
@@ -1142,37 +1211,30 @@ namespace CompanyProject.Controllers
             {
                 ModelState.AddModelError("depID", "Department ID doesn't exist");
             }
-            reader.Close();
-            string query = "select loc_name from dep_locations where loc_name = '" + location.loc_name + "' and depID = " + location.depID + ";";
-            cmd.CommandText = query;
-            cmd.Connection = conn;
-            reader = cmd.ExecuteReader();
-            if (reader.HasRows)
-            {
-                ModelState.AddModelError("loc_name", "Department ID and Location name already exist");
-            }
-            reader.Close();
-            string test = "select depID, loc_name from dep_locations where loc_name = '" + location.loc_name + "' " +
+            reader.Close();           
+            string test = "select depID, loc_name from dep_locations where loc_name = @lname " +
                     "and depID = " + location.depID + ";";
             cmd.CommandText = test;
+            cmd.Parameters.AddWithValue("@lname", location.loc_name);
             reader = cmd.ExecuteReader();
             if (reader.HasRows && (location.loc_name != location.pastLoc_name && location.depID != location.pastDepID))
             {
                
-                ModelState.AddModelError("loc_name", "Department ID, Supplier ID, and Asset ID already exist");
+                ModelState.AddModelError("loc_name", "Department ID and Location name already exist");
                 
             }
             reader.Close();
             if (ModelState.IsValid)
             {
                 
-                query = "UPDATE dep_locations SET loc_name = @name, depID = @depID  WHERE loc_name = '"+location.pastLoc_name+"' " +
+                string query = "UPDATE dep_locations SET loc_name = @loc_name, depID = @depID  WHERE loc_name = @pastName " +
                     "and depID = " + location.pastDepID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
                 cmd2.CommandText = query;
                 cmd2.Parameters.AddWithValue("@depID", location.depID);
-                cmd2.Parameters.AddWithValue("@name", location.loc_name);               
+                cmd2.Parameters.AddWithValue("@loc_name", location.loc_name);
+                cmd2.Parameters.AddWithValue("@pastName", location.pastLoc_name);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
 
@@ -1242,8 +1304,9 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
                 string query = "insert into distributed_to (depID, supID, assetID, field) VALUES ('" + obj.depID + 
-                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.field + "');"; ;
+                    "', '" + obj.supID + "', '" + obj.assetID + "', @field);"; 
                 cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@field", obj.field);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1332,8 +1395,9 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
                 string query = "insert into used_by (employeeID, supID, assetID, field) VALUES ('" + obj.employeeID +
-                    "', '" + obj.supID + "', '" + obj.assetID + "', '" + obj.field + "');"; ;
+                    "', '" + obj.supID + "', '" + obj.assetID + "', @field);"; ;
                 cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@field", obj.field);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1844,7 +1908,8 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = '" + name + "';", conn);
+            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = @name;", conn);
+            cmd.Parameters.AddWithValue("@name", name);
             var reader = cmd.ExecuteReader();
             reader.Read();
             location.depID = getIntValue(reader["depID"]);
@@ -1866,9 +1931,10 @@ namespace CompanyProject.Controllers
            
             if (ModelState.IsValid)
             {
-                string query = "delete from dep_locations where depID = " + location.depID + " and loc_name = '" + location.loc_name + "';";
+                string query = "delete from dep_locations where depID = " + location.depID + " and loc_name = @name;";
+               
                 MySqlCommand cmd2 = new MySqlCommand();
-
+                cmd2.Parameters.AddWithValue("@name", location.loc_name);
                 cmd2.CommandText = query;
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();

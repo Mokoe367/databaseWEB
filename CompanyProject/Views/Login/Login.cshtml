@@ -4,23 +4,23 @@
 }
 
 <form asp-action="Verify" method="post">
-   
+
     <h1>LOGIN</h1>
     <div>
-        @if(ViewData["LoginFlag"] != null)
+        @if (ViewData["LoginFlag"] != null)
         {
-        <p class="text-danger">@ViewData["LoginFlag"].ToString()</p>
+            <p class="text-danger">@ViewData["LoginFlag"].ToString()</p>
         }
     </div>
-   
+
     <div class="form-outline mb-4">
-        <input type="text" name="username" id="form2Example1" class="form-control" required/>
+        <input type="text" name="username" id="form2Example1" class="form-control" required />
         <label class="form-label" for="form2Example1">Username</label>
     </div>
 
-        <!-- Password input -->
+    <!-- Password input -->
     <div class="form-outline mb-4">
-        <input type="password" name="password" id="form2Example2" class="form-control" required/>
+        <input type="password" name="password" id="form2Example2" class="form-control" required />
         <label class="form-label" for="form2Example2">Password</label>
     </div>
 
@@ -29,4 +29,3 @@
     <input type="submit" class="btn btn-primary btn-block mb-4">
 
 </form>
-
