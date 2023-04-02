@@ -1598,14 +1598,22 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
-                    "', '" + obj.TaskID + "', '" + obj.hours + "');"; 
-                cmd.CommandText = query;
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Works On succesfully added";
-                return RedirectToAction("Index");
+                try
+                {
+                    string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
+                    "', '" + obj.TaskID + "', '" + obj.hours + "');";
+                    cmd.CommandText = query;
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Works On succesfully added";
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("taskID", e.Message);
+                    return View(obj);
+                }
             }
             else
             {
@@ -1667,21 +1675,29 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours WHERE employeeID = '" + work.tempemployeeID + "' " +
+                try
+                {
+                    string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours WHERE employeeID = '" + work.tempemployeeID + "' " +
                     "and taskID = " + work.tempTaskID + ";";
-                MySqlCommand cmd2 = new MySqlCommand();
+                    MySqlCommand cmd2 = new MySqlCommand();
 
-                cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@emp", work.employeeID);
-                cmd2.Parameters.AddWithValue("@task", work.TaskID);
-                cmd2.Parameters.AddWithValue("@hours", work.hours);
-             
-                cmd2.Connection = conn;
-                cmd2.ExecuteNonQuery();
+                    cmd2.CommandText = query;
+                    cmd2.Parameters.AddWithValue("@emp", work.employeeID);
+                    cmd2.Parameters.AddWithValue("@task", work.TaskID);
+                    cmd2.Parameters.AddWithValue("@hours", work.hours);
 
-                conn.Close();
-                TempData["success"] = "Works on successfully edited";
-                return RedirectToAction("Index");
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
+
+                    conn.Close();
+                    TempData["success"] = "Works on successfully edited";
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("taskID", e.Message);
+                    return View(work);
+                }
             }
             else
             {

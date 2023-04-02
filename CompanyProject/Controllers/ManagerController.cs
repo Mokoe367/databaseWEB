@@ -2061,14 +2061,23 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
+                try
+                {
+                    string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
                     "', '" + obj.TaskID + "', '" + obj.hours + "');";
-                cmd.CommandText = query;
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Works On succesfully added";
-                return RedirectToAction("EmployeeDetails", new { id = obj.employeeID });
+                    cmd.CommandText = query;
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Works On succesfully added";
+                    return RedirectToAction("EmployeeDetails", new { id = obj.employeeID });
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("taskID", e.Message);
+                    ViewData["employee"] = obj.employeeID;
+                    return View(obj);
+                }
             }
             else
             {
