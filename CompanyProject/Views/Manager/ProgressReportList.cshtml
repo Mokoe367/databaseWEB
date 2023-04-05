@@ -1,0 +1,122 @@
+﻿@model IEnumerable<CompanyProject.Models.ProgressReport>
+
+@{
+    ViewData["Title"] = "ProgressReportList";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<style>
+    #table-div {
+        margin: 25px;
+    }
+</style>
+
+<div style="margin: 25px">
+
+    @if (ViewData["ProjectInfo"] != null)
+    {
+        <h2>Project Progress Report For @ViewData["ProjectInfo"]</h2>
+
+    }
+
+    @if (ViewData["status"] != null)
+    {
+        <h3>Current status = @ViewData["status"]%</h3>
+    }
+    @if (ViewData["dueDate"] != null)
+    {
+        <h3>Project Due Date = @ViewData["dueDate"]</h3>
+    }
+    @if (ViewData["cost"] != null)
+    {
+        <h3>Project Budget = $@ViewData["cost"]</h3>
+    }
+</div>
+
+<div id="table-div">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Tasks</caption>
+        <thead>
+            <tr>
+                <th>
+                    Task ID
+                </th>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Task Budget
+                </th>
+                <th>
+                    Task Due Date
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().tasks)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskName)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskDueDate)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="table-div">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Employee Progress</caption>
+        <thead>
+            <tr>
+                <th>
+                    First Name
+                </th>
+                <th>
+                    Last Name
+                </th>
+                <th>
+                    Role Name
+                </th>
+                <th>
+                    Hours
+                </th>
+                <th>
+                    Task Name
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FirstOrDefault().progress)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.roleName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.hours)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskName)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

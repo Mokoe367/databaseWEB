@@ -729,6 +729,76 @@ namespace CompanyProject.Controllers
 
         }
 
+        public IActionResult ProgressReport()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ProgressReport(int projectID)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select projID, depID from project where projID = " + projectID + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            string depID = HttpContext.Session.GetString("depID");
+            int department = Convert.ToInt32(depID);
+            bool valid = true;
+            if (!reader.HasRows)
+            {
+                ViewData["inputError"] = "ProjectID doesn't exist";
+                valid = false;
+            }
+            else if (getIntValue(reader["depID"]) != department)
+            {
+                ViewData["inputError"] = "projectID not in this department";
+                valid = false;
+            }
+            reader.Close();
+            if (valid)
+            {
+                IEnumerable<ProgressReport> list = GetProgressReports(projectID);
+                string query = "select projName, projStatus, dueDate, cost from project where projID = " + projectID + ";";
+                cmd.CommandText = query;
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                string msg = getStringValue(reader["projName"]);
+                decimal status = Convert.ToDecimal(reader["projStatus"]);
+                int cost = getIntValue(reader["cost"]);
+                DateTime date = Convert.ToDateTime(getStringValue(reader["dueDate"]));
+                string dateNoTime = date.ToShortDateString();
+                string[] dateTemp = dateNoTime.Split('/');
+                int month = Int32.Parse(dateTemp[0]);
+                int day = Int32.Parse(dateTemp[1]);
+                if (month < 10)
+                {
+                    dateTemp[0] = "0" + dateTemp[0];
+                }
+                if (day < 10)
+                {
+                    dateTemp[1] = "0" + dateTemp[1];
+                }
+                string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+
+                ViewData["ProjectInfo"] = msg;
+                ViewData["status"] = status;
+                ViewData["dueDate"] = sqlDate;
+                ViewData["cost"] = cost;
+
+                conn.Close();
+
+                return View("ProgressReportList", list);
+            }
+            else
+            {
+                return View();
+            }
+
+        }
+    
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CostReport(CostReport obj)
@@ -2199,6 +2269,17 @@ namespace CompanyProject.Controllers
             return data;
         }
 
+        public IEnumerable<ProgressReport> GetProgressReports(int id)
+        {
+            List<ProgressReport> data = new List<ProgressReport>();
+            ProgressReport model = new ProgressReport();
+            model.progress = GetEmployeeProgs(id);
+            model.tasks = getTasks(id);
+            data.Add(model);
+
+            return data;
+        }
+
         public List<Employee> getEmployeeData()
         {
             MySqlConnection conn = GetConnection();
@@ -2750,6 +2831,81 @@ namespace CompanyProject.Controllers
             conn.Close();
 
             return Report;
+        }
+
+        public List<employeeProg> GetEmployeeProgs(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<employeeProg> Report = new List<employeeProg>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, r.roleName, w.hours, t.taskName " +
+                "from works_on as w inner join task as t on t.taskID = w.taskID " +
+                "inner join employee as e on e.employeeID = w.employeeID inner join roles as r on r.roleID = e.roleID " +
+                "where t.projID = " + id + " ;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Report.Add(new employeeProg()
+                    {
+                        Fname = getStringValue(reader["Fname"]),
+                        Lname = getStringValue(reader["Lname"]),
+                        roleName = getStringValue(reader["roleName"]),
+                        hours = Convert.ToDecimal(reader["hours"]),
+                        taskName = getStringValue(reader["taskName"])
+
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
+        }
+
+        public List<Tasks> getTasks(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<Tasks> TaskData = new List<Tasks>();
+        
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.cost, t.taskDueDate " +
+                "from task as t where t.projID = " + id + " and t.deleted_flag = 1;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
+                    string dateNoTime = date.ToShortDateString();
+                    string[] dateTemp = dateNoTime.Split('/');
+                    int month = Int32.Parse(dateTemp[0]);
+                    int day = Int32.Parse(dateTemp[1]);
+                    if (month < 10)
+                    {
+                        dateTemp[0] = "0" + dateTemp[0];
+                    }
+                    if (day < 10)
+                    {
+                        dateTemp[1] = "0" + dateTemp[1];
+                    }
+                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+                    TaskData.Add(new Tasks()
+                    {
+                        taskID = getIntValue(reader["taskID"]),
+                        taskName = getStringValue(reader["taskName"]),
+                        cost = getIntValue(reader["cost"]),
+                        taskDueDate = sqlDate,
+                       
+                    });
+                }
+            }
+            conn.Close();
+
+            return TaskData;
         }
 
         public string HashPassword(string password)
