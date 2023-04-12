@@ -3,22 +3,20 @@
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
     <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
-    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">C:\Users\maste\OneDrive\Documents\GitHub\databaseWEB\CompanyProject\obj\project.assets.json</ProjectAssetsFile>
     <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\khoin\.nuget\packages\;C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages</NuGetPackageFolders>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\maste\.nuget\packages\;C:\Program Files\dotnet\sdk\NuGetFallbackFolder</NuGetPackageFolders>
     <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
-    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.5.0</NuGetToolVersion>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">4.9.3</NuGetToolVersion>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <SourceRoot Include="C:\Users\khoin\.nuget\packages\" />
-    <SourceRoot Include="C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
-  </ItemGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <Content Include="$(NuGetPackageRoot)bootstrap\5.3.0-alpha1\contentFiles\any\any\wwwroot\css\bootstrap-grid.css" Condition="Exists('$(NuGetPackageRoot)bootstrap\5.3.0-alpha1\contentFiles\any\any\wwwroot\css\bootstrap-grid.css')">
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.css</Link>
     </Content>
@@ -26,7 +24,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.css.map</Link>
     </Content>
@@ -34,7 +31,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.min.css</Link>
     </Content>
@@ -42,7 +38,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.min.css.map</Link>
     </Content>
@@ -50,7 +45,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.rtl.css</Link>
     </Content>
@@ -58,7 +52,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.rtl.css.map</Link>
     </Content>
@@ -66,7 +59,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.rtl.min.css</Link>
     </Content>
@@ -74,7 +66,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-grid.rtl.min.css.map</Link>
     </Content>
@@ -82,7 +73,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.css</Link>
     </Content>
@@ -90,7 +80,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.css.map</Link>
     </Content>
@@ -98,7 +87,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.min.css</Link>
     </Content>
@@ -106,7 +94,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.min.css.map</Link>
     </Content>
@@ -114,7 +101,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.rtl.css</Link>
     </Content>
@@ -122,7 +108,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.rtl.css.map</Link>
     </Content>
@@ -130,7 +115,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.rtl.min.css</Link>
     </Content>
@@ -138,7 +122,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-reboot.rtl.min.css.map</Link>
     </Content>
@@ -146,7 +129,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.css</Link>
     </Content>
@@ -154,7 +136,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.css.map</Link>
     </Content>
@@ -162,7 +143,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.min.css</Link>
     </Content>
@@ -170,7 +150,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.min.css.map</Link>
     </Content>
@@ -178,7 +157,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.rtl.css</Link>
     </Content>
@@ -186,7 +164,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.rtl.css.map</Link>
     </Content>
@@ -194,7 +171,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.rtl.min.css</Link>
     </Content>
@@ -202,7 +178,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap-utilities.rtl.min.css.map</Link>
     </Content>
@@ -210,7 +185,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.css</Link>
     </Content>
@@ -218,7 +192,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.css.map</Link>
     </Content>
@@ -226,7 +199,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.min.css</Link>
     </Content>
@@ -234,7 +206,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.min.css.map</Link>
     </Content>
@@ -242,7 +213,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.rtl.css</Link>
     </Content>
@@ -250,7 +220,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.rtl.css.map</Link>
     </Content>
@@ -258,7 +227,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.rtl.min.css</Link>
     </Content>
@@ -266,7 +234,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\css\bootstrap.rtl.min.css.map</Link>
     </Content>
@@ -274,7 +241,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.bundle.js</Link>
     </Content>
@@ -282,7 +248,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.bundle.js.map</Link>
     </Content>
@@ -290,7 +255,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.bundle.min.js</Link>
     </Content>
@@ -298,7 +262,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.bundle.min.js.map</Link>
     </Content>
@@ -306,7 +269,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.esm.js</Link>
     </Content>
@@ -314,7 +276,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.esm.js.map</Link>
     </Content>
@@ -322,7 +283,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.esm.min.js</Link>
     </Content>
@@ -330,7 +290,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.esm.min.js.map</Link>
     </Content>
@@ -338,7 +297,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.js</Link>
     </Content>
@@ -346,7 +304,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.js.map</Link>
     </Content>
@@ -354,7 +311,6 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.min.js</Link>
     </Content>
@@ -362,23 +318,22 @@
       <NuGetPackageId>bootstrap</NuGetPackageId>
       <NuGetPackageVersion>5.3.0-alpha1</NuGetPackageVersion>
       <NuGetItemType>Content</NuGetItemType>
-      <Pack>false</Pack>
       <Private>False</Private>
       <Link>wwwroot\js\bootstrap.min.js.map</Link>
     </Content>
   </ItemGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)microsoft.netcore.app\2.1.0\build\netcoreapp2.1\Microsoft.NETCore.App.props" Condition="Exists('$(NuGetPackageRoot)microsoft.netcore.app\2.1.0\build\netcoreapp2.1\Microsoft.NETCore.App.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.extensions.fileproviders.embedded\2.1.1\build\netstandard2.0\Microsoft.Extensions.FileProviders.Embedded.props" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.fileproviders.embedded\2.1.1\build\netstandard2.0\Microsoft.Extensions.FileProviders.Embedded.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.extensions.configuration.usersecrets\2.1.1\build\netstandard2.0\Microsoft.Extensions.Configuration.UserSecrets.props" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.configuration.usersecrets\2.1.1\build\netstandard2.0\Microsoft.Extensions.Configuration.UserSecrets.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.entityframeworkcore.design\2.1.1\build\netcoreapp2.0\Microsoft.EntityFrameworkCore.Design.props" Condition="Exists('$(NuGetPackageRoot)microsoft.entityframeworkcore.design\2.1.1\build\netcoreapp2.0\Microsoft.EntityFrameworkCore.Design.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.mvc.razor.extensions\2.1.1\build\netstandard2.0\Microsoft.AspNetCore.Mvc.Razor.Extensions.props" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.mvc.razor.extensions\2.1.1\build\netstandard2.0\Microsoft.AspNetCore.Mvc.Razor.Extensions.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.razor.design\2.1.2\build\netstandard2.0\Microsoft.AspNetCore.Razor.Design.props" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.razor.design\2.1.2\build\netstandard2.0\Microsoft.AspNetCore.Razor.Design.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.app\2.1.1\build\netcoreapp2.1\Microsoft.AspNetCore.App.props" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.app\2.1.1\build\netcoreapp2.1\Microsoft.AspNetCore.App.props')" />
+    <Import Project="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.1.0\build\netcoreapp2.1\Microsoft.NETCore.App.props" Condition="Exists('C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.1.0\build\netcoreapp2.1\Microsoft.NETCore.App.props')" />
+    <Import Project="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.fileproviders.embedded\2.1.1\build\netstandard2.0\Microsoft.Extensions.FileProviders.Embedded.props" Condition="Exists('C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.fileproviders.embedded\2.1.1\build\netstandard2.0\Microsoft.Extensions.FileProviders.Embedded.props')" />
+    <Import Project="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration.usersecrets\2.1.1\build\netstandard2.0\Microsoft.Extensions.Configuration.UserSecrets.props" Condition="Exists('C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration.usersecrets\2.1.1\build\netstandard2.0\Microsoft.Extensions.Configuration.UserSecrets.props')" />
+    <Import Project="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.entityframeworkcore.design\2.1.1\build\netcoreapp2.0\Microsoft.EntityFrameworkCore.Design.props" Condition="Exists('C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.entityframeworkcore.design\2.1.1\build\netcoreapp2.0\Microsoft.EntityFrameworkCore.Design.props')" />
+    <Import Project="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.mvc.razor.extensions\2.1.1\build\netstandard2.0\Microsoft.AspNetCore.Mvc.Razor.Extensions.props" Condition="Exists('C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.mvc.razor.extensions\2.1.1\build\netstandard2.0\Microsoft.AspNetCore.Mvc.Razor.Extensions.props')" />
+    <Import Project="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.razor.design\2.1.2\build\netstandard2.0\Microsoft.AspNetCore.Razor.Design.props" Condition="Exists('C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.razor.design\2.1.2\build\netstandard2.0\Microsoft.AspNetCore.Razor.Design.props')" />
+    <Import Project="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.app\2.1.1\build\netcoreapp2.1\Microsoft.AspNetCore.App.props" Condition="Exists('C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.app\2.1.1\build\netcoreapp2.1\Microsoft.AspNetCore.App.props')" />
   </ImportGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <PkgMicrosoft_CodeAnalysis_Analyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_Analyzers)' == '' ">C:\Users\khoin\.nuget\packages\microsoft.codeanalysis.analyzers\1.1.0</PkgMicrosoft_CodeAnalysis_Analyzers>
-    <PkgMicrosoft_EntityFrameworkCore_Tools Condition=" '$(PkgMicrosoft_EntityFrameworkCore_Tools)' == '' ">C:\Users\khoin\.nuget\packages\microsoft.entityframeworkcore.tools\2.1.1</PkgMicrosoft_EntityFrameworkCore_Tools>
-    <PkgMicrosoft_AspNetCore_Razor_Design Condition=" '$(PkgMicrosoft_AspNetCore_Razor_Design)' == '' ">C:\Users\khoin\.nuget\packages\microsoft.aspnetcore.razor.design\2.1.2</PkgMicrosoft_AspNetCore_Razor_Design>
+    <PkgMicrosoft_CodeAnalysis_Analyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_Analyzers)' == '' ">C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.codeanalysis.analyzers\1.1.0</PkgMicrosoft_CodeAnalysis_Analyzers>
+    <PkgMicrosoft_EntityFrameworkCore_Tools Condition=" '$(PkgMicrosoft_EntityFrameworkCore_Tools)' == '' ">C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.entityframeworkcore.tools\2.1.1</PkgMicrosoft_EntityFrameworkCore_Tools>
+    <PkgMicrosoft_AspNetCore_Razor_Design Condition=" '$(PkgMicrosoft_AspNetCore_Razor_Design)' == '' ">C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.razor.design\2.1.2</PkgMicrosoft_AspNetCore_Razor_Design>
   </PropertyGroup>
 </Project>

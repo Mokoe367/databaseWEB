@@ -38,18 +38,18 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="BirthDate" class="control-label">Birth Day (YYYY-MM-DD)</label>
-                <input asp-for="BirthDate" class="form-control" />
+                <input asp-for="BirthDate" type="date" class="form-control" />
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="RoleID" class="control-label">Role ID (0 for null)</label>
-                <input asp-for="RoleID" class="form-control" />
-                <span asp-validation-for="RoleID" class="text-danger"></span>
+                <label asp-for="RoleName" class="control-label">Role (Insert either name or ID)</label>
+                <input asp-for="RoleName" type="text" class="form-control" />
+                <span asp-validation-for="RoleName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="DepID" class="control-label">Dep ID (0 for null)</label>
-                <input asp-for="DepID" class="form-control" />
-                <span asp-validation-for="DepID" class="text-danger"></span>
+                <label asp-for="DepName" class="control-label">Department (Insert either name or ID)</label>
+                <input asp-for="DepName" type="text" class="form-control" />
+                <span asp-validation-for="DepName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Ssn" class="control-label"></label>
@@ -62,7 +62,7 @@
                 <span asp-validation-for="Salary" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="SuperID" class="control-label">Superviser ID (0 for null)</label>
+                <label asp-for="SuperID" class="control-label">Supervisor (Insert ID or 0 for null)</label>
                 <input asp-for="SuperID" class="form-control" />
                 <span asp-validation-for="SuperID" class="text-danger"></span>
             </div>
@@ -75,5 +75,4 @@
         <a asp-action="Index">Back to List</a>
     </div>
 </div>
-
 

@@ -47,6 +47,7 @@ namespace CompanyProject.Controllers
             {
                 depName = getStringValue(reader["depName"]);
             }
+            conn.Close();
             return depName;
         }
 
@@ -64,6 +65,7 @@ namespace CompanyProject.Controllers
             {
                 roleName = getStringValue(reader["roleName"]);
             }
+            conn.Close();
             return roleName;
         }
 
@@ -91,6 +93,7 @@ namespace CompanyProject.Controllers
                 superMname = getStringValue(reader["Mname"]);
                 superLname = getStringValue(reader["Lname"]);
             }
+            conn.Close();
             return superFname + " " + superMname + " " + superLname;
         }
         public IActionResult Index()
@@ -221,7 +224,7 @@ namespace CompanyProject.Controllers
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
 
-
+            conn.Close();
             return View(emp);
         }
 
@@ -258,7 +261,7 @@ namespace CompanyProject.Controllers
             proj.cost = getIntValue(reader["cost"]);
             proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
             proj.field = getStringValue(reader["field"]);
-
+            conn.Close();
             return View(proj);
         }
 
@@ -290,7 +293,7 @@ namespace CompanyProject.Controllers
             task.cost = getIntValue(reader["cost"]);
             task.taskDueDate = sqlDate;
             task.projID = getIntValue(reader["projID"]);
-
+            conn.Close();
             return View(task);
         }
 
@@ -309,7 +312,7 @@ namespace CompanyProject.Controllers
             sup.product = getStringValue(reader["product"]);
             sup.name = getStringValue(reader["name"]);
             sup.roleID = getIntValue(reader["roleID"]);
-
+            conn.Close();
             return View(sup);
         }
 
@@ -325,6 +328,7 @@ namespace CompanyProject.Controllers
             role.roleID = getIntValue(reader["roleID"]);
             role.roleName = getStringValue(reader["rolename"]);
             reader.Close();
+            conn.Close();
             return View(role);
         }
 
@@ -343,7 +347,7 @@ namespace CompanyProject.Controllers
             asset.supID = getIntValue(reader["supID"]);
 
             ViewData["asset"] = asset.supID;
-
+            conn.Close();
             return View(asset);
         }
 
@@ -368,7 +372,7 @@ namespace CompanyProject.Controllers
             distribution.field = getStringValue(reader["field"]);
 
             ViewData["supplier"] = supId;
-
+            conn.Close();
             return View(distribution);
         }
 
@@ -391,7 +395,7 @@ namespace CompanyProject.Controllers
             use.field = getStringValue(reader["field"]);
 
             ViewData["use"] = empId;
-
+            conn.Close();
             return View(use);
         }
 
@@ -409,7 +413,7 @@ namespace CompanyProject.Controllers
             location.loc_name = getStringValue(reader["loc_name"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
-
+            conn.Close();
             return View(location);
         }
 
@@ -431,7 +435,7 @@ namespace CompanyProject.Controllers
             distribution.field = getStringValue(reader["field"]);
 
             ViewData["supplier"] = supId;
-
+            conn.Close();
             return View(distribution);
         }
 
@@ -474,7 +478,7 @@ namespace CompanyProject.Controllers
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
 
-
+            conn.Close();
             return View(emp);
         }
 
@@ -511,7 +515,7 @@ namespace CompanyProject.Controllers
             proj.cost = getIntValue(reader["cost"]);
             proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
             proj.field = getStringValue(reader["field"]);
-
+            conn.Close();
             return View(proj);
         }
 
@@ -533,7 +537,7 @@ namespace CompanyProject.Controllers
             ViewData["TaskInfo"] = msg;
 
             ViewData["employee"] = id;
-
+           
             return View(getEmployeeDetails(id));
 
         }
@@ -553,7 +557,7 @@ namespace CompanyProject.Controllers
             ViewData["ProjectInfo"] = msg;
 
             ViewData["project"] = id;
-
+           
             return View(list);
         }
 
@@ -571,7 +575,7 @@ namespace CompanyProject.Controllers
             ViewData["SupplierInfo"] = msg;
 
             ViewData["supplier"] = id;
-
+            
             return View(GetSupplierDetailsViews(id));
         }
 
@@ -590,7 +594,7 @@ namespace CompanyProject.Controllers
             ViewData["TaskInfo"] = msg;
 
             ViewData["task"] = id;
-
+            
             return View(list);
         }
 
@@ -668,7 +672,7 @@ namespace CompanyProject.Controllers
             task.cost = getIntValue(reader["cost"]);
             task.taskDueDate = sqlDate;
             task.projID = getIntValue(reader["projID"]);
-
+            conn.Close();
             return View(task);
         }
 
@@ -687,7 +691,7 @@ namespace CompanyProject.Controllers
             sup.product = getStringValue(reader["product"]);
             sup.name = getStringValue(reader["name"]);
             sup.roleID = getIntValue(reader["roleID"]);
-
+            conn.Close();
             return View(sup);
         }
 
@@ -703,6 +707,7 @@ namespace CompanyProject.Controllers
             role.roleID = getIntValue(reader["roleID"]);
             role.roleName = getStringValue(reader["rolename"]);
             reader.Close();
+            conn.Close();
             return View(role);
         }
 
@@ -721,7 +726,7 @@ namespace CompanyProject.Controllers
             asset.supID = getIntValue(reader["supID"]);
 
             ViewData["asset"] = asset.supID;
-
+            conn.Close();
             return View(asset);
         }
 
@@ -741,7 +746,7 @@ namespace CompanyProject.Controllers
             use.field = getStringValue(reader["field"]);
 
             ViewData["use"] = empId;
-
+            conn.Close();
             return View(use);
 
         }
@@ -760,7 +765,7 @@ namespace CompanyProject.Controllers
             location.loc_name = getStringValue(reader["loc_name"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
-
+            conn.Close();
             return View(location);
         }
 
@@ -784,6 +789,7 @@ namespace CompanyProject.Controllers
             login.username = getStringValue(reader["username"]);
             login.password = getStringValue(reader["user_password"]);
             login.privilege = getStringValue(reader["user_privilege"]);
+            conn.Close();
             return View(login);
 
         }
@@ -852,6 +858,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View();
             }
 
@@ -900,6 +907,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
                                         
@@ -998,6 +1006,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 string depID = "Adding Employee into Department number " + HttpContext.Session.GetString("depID");
                 ViewData["AddInfo"] = depID;
                 return View(obj);
@@ -1082,11 +1091,12 @@ namespace CompanyProject.Controllers
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 TempData["success"] = "Employee edited successfully";
+                conn.Close();
                 return RedirectToAction("Index");
 
             }
 
-
+            conn.Close();
             return View(employee);
         }
 
@@ -1131,6 +1141,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 string depID = "Adding Project into Department number " + HttpContext.Session.GetString("depID");
                 ViewData["AddInfo"] = depID;
                 return View(obj);
@@ -1177,12 +1188,13 @@ namespace CompanyProject.Controllers
 
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
-
+                conn.Close();
                 TempData["success"] = "Project edited successfully";
                 return RedirectToAction("Index");
             }
             else
             {
+                conn.Close();
                 return View(proj);
             }
         }
@@ -1212,7 +1224,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
-
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -1277,12 +1289,14 @@ namespace CompanyProject.Controllers
                     ModelState.AddModelError("projID", e.Message);
                     string info = "Adding Task for Department number " + department;
                     ViewData["AddInfo"] = info;
+                    conn.Close();
                     return View(obj);
                 }
                
             }
             else
             {
+                conn.Close();
                 string info = "Adding Task for Department number " + department;
                 ViewData["AddInfo"] = info;
                 return View(obj);
@@ -1340,12 +1354,14 @@ namespace CompanyProject.Controllers
                 }
                 catch(MySqlException e)
                 {
+                    conn.Close();
                     ModelState.AddModelError("projID", e.Message);
                     return View(task);
                 }                
             }
             else
             {
+                conn.Close();
                 return View(task);
             }
         }
@@ -1375,7 +1391,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
-
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -1461,12 +1477,13 @@ namespace CompanyProject.Controllers
                 }
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
-
+                conn.Close();
                 TempData["success"] = "Supplier edited successfully";
                 return RedirectToAction("Index");
             }
             else
             {
+                conn.Close();
                 return View(sup);
             }
         }
@@ -1496,7 +1513,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
-
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -1532,6 +1549,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
         }
@@ -1571,6 +1589,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(role);
             }
         }
@@ -1608,6 +1627,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(role);
             }
         }
@@ -1645,6 +1665,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 ViewData["asset"] = obj.supID;
                 return View(obj);
             }
@@ -1683,6 +1704,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(asset);
             }
         }
@@ -1712,7 +1734,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
-
+            conn.Close();
             return RedirectToAction("SupplierDetails", new { id = asset.supID });
         }
 
@@ -1739,6 +1761,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 ViewData["supplier"] = distribution.supID;
                 return View(distribution);
             }
@@ -1825,6 +1848,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 ViewData["asset"] = obj.supID;
                 return View(obj);
             }
@@ -1891,6 +1915,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 ViewData["use"] = obj.employeeID;
                 return View(obj);
             }
@@ -1966,6 +1991,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 ViewData["use"] = use.employeeID;
                 return View(use);
             }
@@ -2025,6 +2051,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 string info = "Adding Location into Department number " + department;
                 ViewData["AddInfo"] = info;
                 return View(obj);
@@ -2076,6 +2103,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(location);
             }
 
@@ -2106,6 +2134,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(location);
             }
         }
@@ -2135,6 +2164,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -2203,6 +2233,7 @@ namespace CompanyProject.Controllers
                 }
                 catch(MySqlException e)
                 {
+                    conn.Close();
                     ModelState.AddModelError("taskID", e.Message);
                     ViewData["employee"] = obj.employeeID;
                     return View(obj);
@@ -2210,6 +2241,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 ViewData["employee"] = obj.employeeID;
                 return View(obj);
             }
@@ -2257,6 +2289,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(login);
             }
         }

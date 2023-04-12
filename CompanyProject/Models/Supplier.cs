@@ -14,6 +14,7 @@ namespace CompanyProject.Models
         [Required (ErrorMessage = "Name Required")]
         public string name { get; set; }
         public int roleID { get; set; }
+        public string roleName { get; set; }
         public int deleted_flag { get; set; }
 
     }

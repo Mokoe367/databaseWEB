@@ -18,13 +18,13 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="dueDate" class="control-label">Project Due Date</label>
-                <input asp-for="dueDate" class="form-control" />
+                <input asp-for="dueDate" type="date" class="form-control" />
                 <span asp-validation-for="dueDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="depID" class="control-label">Department ID</label>
-                <input asp-for="depID" class="form-control" />
-                <span asp-validation-for="depID" class="text-danger"></span>
+                <label asp-for="depName" class="control-label">Department (insert either ID or Department name)</label>
+                <input asp-for="depName" class="form-control" />
+                <span asp-validation-for="depName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="location" class="control-label">Location</label>
@@ -55,6 +55,3 @@
         <a asp-action="Index">Back to List</a>
     </div>
 </div>
-
-
-

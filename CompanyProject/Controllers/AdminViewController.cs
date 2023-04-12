@@ -110,7 +110,8 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from employee where employeeID = " + id + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.employeeID, e.Fname, e.Lname, e.Mname, e.Address, e.sex, e.birthDate, e.deleted_flag, e.roleID, e.depID, e.ssn, e.salary, e.superID, r.roleName, s.Fname as superFname, s.Lname as superLname, d.depName" +
+                " from employee as e left outer join employee as s on e.superID = s.employeeID left outer join roles as r on r.roleID = e.roleID left outer join department as d on d.depID = e.depID where e.employeeID = "+id+" ;", conn);
 
             var reader = cmd.ExecuteReader();
             reader.Read();
@@ -128,7 +129,7 @@ namespace CompanyProject.Controllers
                 dateTemp[1] = "0" + dateTemp[1];
             }
             string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
-
+            string supervisorName = getStringValue(reader["superFname"]) + " " + getStringValue(reader["superLname"]);
             emp.Fname = getStringValue(reader["Fname"]);
             emp.ID = getIntValue(reader["employeeID"]);
             emp.Fname = getStringValue(reader["Fname"]);
@@ -142,8 +143,10 @@ namespace CompanyProject.Controllers
             emp.Ssn = getIntValue(reader["ssn"]);
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
-
-            
+            emp.SupervisorName = supervisorName;
+            emp.DepName = getStringValue(reader["depName"]);
+            emp.RoleName = getStringValue(reader["roleName"]);
+            conn.Close();
             return View(emp);
             
         }
@@ -164,29 +167,42 @@ namespace CompanyProject.Controllers
             }
 
             reader.Close();
-            cmd2 = new MySqlCommand("select depID from department where depID = "+employee.DepID+";", conn);
+            cmd2 = new MySqlCommand("select depID from department where (depID = @depName or depName = @depName);", conn);
+            cmd2.Parameters.AddWithValue("@depName", employee.DepName);
             reader = cmd2.ExecuteReader();
-            if(!reader.Read() && employee.DepID != 0)
+            if(!reader.HasRows && !string.IsNullOrEmpty(employee.DepName))
             {
-                ModelState.AddModelError("DepId","Department number doesn't exist");
+                ModelState.AddModelError("depName","Department doesn't exist");
+            }
+            else if(reader.HasRows)
+            {
+                reader.Read();
+                employee.DepID = getIntValue(reader["depID"]);
             }
             reader.Close();
 
-            cmd2 = new MySqlCommand("select roleId from roles where roleId = " + employee.RoleID + ";", conn);
+            cmd2 = new MySqlCommand("select roleId from roles where (roleId = @roleName or roleName = @roleName);", conn);
+            cmd2.Parameters.AddWithValue("@roleName", employee.RoleName);
             reader = cmd2.ExecuteReader();
-            if (!reader.Read() && employee.RoleID != 0)
+            if (!reader.HasRows && !string.IsNullOrEmpty(employee.RoleName))
             {
-                ModelState.AddModelError("RoleId", "Role number doesn't exist");
+                ModelState.AddModelError("roleName", "Role doesn't exist");               
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                employee.RoleID = getIntValue(reader["roleId"]);
             }
             reader.Close();
 
             cmd2 = new MySqlCommand("select employeeID from employee where employeeID = " + employee.SuperID + ";", conn);
+                                                     
             reader = cmd2.ExecuteReader();
             if (!reader.HasRows && employee.SuperID != 0)
             {
-                ModelState.AddModelError("superID", "superviser Id number doesn't exist");
-            }
-            if(reader.Read())
+                ModelState.AddModelError("superID", "superviser doesn't exist");
+            }           
+            if (reader.Read())
             {
                 int id = getIntValue(reader["employeeID"]);
                 if(id == employee.ID)
@@ -218,7 +234,7 @@ namespace CompanyProject.Controllers
                 cmd.Parameters.AddWithValue("@salary", employee.Salary);
                 cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
                 cmd.Parameters.AddWithValue("@address", employee.Address);
-                if (employee.DepID == 0)
+                if (string.IsNullOrEmpty(employee.DepName))
                 {
                     cmd.Parameters.AddWithValue("@depId", DBNull.Value);
                 }
@@ -227,7 +243,7 @@ namespace CompanyProject.Controllers
                     cmd.Parameters.AddWithValue("@depId", employee.DepID);
                 }
 
-                if (employee.RoleID == 0)
+                if (string.IsNullOrEmpty(employee.RoleName))
                 {
                     cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
                 }
@@ -243,16 +259,16 @@ namespace CompanyProject.Controllers
                 else
                 {
                     cmd.Parameters.AddWithValue("@superID", employee.SuperID);
-                }
-
+                }               
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 TempData["success"] = "Employee edited successfully";
+                conn.Close();
                 return RedirectToAction("Index");
 
             }
-           
-            
+
+            conn.Close();
             return View(employee);
         }
 
@@ -270,10 +286,12 @@ namespace CompanyProject.Controllers
                 login.username = getStringValue(reader["username"]);
                 login.password = getStringValue(reader["user_password"]);
                 login.privilege = getStringValue(reader["user_privilege"]);
+                conn.Close();
                 return View(login);
             }
             else
             {
+                conn.Close();
                 return RedirectToAction("AddLogin", new { loginId = id});
             }
             
@@ -429,6 +447,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
 
@@ -451,7 +470,7 @@ namespace CompanyProject.Controllers
             dep.location = getStringValue(reader["location"]);
             dep.depName = getStringValue(reader["depName"]);
             dep.mgrID = getIntValue(reader["mgrID"]);
-       
+            conn.Close();
             return View(dep);
         }
 
@@ -490,12 +509,13 @@ namespace CompanyProject.Controllers
                 }
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
-                
+                conn.Close();
                 TempData["success"] = "Department edited successfully";
                 return RedirectToAction("Index");
             }
             else
             {
+                conn.Close();
                 return View(dep);
             }           
         }
@@ -547,6 +567,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
           
@@ -606,12 +627,13 @@ namespace CompanyProject.Controllers
                 }
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
-
+                conn.Close();
                 TempData["success"] = "Supplier edited successfully";
                 return RedirectToAction("Index");
             }
             else
             {
+                conn.Close();
                 return View(sup);
             }
         }
@@ -627,13 +649,18 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + obj.depID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = @depName or depName = @depName", conn);
+            cmd.Parameters.AddWithValue("@depName", obj.depName);
             var reader = cmd.ExecuteReader();
 
-            if (!reader.HasRows && obj.depID != 0)
+            if (!reader.HasRows && !string.IsNullOrEmpty(obj.depName))
             {
-                ModelState.AddModelError("depID", "DepartmentID doesn't exist");
+                ModelState.AddModelError("depName", "Department doesn't exist");
+            }
+            else if(reader.HasRows)
+            {
+                reader.Read();
+                obj.depID = getIntValue(reader["depID"]);
             }
             reader.Close();
 
@@ -678,6 +705,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
 
@@ -689,8 +717,9 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from project where projID = " + id + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand("select p.projID, p.projName, p.dueDate, p.projID, p.location, p.cost, p.field, p.projStatus, p.deleted_flag, p.depID, d.depName" +
+                " from project as p left outer join department as d on d.depID = p.depID where p.projID = "+id+";", conn);
+   
             var reader = cmd.ExecuteReader();
             reader.Read();
             DateTime date = Convert.ToDateTime(getStringValue(reader["dueDate"]));
@@ -716,7 +745,8 @@ namespace CompanyProject.Controllers
             proj.cost = getIntValue(reader["cost"]);
             proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
             proj.field = getStringValue(reader["field"]);
-           
+            proj.depName = getStringValue(reader["depName"]);
+            conn.Close();
             return View(proj);
         }
 
@@ -726,13 +756,19 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + proj.depID + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = @depName or depName = @depName", conn);
+            cmd.Parameters.AddWithValue("@depName", proj.depName);
 
             var reader = cmd.ExecuteReader();
 
-            if (!reader.HasRows && proj.depID != 0)
+            if (!reader.HasRows && !string.IsNullOrEmpty(proj.depName))
             {
-                ModelState.AddModelError("depID", "DepartmentID doesn't exist");
+                ModelState.AddModelError("depName", "Department doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                proj.depID = getIntValue(reader["depID"]);
             }
             reader.Close();
 
@@ -756,7 +792,7 @@ namespace CompanyProject.Controllers
                 cmd2.CommandText = query;
                 cmd2.Parameters.AddWithValue("@projName", proj.projName);
                 cmd2.Parameters.AddWithValue("@dueDate", proj.dueDate);
-                if (proj.depID == 0)
+                if (string.IsNullOrEmpty(proj.depName))
                 {
                     cmd2.Parameters.AddWithValue("@depID", DBNull.Value);
                 }
@@ -771,12 +807,13 @@ namespace CompanyProject.Controllers
             
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
-
+                conn.Close();
                 TempData["success"] = "Project edited successfully";
                 return RedirectToAction("Index");
             }
             else
             {
+                conn.Close();
                 return View(proj);
             }
         }
@@ -817,6 +854,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
         }
@@ -871,6 +909,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(role);
             }
         }
@@ -965,7 +1004,7 @@ namespace CompanyProject.Controllers
             task.taskDueDate = sqlDate;
             task.projID = getIntValue(reader["projID"]);
             task.deleted_flag = getIntValue(reader["deleted_flag"]);
-
+            conn.Close();
             return View(task);
         }
 
@@ -1018,6 +1057,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(task);
             }
         }
@@ -1083,8 +1123,8 @@ namespace CompanyProject.Controllers
             asset.assetID = getIntValue(reader["assetID"]);
             asset.type = getStringValue(reader["type"]);
             asset.cost = getIntValue(reader["cost"]);
-            asset.supID = getIntValue(reader["supID"]);                    
-
+            asset.supID = getIntValue(reader["supID"]);
+            conn.Close();
             return View(asset);
         }
 
@@ -1128,6 +1168,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(asset);
             }
         }
@@ -1175,6 +1216,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
         }
@@ -1193,7 +1235,7 @@ namespace CompanyProject.Controllers
             location.loc_name = getStringValue(reader["loc_name"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
-
+            conn.Close();
             return View(location);
         }
 
@@ -1244,6 +1286,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(location);
             }
            
@@ -1315,6 +1358,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
         }       
@@ -1336,12 +1380,12 @@ namespace CompanyProject.Controllers
             distribution.tempSupID = getIntValue(reader["supID"]);
             distribution.tempAssetID = getIntValue(reader["assetID"]);
             distribution.field = getStringValue(reader["field"]);
-
+            conn.Close();
             return View(distribution);
         }
 
         public IActionResult AddUse()
-        {
+        {           
             return View();
         }
 
@@ -1406,6 +1450,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
         }
@@ -1427,7 +1472,7 @@ namespace CompanyProject.Controllers
             use.tempsupID = getIntValue(reader["supID"]);
             use.tempassetID = getIntValue(reader["assetID"]);
             use.field = getStringValue(reader["field"]);
-
+            conn.Close();
             return View(use);
         }
         [HttpPost]
@@ -1492,6 +1537,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(use);
             }
         }
@@ -1556,6 +1602,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(distribution);
             }
         }
@@ -1617,6 +1664,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(obj);
             }
         }
@@ -1636,7 +1684,7 @@ namespace CompanyProject.Controllers
             work.tempemployeeID = getIntValue(reader["employeeID"]);
             work.tempTaskID = getIntValue(reader["taskID"]);
             work.hours = getIntValue(reader["hours"]);
-            
+            conn.Close();
             return View(work);
         }
 
@@ -1701,6 +1749,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(work);
             }
         }
@@ -1728,6 +1777,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -1754,7 +1804,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
-
+            conn.Close();
             return RedirectToAction("Index");       
         }
 
@@ -1781,7 +1831,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
-
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -1808,7 +1858,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
-
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -1824,6 +1874,7 @@ namespace CompanyProject.Controllers
             role.roleID = getIntValue(reader["roleID"]);
             role.roleName = getStringValue(reader["rolename"]);
             reader.Close();
+            conn.Close();
             return View(role);
         }
 
@@ -1850,6 +1901,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
+            conn.Close();
 
             return RedirectToAction("Index");
         }
@@ -1914,6 +1966,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
+            conn.Close();
 
             return RedirectToAction("Index");
         }
@@ -1932,6 +1985,7 @@ namespace CompanyProject.Controllers
             location.loc_name = getStringValue(reader["loc_name"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
+            conn.Close();
 
             return View(location);
         }
@@ -1980,6 +2034,7 @@ namespace CompanyProject.Controllers
             distribution.supID = getIntValue(reader["supID"]);
             distribution.assetID = getIntValue(reader["assetID"]);
             distribution.field = getStringValue(reader["field"]);
+            conn.Close();
 
             return View(distribution);
         }
@@ -2018,6 +2073,7 @@ namespace CompanyProject.Controllers
             use.supID = getIntValue(reader["supID"]);
             use.assetID = getIntValue(reader["assetID"]);
             use.field = getStringValue(reader["field"]);
+            conn.Close();
 
             return View(use);
 
@@ -2053,7 +2109,9 @@ namespace CompanyProject.Controllers
             reader.Read();
             work.employeeID = getIntValue(reader["employeeID"]);
             work.TaskID = getIntValue(reader["TaskID"]);
-            work.hours = getIntValue(reader["hours"]);          
+            work.hours = getIntValue(reader["hours"]);
+
+            conn.Close();
 
             return View(work);
         }
@@ -2133,7 +2191,8 @@ namespace CompanyProject.Controllers
             List<Employee> employeeData = new List<Employee>();
             
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from employee", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.employeeID, e.Fname, e.Lname, e.Mname, e.Address, e.sex, e.birthDate, e.deleted_flag, e.roleID, e.depID, e.ssn, e.salary, e.superID, r.roleName, s.Fname as superFname, s.Lname as superLname, d.depName" +
+                " from employee as e left outer join employee as s on e.superID = s.employeeID left outer join roles as r on r.roleID = e.roleID left outer join department as d on d.depID = e.depID;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -2154,6 +2213,7 @@ namespace CompanyProject.Controllers
                         dateTemp[1] = "0" + dateTemp[1];
                     }
                     string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+                    string supervisorName = getStringValue(reader["superFname"]) + " " + getStringValue(reader["superLname"]);
                     employeeData.Add(new Employee()
                     {
                         ID = getIntValue(reader["employeeID"]),
@@ -2168,7 +2228,10 @@ namespace CompanyProject.Controllers
                         DepID = getIntValue(reader["depId"]),
                         Ssn = getIntValue(reader["ssn"]),
                         Salary = getIntValue(reader["salary"]),
-                        SuperID = getIntValue(reader["superID"])
+                        SuperID = getIntValue(reader["superID"]),
+                        SupervisorName = supervisorName,
+                        DepName = getStringValue(reader["depName"]),
+                        RoleName = getStringValue(reader["roleName"])
 
                     });
                 }
@@ -2184,21 +2247,23 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select * from department", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depID, d.location, d.depName, d.mgrID, d.deleted_flag, s.Fname, s.Lname " +
+                "from department as d left outer join employee as s on d.mgrID = s.employeeID;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
 
-                
+                    string mgrName = getStringValue(reader["Fname"]) + " " + getStringValue(reader["Lname"]);
                     departmentData.Add(new Department()
                     {
                         depID = getIntValue(reader["depID"]),
                         location = getStringValue(reader["location"]),
                         depName = getStringValue(reader["depName"]),
                         mgrID = getIntValue(reader["mgrID"]),
-                        deleted_flag = getIntValue(reader["deleted_flag"])                    
+                        deleted_flag = getIntValue(reader["deleted_flag"]),
+                        mgrName = mgrName
                     });
                 }
             }
@@ -2216,7 +2281,8 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select * from project", conn);
+            MySqlCommand cmd = new MySqlCommand("select p.projID, p.projName, p.dueDate, p.projID, p.location, p.cost, p.field, p.projStatus, p.deleted_flag, p.depID, d.depName" +
+                " from project as p left outer join department as d on d.depID = p.depID;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -2246,7 +2312,8 @@ namespace CompanyProject.Controllers
                         cost = getIntValue(reader["cost"]),
                         projStatus = Convert.ToDecimal(reader["projStatus"]),
                         field = getStringValue(reader["field"]),
-                        deleted_flag = getIntValue(reader["deleted_flag"])
+                        deleted_flag = getIntValue(reader["deleted_flag"]),
+                        depName = getStringValue(reader["depName"])
                     });
                 }
             }

@@ -14,7 +14,8 @@ namespace CompanyProject.Models
         public string location { get; set; }
         [Required]
         public string depName { get; set; }
-        public int mgrID { get; set; }    
+        public int mgrID { get; set; }
+        public string mgrName { get; set; }
         public int deleted_flag { get; set; }
     }
 }

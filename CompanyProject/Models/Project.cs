@@ -16,6 +16,8 @@ namespace CompanyProject.Models
         public string dueDate { get; set; }
 
         public int depID { get; set; }
+
+        public string depName { get; set; }
         [Required(ErrorMessage = "Project Name Required")]
         public string projName { get; set; }
 
