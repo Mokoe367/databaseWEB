@@ -42,24 +42,101 @@ namespace CompanyProject.Controllers
             {
                 user.Fname = getStringValue(reader["Fname"]);
                 user.Lname = getStringValue(reader["Lname"]);
-                user.DepID = getIntValue(reader["depID"]);
+                user.DepName = getDepartmentName(getIntValue(reader["depID"]));
             }
             conn.Close();
-            string msg = "Signed in as " + user.Fname + " " + user.Lname;
+            string msg = "Signed in as " + user.Fname + " " + user.Lname + " from Department " + user.DepName;
             ViewData["userInfo"] = msg;
 
 
-            return View("Index", getEmployeeData()); // you can pass models into view
+            return View("Index", getEmployeeData(empID)); // you can pass models into view
         }
 
-
-        public List<Employee> getEmployeeData()
+        public string getDepartment(string empID)
         {
+            string ID = "0";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select depID from employee where employeeID=" + empID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                ID = getStringValue(reader["depID"]);
+            }
+            return ID;
+        }
+
+        public string getRoleName(int roleID)
+        {
+            string roleName = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select roleName from roles where roleID=" + roleID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                roleName = getStringValue(reader["roleName"]);
+            }
+            return roleName;
+        }
+
+        public string getDepartmentName(int depID)
+        {
+            string depName = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select depName from department where depID=" + depID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                depName = getStringValue(reader["depName"]);
+            }
+            return depName;
+        }
+
+        public string getSuperName(int superID)
+        {
+            if (superID == 0)
+            {
+                return "";
+            }
+
+            string superFname = "";
+            string superMname = "";
+            string superLname = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select S.Fname, S.Mname, S.Lname from employee as S " +
+                "where  S.employeeID = " + superID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                superFname = getStringValue(reader["Fname"]);
+                superMname = getStringValue(reader["Mname"]);
+                superLname = getStringValue(reader["Lname"]);
+            }
+            return superFname + " " + superMname + " " + superLname;
+        }
+
+        public List<Employee> getEmployeeData(string empID)
+        {
+            
             MySqlConnection conn = GetConnection();
             List<Employee> employeeData = new List<Employee>();
 
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from employee", conn);
+            
+            string depID = getDepartment(empID);
+            
+            MySqlCommand cmd = new MySqlCommand("select * from employee where depID=" + depID, conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -91,12 +168,14 @@ namespace CompanyProject.Controllers
                         BirthDate = sqlDate,
                         Deleted_flag = getIntValue(reader["deleted_flag"]),
                         RoleID = getIntValue(reader["roleId"]),
+                        RoleName = getRoleName(getIntValue(reader["roleId"])),
                         DepID = getIntValue(reader["depId"]),
                         Ssn = getIntValue(reader["ssn"]),
                         Salary = getIntValue(reader["salary"]),
-                        SuperID = getIntValue(reader["superID"])
+                        SuperID = getIntValue(reader["superID"]),
+                        SupervisorName = getSuperName(getIntValue(reader["superID"]))
 
-                    });
+                    }); 
                 }
             }
             conn.Close();
