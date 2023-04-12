@@ -59,10 +59,10 @@
                     Salary
                 </th>
                 <th>
-                    Role ID
+                    Role Name
                 </th>               
                 <th>
-                    Superviser ID
+                    Superviser Name
                 </th>            
                 <th>
 
@@ -99,13 +99,13 @@
                 <td>
                     @if (item.RoleID != 0)
                     {
-                        @Html.DisplayFor(modelItem => item.RoleID)
+                        @Html.DisplayFor(modelItem => item.RoleName)
                     }
                 </td>               
                 <td>
                     @if (item.SuperID != 0)
                     {
-                        @Html.DisplayFor(modelItem => item.SuperID)
+                        @Html.DisplayFor(modelItem => item.SupervisorName)
                     }
                 </td>
                 <td>                    

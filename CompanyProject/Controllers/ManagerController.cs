@@ -34,7 +34,65 @@ namespace CompanyProject.Controllers
             if (value == DBNull.Value) return 0;
             return Convert.ToInt32(value);
         }
+        public string getDepartmentName(int depID)
+        {
+            string depName = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
 
+            MySqlCommand cmd1 = new MySqlCommand("select depName from department where depID=" + depID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                depName = getStringValue(reader["depName"]);
+            }
+            return depName;
+        }
+
+        // GET ROLE NAME
+        public string getRoleName(int roleID)
+        {
+            string roleName = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select roleName from roles where roleID=" + roleID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                roleName = getStringValue(reader["roleName"]);
+            }
+            return roleName;
+        }
+
+        // GET SUPERVISOR NAME
+        public string getSuperName(int superID)
+        {
+            if (superID == 0)
+            {
+                return "";
+            }
+
+            string superFname = "";
+            string superMname = "";
+            string superLname = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select S.Fname, S.Mname, S.Lname from employee as S " +
+                "where  S.employeeID = " + superID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                superFname = getStringValue(reader["Fname"]);
+                superMname = getStringValue(reader["Mname"]);
+                superLname = getStringValue(reader["Lname"]);
+            }
+            return superFname + " " + superMname + " " + superLname;
+        }
         public IActionResult Index()
         {
             string empID = HttpContext.Session.GetString("id");
@@ -57,12 +115,13 @@ namespace CompanyProject.Controllers
                     user.Fname = getStringValue(reader["Fname"]);
                     user.Lname = getStringValue(reader["Lname"]);
                     user.DepID = getIntValue(reader["depID"]);
+                    user.DepName = getDepartmentName(getIntValue(reader["depID"]));
                 }
                 conn.Close();
                 HttpContext.Session.SetString("depID", user.DepID.ToString());
                 userDepID = user.DepID;
                 userEmpID = Convert.ToInt32(empID);
-                string msg = "Signed in as " + user.Fname + " " + user.Lname + " showing Department " + user.DepID;
+                string msg = "Signed in as " + user.Fname + " " + user.Lname + " showing Department " + user.DepName + " (Department ID: " + user.DepID + ")";
                 ViewData["userInfo"] = msg;              
                 return View(getViewData());
             }
@@ -2318,10 +2377,12 @@ namespace CompanyProject.Controllers
                         BirthDate = sqlDate,
                         Deleted_flag = getIntValue(reader["deleted_flag"]),
                         RoleID = getIntValue(reader["roleId"]),
+                        RoleName = getRoleName(getIntValue(reader["roleId"])),
                         DepID = getIntValue(reader["depId"]),
                         Ssn = getIntValue(reader["ssn"]),
                         Salary = getIntValue(reader["salary"]),
-                        SuperID = getIntValue(reader["superID"])
+                        SuperID = getIntValue(reader["superID"]),
+                        SupervisorName = getSuperName(getIntValue(reader["superID"]))
 
                     });
                 }

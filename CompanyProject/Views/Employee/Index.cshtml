@@ -23,36 +23,35 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ID)
+                Employee ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Fname)
+                First Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Lname)
+                Last Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Mname)
-            </th>
-           
-            <th>
-                @Html.DisplayNameFor(model => model.Sex)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BirthDate)
+                Middle Name
             </th>
             
+            <th>
+                Gender
+            </th>
+            <th>
+                Birthday
+            </th>
             
             <th>
-                @Html.DisplayNameFor(model => model.RoleName)
+                Role Name
+            </th>
+            
+            <th>
+                Superviser Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DepName)
+
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SupervisorName)
-            </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -82,9 +81,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.RoleName)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.DepName)
-                </td>
+                </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.SupervisorName)
                 </td>
