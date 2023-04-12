@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -31,8 +31,9 @@ namespace CompanyProject.Models
         public string BirthDate{ get; set; }
 
         public int Deleted_flag { get; set; }
-
+        public string RoleName { get; set; }   
         public int RoleID { get; set; }
+        public string DepName { get; set; }
 
         public int DepID { get; set; }
 
@@ -43,8 +44,10 @@ namespace CompanyProject.Models
         [Required(ErrorMessage = "Salary Required")]
         [Range(0,100000,ErrorMessage = "Range should be between 0 and 100k")]
         public int Salary { get; set; }
+        
 
         public int SuperID { get; set; }
+        public string SupervisorName { get; set; }   
 
 
     }
