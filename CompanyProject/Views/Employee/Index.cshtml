@@ -34,32 +34,23 @@
             <th>
                 @Html.DisplayNameFor(model => model.Mname)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
+           
             <th>
                 @Html.DisplayNameFor(model => model.Sex)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.BirthDate)
             </th>
+            
+            
             <th>
-                @Html.DisplayNameFor(model => model.Deleted_flag)
-            </th>
-            @*<th>
-            @Html.DisplayNameFor(model => model.Ssn)
-            </th>
-            <th>
-            @Html.DisplayNameFor(model => model.Salary)
-            </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.RoleID)
+                @Html.DisplayNameFor(model => model.RoleName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DepID)
+                @Html.DisplayNameFor(model => model.DepName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SuperID)
+                @Html.DisplayNameFor(model => model.SupervisorName)
             </th>
             <th></th>
         </tr>
@@ -80,39 +71,28 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Mname)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>
+                
                 <td>
                     @Html.DisplayFor(modelItem => item.Sex)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.BirthDate)
                 </td>
+                
                 <td>
-                    @Html.DisplayFor(modelItem => item.Deleted_flag)
-                </td>
-                @*<td>
-            @Html.DisplayFor(modelItem => item.Ssn)
-            </td>
-            <td>
-            @Html.DisplayFor(modelItem => item.Salary)
-            </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.RoleID)
+                    @Html.DisplayFor(modelItem => item.RoleName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DepID)
+                    @Html.DisplayFor(modelItem => item.DepName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SuperID)
+                    @Html.DisplayFor(modelItem => item.SupervisorName)
                 </td>
                 <td>
                     @if (item.ID == ViewBag.ID) {
                     <p>
                         @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                        @Html.ActionLink("Details", "Detail", new { id = item.ID }) |
-                        @Html.ActionLink("Delete", "Delete", new {id = item.ID })
+                        @Html.ActionLink("Details", "Detail", new { id = item.ID }) 
                     </p>
                     }
 
