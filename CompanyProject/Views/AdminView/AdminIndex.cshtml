@@ -5,9 +5,44 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
+
 <style>
-    #table-div {
+    .admin-nav {
+        width: 100%;
+        box-sizing:border-box;
+        padding: 0 25px;
+        display: flex;
+        flex-direction: row;
+        align-items:center;
+    }
+    .admin-nav h6 {
+        margin-right: 15px;
+    }
+    .admin-nav h6:hover {
+        cursor: pointer;
+        color: #0d6efd;
+    }
+    .content-body {
         margin: 25px;
+        display: none;
+    }
+    .show-active{
+        display:block;
+        /*animation: fade 0.5s;*/
+    }
+    .tab {
+
+    }
+    .tab-active {
+        font-size: 2.5rem;
+    }
+    @@keyframes fade {
+        from{
+            opacity: 0
+        }
+        to {
+            opacity: 1
+        }
     }
 </style>
 
@@ -29,7 +64,22 @@
     }
 </div>
 
-<div id="table-div">
+
+<div class="admin-nav">
+    <h6 class="tab tab-active">Employees</h6>
+    <h6 class="tab">Departments</h6>
+    <h6 class="tab">Projects</h6>
+    <h6 class="tab">Suppliers</h6>
+    <h6 class="tab">Roles</h6>
+    <h6 class="tab">Tasks</h6>
+    <h6 class="tab">Assets</h6>
+    <h6 class="tab">Locations</h6>
+    <h6 class="tab">Supplier Distributions</h6>
+    <h6 class="tab">Used By</h6>
+    <h6 class="tab">Works On</h6>
+</div>
+
+<div id="Employees" class="content-body show-active">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddEmployee">Add Employee</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Employees</caption>
@@ -113,7 +163,7 @@
                         @if (item.RoleID != 0)
                         {
                             @Html.DisplayFor(modelItem => item.RoleID)
-                        }                        
+                        }
                     </td>
                     <td>
                         @if (item.DepID != 0)
@@ -141,7 +191,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Departments" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddDepartment">Add Department</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Departments</caption>
@@ -197,7 +247,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Projects"class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddProject">Add Project</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Projects</caption>
@@ -247,7 +297,7 @@
                         @if (item.depID != 0)
                         {
                             @Html.DisplayFor(modelItem => item.depID)
-                        }                        
+                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.location)
@@ -277,7 +327,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Suppliers" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddSupplier">Add Supplier</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Suppliers</caption>
@@ -318,13 +368,13 @@
                         @if (item.roleID != 0)
                         {
                             @Html.DisplayFor(modelItem => item.roleID)
-                        }                        
+                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.deleted_flag)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "EditSupplier", new {  id=item.supID  }) |                       
+                        @Html.ActionLink("Edit", "EditSupplier", new { id = item.supID }) |
                         @Html.ActionLink("Delete/Restore", "DeleteSupplier", new { id = item.supID })
                     </td>
                 </tr>
@@ -333,7 +383,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Roles" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddRole">Add Role</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Roles</caption>
@@ -359,7 +409,7 @@
                         @Html.DisplayFor(modelItem => item.roleName)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "EditRole", new { id=item.roleID }) |                        
+                        @Html.ActionLink("Edit", "EditRole", new { id = item.roleID }) |
                         @Html.ActionLink("Delete", "DeleteRole", new { id = item.roleID })
                     </td>
                 </tr>
@@ -368,7 +418,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Tasks" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddTask">Add Task</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Tasks</caption>
@@ -416,12 +466,12 @@
                         {
                             @Html.DisplayFor(modelItem => item.projID)
                         }
-                    </td>                    
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.deleted_flag)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |                   
+                        @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |
                         @Html.ActionLink("Delete/Restore", "DeleteTask", new { id = item.taskID })
                     </td>
                 </tr>
@@ -430,7 +480,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Assets" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddAsset">Add Asset</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Assets</caption>
@@ -471,13 +521,13 @@
                         @if (item.supID != 0)
                         {
                             @Html.DisplayFor(modelItem => item.supID)
-                        }                       
+                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.deleted_flag)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "EditAsset", new { id = item.assetID }) |                       
+                        @Html.ActionLink("Edit", "EditAsset", new { id = item.assetID }) |
                         @Html.ActionLink("Delete/Restore", "DeleteAsset", new { id = item.assetID })
                     </td>
                 </tr>
@@ -486,7 +536,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Locations" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddLocations">Add Locations</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Locations</caption>
@@ -512,7 +562,7 @@
                         @Html.DisplayFor(modelItem => item.loc_name)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "EditLocation", new { id = item.depID, name = item.loc_name }) |                       
+                        @Html.ActionLink("Edit", "EditLocation", new { id = item.depID, name = item.loc_name }) |
                         @Html.ActionLink("Delete", "DeleteLocation", new { id = item.depID, name = item.loc_name })
                     </td>
                 </tr>
@@ -521,7 +571,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Supplier-Distributions" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddDistribution">Add Supplier Distributions</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Supplier Distributions</caption>
@@ -538,37 +588,37 @@
                 </th>
                 <th>
                     Field
-                </th>                
+                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.FirstOrDefault().Distributions)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.depID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.supID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.assetID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.field)
-                </td>             
-                <td>
-                    @Html.ActionLink("Edit", "EditDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID }) |
-                    @Html.ActionLink("Delete", "DeleteDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID })
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.depID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.supID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.assetID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.field)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "EditDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID }) |
+                        @Html.ActionLink("Delete", "DeleteDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID })
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
 
-<div id="table-div">
+<div id="Used-By" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddUse">Add Used By Employee</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Used By</caption>
@@ -585,37 +635,37 @@
                 </th>
                 <th>
                     Field
-                </th>                
+                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.FirstOrDefault().UsedBy)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.employeeID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.supID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.assetID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.field)
-                </td>               
-                <td>
-                    @Html.ActionLink("Edit", "EditUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID }) |
-                    @Html.ActionLink("Delete", "DeleteUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID })
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.employeeID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.supID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.assetID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.field)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "EditUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID }) |
+                        @Html.ActionLink("Delete", "DeleteUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID })
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
 
-<div id="table-div">
+<div id="Works-On" class="content-body">
     <a asp-controller="AdminView" class="btn btn-primary" asp-action="AddWork">Add Employee Works On</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Works On</caption>
@@ -629,28 +679,28 @@
                 </th>
                 <th>
                     Hours
-                </th>               
+                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.FirstOrDefault().Works_Ons)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.employeeID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TaskID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.hours)
-                </td>               
-                <td>
-                    @Html.ActionLink("Edit", "EditWork", new { empid = item.employeeID, taskid = item.TaskID }) |                   
-                    @Html.ActionLink("Delete", "DeleteWork", new { empid = item.employeeID, taskid = item.TaskID })
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.employeeID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaskID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.hours)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "EditWork", new { empid = item.employeeID, taskid = item.TaskID }) |
+                        @Html.ActionLink("Delete", "DeleteWork", new { empid = item.employeeID, taskid = item.TaskID })
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
@@ -660,4 +710,34 @@
     $(document).ready(function () {
         $('table').DataTable();
     });
+
+
+    //function to remove .show-active class and add to clicked
+    function setNewActive(el) {
+        // select all .content-body
+        var contentBodies = document.getElementsByClassName('content-body');
+        // remove .show-active
+        for (var contentBody of contentBodies) {
+            contentBody.classList.remove('show-active');
+        }
+        //add .show-active back
+        document.getElementById(el.textContent.replace(/\s+/g, '-')).classList.add('show-active');
+
+        var tabs = document.getElementsByClassName('tab');
+        for (var tab of tabs) {
+            tab.classList.remove('tab-active');
+        }
+        el.classList.add('tab-active');
+    }
+
+    //select tab class and loop through
+    var tabs = document.getElementsByClassName('tab');
+    for (var tab of tabs) {
+        //add click listener
+        tab.addEventListener('click', function (e) {
+            setNewActive(e.currentTarget);
+        })
+
+    }
+
 </script>
