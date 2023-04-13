@@ -67,7 +67,7 @@ using CompanyProject.Models;
             WriteLiteral("\r\n<h2 style=\"margin: 25px;\">Progress Report</h2>\r\n\r\n<div class=\"row\" style=\"margin: 25px;\">\r\n    <div class=\"col-md-4\">\r\n        ");
             EndContext();
             BeginContext(235, 662, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b4a36182e3954d6ba8b91d58170ca91c", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "445e71744c39460484072d56cbc38a09", async() => {
                 BeginContext(269, 223, true);
                 WriteLiteral("           \r\n            <div class=\"form-group mb-3\">\r\n                <label for=\"ProjectID\" class=\"control-label\"></label>\r\n                <input name=\"ProjectID\" class=\"form-control\" placeholder=\"Input Project ID\" />\r\n");
                 EndContext();
@@ -120,7 +120,7 @@ using CompanyProject.Models;
             WriteLiteral("\r\n    </div>\r\n    <div class=\"mb-3\">\r\n        ");
             EndContext();
             BeginContext(943, 38, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "055807c930f64a839558cf425b3c13f0", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "429f25c6309f4177b12b30b55d9145a8", async() => {
                 BeginContext(965, 12, true);
                 WriteLiteral("Back to List");
                 EndContext();

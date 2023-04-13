@@ -117,7 +117,7 @@ using CompanyProject.Models;
             WriteLiteral("</div>\r\n\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(566, 93, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "58a01eb8f1a1402a936092d0018e4c56", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "1abfad37c9e04684afbc02902fe25880", async() => {
                 BeginContext(643, 12, true);
                 WriteLiteral("Add Employee");
                 EndContext();
@@ -354,7 +354,7 @@ using CompanyProject.Models;
             WriteLiteral("        </tbody>\r\n    </table>\r\n</div>\r\n\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(3580, 95, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e040c254e54545b0bfd9cf1b2b8f8725", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "6fbf45bba315489aacad3a07968c9ad8", async() => {
                 BeginContext(3658, 13, true);
                 WriteLiteral("Add Locations");
                 EndContext();
@@ -451,7 +451,7 @@ using CompanyProject.Models;
             WriteLiteral("        </tbody>\r\n    </table>\r\n</div>\r\n\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(4820, 91, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "2225852f9ddf454fa783aed2b085cac5", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c620417d58254c149622d7692e434bc4", async() => {
                 BeginContext(4896, 11, true);
                 WriteLiteral("Add Project");
                 EndContext();
@@ -623,7 +623,7 @@ using CompanyProject.Models;
             WriteLiteral("        </tbody>\r\n    </table>\r\n</div>\r\n\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(7164, 85, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "630eec9ea7bc4aecb723da9eae4d7a15", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5a70571bfdaf49f183ef6affbc20fd36", async() => {
                 BeginContext(7237, 8, true);
                 WriteLiteral("Add Task");
                 EndContext();
@@ -783,7 +783,7 @@ using CompanyProject.Models;
             WriteLiteral("        </tbody>\r\n    </table>\r\n</div>\r\n\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(9217, 93, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "1a753712107844cea87f164a7e85ea20", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "df5982475c9f4975a38793cca8b7d008", async() => {
                 BeginContext(9294, 12, true);
                 WriteLiteral("Add Supplier");
                 EndContext();
@@ -929,7 +929,7 @@ using CompanyProject.Models;
             WriteLiteral("        </tbody>\r\n    </table>\r\n</div>\r\n\r\n<div id=\"table-div\">\r\n    ");
             EndContext();
             BeginContext(11053, 85, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "34dde805209547698d54ece5af0ff3d4", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "12f4b1de0d4c4267bc9ca13c960e82be", async() => {
                 BeginContext(11126, 8, true);
                 WriteLiteral("Add Role");
                 EndContext();

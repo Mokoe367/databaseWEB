@@ -67,7 +67,7 @@ using CompanyProject.Models;
             WriteLiteral("\r\n\r\n\r\n\r\n");
             EndContext();
             BeginContext(51, 1618, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "03e3d4fb9aa34c759404a4f8906c6b71", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8ff789b0c78d49bead0133915806da20", async() => {
                 BeginContext(91, 689, true);
                 WriteLiteral(@"
     <style>
@@ -82,7 +82,7 @@ using CompanyProject.Models;
     ");
                 EndContext();
                 BeginContext(780, 862, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "6fc8048d02c14041ac91c73e79d1d5a4", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "865b09e2dcc847a69a754b69219e85f4", async() => {
                     BeginContext(811, 18, true);
                     WriteLiteral(" \r\n        <div>\r\n");
                     EndContext();

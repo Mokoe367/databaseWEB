@@ -66,7 +66,7 @@ using CompanyProject.Models;
             WriteLiteral("<!DOCTYPE html>\r\n\r\n<html>\r\n");
             EndContext();
             BeginContext(27, 919, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "82172563aa9442ca85ddba9a0f06ee08", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "da35cf96e7e4498d8470660fbd8d8f45", async() => {
                 BeginContext(33, 72, true);
                 WriteLiteral("\r\n    <meta name=\"viewport\" content=\"width=device-width\" />\r\n    <title>");
                 EndContext();
@@ -106,12 +106,12 @@ using CompanyProject.Models;
             WriteLiteral("\r\n");
             EndContext();
             BeginContext(948, 1723, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a9193be9cff049a09d69b9ba30e6fba0", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5dd3480664ed41a99dc780e7857c95b2", async() => {
                 BeginContext(954, 116, true);
                 WriteLiteral("\r\n    <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">\r\n        <div class=\"container-fluid\">\r\n            ");
                 EndContext();
                 BeginContext(1070, 88, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "df70078576a9403980f61ec38b2d5f57", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f129162807f640f892f696c1c397cb12", async() => {
                     BeginContext(1150, 4, true);
                     WriteLiteral("Home");
                     EndContext();
@@ -145,7 +145,7 @@ using CompanyProject.Models;
                         ");
                 EndContext();
                 BeginContext(1629, 112, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e4b94c3b04c24aaea06361d6f95119fa", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ed7e96aa006647fca8fdc4427bd94e98", async() => {
                     BeginContext(1714, 23, true);
                     WriteLiteral("Project Progress Report");
                     EndContext();
@@ -172,7 +172,7 @@ using CompanyProject.Models;
                 WriteLiteral("\r\n                    </li>\r\n                    <li class=\"nav-item\">\r\n                        ");
                 EndContext();
                 BeginContext(1837, 105, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5d84c4b0e9a041b1857ff3324d86ea6d", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e0ee38f5618d434398e551046768d847", async() => {
                     BeginContext(1918, 20, true);
                     WriteLiteral("Project Hours Report");
                     EndContext();
@@ -199,7 +199,7 @@ using CompanyProject.Models;
                 WriteLiteral("\r\n                    </li>\r\n                    <li class=\"nav-item\">\r\n                        ");
                 EndContext();
                 BeginContext(2038, 104, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "3dcc07e3959f4592a5cf3bcec0798e69", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "3887bb84fb59499b9060647632402113", async() => {
                     BeginContext(2119, 19, true);
                     WriteLiteral("Project Cost Report");
                     EndContext();
@@ -226,7 +226,7 @@ using CompanyProject.Models;
                 WriteLiteral("\r\n                    </li>\r\n                    <li class=\"nav-item\">\r\n                        ");
                 EndContext();
                 BeginContext(2238, 100, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "eac74dbf0d06498a8f402d4fe4efded8", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "607dcbc3b01d446ba45fd6a2aa28c6b9", async() => {
                     BeginContext(2321, 13, true);
                     WriteLiteral("Login Details");
                     EndContext();
@@ -253,7 +253,7 @@ using CompanyProject.Models;
                 WriteLiteral("\r\n                    </li>\r\n                    <li class=\"nav-item\">\r\n                        ");
                 EndContext();
                 BeginContext(2434, 84, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ec8da2b4aad447b4a90886e27f358253", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e7348d4852d0475e9f45fce8414eceea", async() => {
                     BeginContext(2508, 6, true);
                     WriteLiteral("Logout");
                     EndContext();

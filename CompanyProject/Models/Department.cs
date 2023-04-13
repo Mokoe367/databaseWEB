@@ -8,7 +8,7 @@ namespace CompanyProject.Models
 {
     public class Department
     {
-        private CompanyContext context;
+        
         public int depID { get; set; }
         [Required]
         public string location { get; set; }
@@ -17,5 +17,9 @@ namespace CompanyProject.Models
         public int mgrID { get; set; }
         public string mgrName { get; set; }
         public int deleted_flag { get; set; }
+        public bool check { get; set; }
+        public string mgrFname { get; set; }
+        public string mgrMname { get; set; }
+        public string mgrLname { get; set; }
     }
 }

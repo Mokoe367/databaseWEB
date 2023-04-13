@@ -8,10 +8,8 @@ namespace CompanyProject.Models
 {
     public class Employee
     {
-        private CompanyContext context;
-        
+       
         public int ID { get; set; }
-
         [Required(ErrorMessage = "First Name Required")]
         public string Fname { get; set; }
 
@@ -28,10 +26,10 @@ namespace CompanyProject.Models
 
         [Required(ErrorMessage = "Birth Day Required")]
         [RegularExpression("([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))", ErrorMessage = "Invalid Date Format")]
-        public string BirthDate{ get; set; }
+        public string BirthDate { get; set; }
 
         public int Deleted_flag { get; set; }
-        public string RoleName { get; set; }   
+        public string RoleName { get; set; }
         public int RoleID { get; set; }
         public string DepName { get; set; }
 
@@ -42,13 +40,12 @@ namespace CompanyProject.Models
         public int Ssn { get; set; }
 
         [Required(ErrorMessage = "Salary Required")]
-        [Range(0,100000,ErrorMessage = "Range should be between 0 and 100k")]
+        [Range(0, 100000, ErrorMessage = "Range should be between 0 and 100k")]
         public int Salary { get; set; }
-        
-
         public int SuperID { get; set; }
-        public string SupervisorName { get; set; }   
-
-
+        public string SupervisorName { get; set; }
+        public string superFname { get; set; }
+        public string superLname { get; set; }
+        public string superMname { get; set; }       
     }
 }

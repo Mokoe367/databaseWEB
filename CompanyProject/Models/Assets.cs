@@ -15,6 +15,7 @@ namespace CompanyProject.Models
         [Range(0, int.MaxValue, ErrorMessage = "Range should be more than 0")]
         public int cost { get; set; }
         public int supID { get; set; }
+        public string supName { get; set; }
         public int deleted_flag { get; set; }
     }
 }

@@ -113,13 +113,13 @@
                     Salary
                 </th>
                 <th>
-                    Role ID
+                    Role
                 </th>
                 <th>
-                    Department ID
+                    Department
                 </th>
                 <th>
-                    Superviser ID
+                    Superviser
                 </th>
                 <th>
                     Deleted Flag
@@ -157,24 +157,24 @@
                         @Html.DisplayFor(modelItem => item.BirthDate)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Salary)
+                        $@Html.DisplayFor(modelItem => item.Salary)
                     </td>
                     <td>
                         @if (item.RoleID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.RoleID)
+                            @Html.DisplayFor(modelItem => item.RoleName)
                         }
                     </td>
                     <td>
                         @if (item.DepID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.DepID)
+                            @Html.DisplayFor(modelItem => item.DepName)
                         }
                     </td>
                     <td>
                         @if (item.SuperID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.SuperID)
+                            @Html.DisplayFor(modelItem => item.SupervisorName)
                         }
                     </td>
                     <td>
@@ -231,7 +231,7 @@
                     <td>
                         @if (item.mgrID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.mgrID)
+                            @Html.DisplayFor(modelItem => item.mgrName)
                         }
                     </td>
                     <td>
@@ -260,7 +260,7 @@
                     Project Name
                 </th>
                 <th>
-                    Department ID
+                    Department
                 </th>
                 <th>
                     Department Location
@@ -296,17 +296,17 @@
                     <td>
                         @if (item.depID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.depID)
+                            @Html.DisplayFor(modelItem => item.depName)
                         }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.location)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.cost)
+                        $@Html.DisplayFor(modelItem => item.cost)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.projStatus)
+                        @Html.DisplayFor(modelItem => item.projStatus)%
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.dueDate)
@@ -343,7 +343,7 @@
                     Supplier product
                 </th>
                 <th>
-                    Role ID
+                    Role
                 </th>
                 <th>
                     Deleted Flag
@@ -367,7 +367,7 @@
                     <td>
                         @if (item.roleID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.roleID)
+                            @Html.DisplayFor(modelItem => item.roleName)
                         }
                     </td>
                     <td>
@@ -437,7 +437,7 @@
                     Task Due Date
                 </th>
                 <th>
-                    Task Project ID
+                    Task Project
                 </th>
                 <th>
                     Deleted Flag
@@ -456,7 +456,7 @@
                         @Html.DisplayFor(modelItem => item.taskName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.cost)
+                        $@Html.DisplayFor(modelItem => item.cost)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.taskDueDate)
@@ -464,7 +464,7 @@
                     <td>
                         @if (item.projID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.projID)
+                            @Html.DisplayFor(modelItem => item.projName)
                         }
                     </td>
                     <td>
@@ -496,7 +496,7 @@
                     Cost
                 </th>
                 <th>
-                    Supplier ID
+                    Supplier
                 </th>
                 <th>
                     Deleted Flag
@@ -520,7 +520,7 @@
                     <td>
                         @if (item.supID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.supID)
+                            @Html.DisplayFor(modelItem => item.supName)
                         }
                     </td>
                     <td>
