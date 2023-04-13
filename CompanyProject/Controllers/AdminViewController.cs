@@ -456,20 +456,49 @@ namespace CompanyProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddDepartment(Department obj)
+        public IActionResult AddDepartment(Department obj, bool check)
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.mgrID + "; ", conn);
-
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows && obj.mgrID != 0)
+            if (check)
             {
-                ModelState.AddModelError("mgrID", "EmployeeID doesn't exist");
+                if (string.IsNullOrEmpty(obj.mgrFname) && string.IsNullOrEmpty(obj.mgrMname) && string.IsNullOrEmpty(obj.mgrLname))
+                {
+                    obj.mgrID = 0;
+                }
+                else
+                {
+                    MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employee.Fname = @mgrFname and employee.Mname = @mgrMname and employee.Lname = @mgrLname", conn);
+                    cmd.Parameters.AddWithValue("@mgrFname", obj.mgrFname);
+                    cmd.Parameters.AddWithValue("@mgrMname", obj.mgrMname);
+                    cmd.Parameters.AddWithValue("@mgrLname", obj.mgrLname);
+
+                    var reader = cmd.ExecuteReader();
+
+                    if (!reader.HasRows)
+                    {
+                        ModelState.AddModelError("mgrLname", "Employee doesn't exist");
+                    }
+                    else if (reader.HasRows)
+                    {
+                        reader.Read();
+                        obj.mgrID = getIntValue(reader["employeeID"]);
+                    }
+                    reader.Close();
+                }
             }
-            reader.Close();
-            
+            else
+            {
+                MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.mgrID + "; ", conn);
+
+                var reader = cmd.ExecuteReader();
+
+                if (!reader.HasRows && obj.mgrID != 0)
+                {
+                    ModelState.AddModelError("mgrID", "Employee doesn't exist");
+                }
+                reader.Close();
+            }
             if (ModelState.IsValid)
             {
 
@@ -1429,29 +1458,46 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + obj.depID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = @depName or depName = @depName", conn);
+            cmd.Parameters.AddWithValue("@depName", obj.depName);
             var reader = cmd.ExecuteReader();
 
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("depID", "Department ID doesn't exist");
+                ModelState.AddModelError("depName", "Department ID doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                obj.depID = getIntValue(reader["depID"]);
             }
             reader.Close();
-            string test = "select supID from suppliers where supID = " + obj.supID + ";";
+            string test = "select supID from suppliers where supID = @supName or name = @supName;";
             cmd.CommandText = test;
+            cmd.Parameters.AddWithValue("@supName", obj.supName);
             reader = cmd.ExecuteReader();
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+                ModelState.AddModelError("supName", "Supplier ID doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                obj.supID = getIntValue(reader["supID"]);
             }
             reader.Close();
-            test = "select assetID from assets where assetID = " + obj.assetID + ";";
+            test = "select assetID from assets where assetID = @assetName or type = @assetName;";
             cmd.CommandText = test;
+            cmd.Parameters.AddWithValue("@assetName", obj.assetName);
             reader = cmd.ExecuteReader();
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+                ModelState.AddModelError("assetName", "Asset ID doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                obj.assetID = getIntValue(reader["assetID"]);
             }
             reader.Close();
             test = "select * from distributed_to where depID = " + obj.depID + " and supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
@@ -1467,7 +1513,7 @@ namespace CompanyProject.Controllers
             reader = cmd.ExecuteReader();
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("assetID", "assetID not associated with supplier");
+                ModelState.AddModelError("assetName", "assetID not associated with supplier");
             }
             reader.Close();
             if (ModelState.IsValid)
@@ -1495,8 +1541,10 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from distributed_to where depID = " + depId + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID " +
+                "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
+                " left outer join department as d on d.depID = t.depID where t.depID = " + depId + " and " +
+                "t.supID = " + supId + " and t.assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             distribution.depID = getIntValue(reader["depID"]);
@@ -1506,6 +1554,9 @@ namespace CompanyProject.Controllers
             distribution.tempSupID = getIntValue(reader["supID"]);
             distribution.tempAssetID = getIntValue(reader["assetID"]);
             distribution.field = getStringValue(reader["field"]);
+            distribution.depName = getStringValue(reader["depName"]);
+            distribution.supName = getStringValue(reader["name"]);
+            distribution.assetName = getStringValue(reader["type"]);
             conn.Close();
             return View(distribution);
         }
@@ -1674,29 +1725,46 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + distribution.depID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = @depName or depName = @depName", conn);
+            cmd.Parameters.AddWithValue("@depName", distribution.depName);
             var reader = cmd.ExecuteReader();
 
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("depID", "Department ID doesn't exist");
+                ModelState.AddModelError("depName", "Department ID doesn't exist");
+            }
+            else if(reader.HasRows)
+            {
+                reader.Read();
+                distribution.depID = getIntValue(reader["depID"]);
             }
             reader.Close();
-            string test = "select supID from suppliers where supID = " + distribution.supID + ";";
+            string test = "select supID from suppliers where supID = @supName or name = @supName;";            
             cmd.CommandText = test;
+            cmd.Parameters.AddWithValue("@supName", distribution.supName);
             reader = cmd.ExecuteReader();
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
+                ModelState.AddModelError("supName", "Supplier ID doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                distribution.supID = getIntValue(reader["supID"]);
             }
             reader.Close();
-            test = "select assetID from assets where assetID = " + distribution.assetID + ";";
+            test = "select assetID from assets where assetID = @assetName or type = @assetName;";          
             cmd.CommandText = test;
+            cmd.Parameters.AddWithValue("@assetName", distribution.assetName);
             reader = cmd.ExecuteReader();
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
+                ModelState.AddModelError("assetName", "Asset ID doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                distribution.assetID = getIntValue(reader["assetID"]);
             }
             reader.Close();
             test = "select depID, supID, assetID from distributed_to where depID = '" + distribution.depID + "' " +
@@ -1706,6 +1774,14 @@ namespace CompanyProject.Controllers
             if (reader.HasRows && (distribution.tempAssetID != distribution.assetID || distribution.tempDepID != distribution.depID || distribution.tempSupID != distribution.supID))
             {              
                ModelState.AddModelError("field", "Department ID, Supplier ID, and Asset ID already exist");                         
+            }
+            reader.Close();
+            test = "select assetID from assets where supID = " + distribution.supID + " and assetID = " + distribution.assetID + ";";
+            cmd.CommandText = test;
+            reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "assetID not associated with supplier");
             }
             reader.Close();
             if (ModelState.IsValid)
@@ -2151,8 +2227,10 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from distributed_to where depID = " + depId + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID " +
+                "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
+                " left outer join department as d on d.depID = t.depID where t.depID = " + depId + " and " +
+                "t.supID = " + supId + " and t.assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
 
@@ -2160,6 +2238,9 @@ namespace CompanyProject.Controllers
             distribution.supID = getIntValue(reader["supID"]);
             distribution.assetID = getIntValue(reader["assetID"]);
             distribution.field = getStringValue(reader["field"]);
+            distribution.depName = getStringValue(reader["depName"]);
+            distribution.supName = getStringValue(reader["name"]);
+            distribution.assetName = getStringValue(reader["type"]);
             conn.Close();
 
             return View(distribution);
@@ -2626,7 +2707,9 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select * from distributed_to", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID " +
+                "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
+                " left outer join department as d on d.depID = t.depID", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -2638,7 +2721,10 @@ namespace CompanyProject.Controllers
                         depID = getIntValue(reader["depID"]),
                         supID = getIntValue(reader["supID"]),
                         assetID = getIntValue(reader["assetID"]),
-                        field = getStringValue(reader["field"])                       
+                        field = getStringValue(reader["field"]),
+                        depName = getStringValue(reader["depName"]),
+                        supName = getStringValue(reader["name"]),
+                        assetName = getStringValue(reader["type"])
                     });
                 }
             }

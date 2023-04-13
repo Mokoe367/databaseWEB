@@ -18,5 +18,11 @@ namespace CompanyProject.Models
         public int tempAssetID { get; set; }
         public int tempDepID { get; set; }
         public string field { get; set; }
+        [Required(ErrorMessage = "Supplier required")]
+        public string supName { get; set; }
+        [Required(ErrorMessage = "Supplier required")]
+        public string depName { get; set; }
+        [Required(ErrorMessage = "Supplier required")]
+        public string assetName { get; set; }
     }
 }

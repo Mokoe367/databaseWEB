@@ -23,11 +23,29 @@
                 <span asp-validation-for="depName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
+                <label for="check">check to insert by name</label>
+                <input type="checkbox" id="check" name="check" />
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="mgrID" class="control-label">Manager ID (0 for null)</label>
                 <input asp-for="mgrID" class="form-control" />
                 <span asp-validation-for="mgrID" class="text-danger"></span>
             </div>
-            
+            <div class="form-group mb-3">
+                <label asp-for="mgrFname" class="control-label">Manager First Name</label>
+                <input asp-for="mgrFname" name="mgrFname" class="form-control" readonly />
+                <span asp-validation-for="mgrFname" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="mgrMname" class="control-label">Manager Middle Inititial</label>
+                <input asp-for="mgrMname" name="mgrMname" class="form-control" readonly />
+                <span asp-validation-for="mgrMname" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="mgrLname" class="control-label">Manager Last Name</label>
+                <input asp-for="mgrLname" name="mgrLname" class="form-control" readonly />
+                <span asp-validation-for="mgrLname" class="text-danger"></span>
+            </div>
             <div class="form-group mb-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -37,5 +55,26 @@
         <a asp-action="Index">Back to List</a>
     </div>
 </div>
+<script>
 
+    var checkbox = document.querySelector("input[name=check]");
+
+    checkbox.addEventListener("change", function () {
+        if (this.checked) {
+            document.querySelector("input[name=mgrFname]").removeAttribute('readonly');
+            document.querySelector("input[name=mgrMname]").removeAttribute('readonly');
+            document.querySelector("input[name=mgrLname]").removeAttribute('readonly');
+            document.querySelector("input[name=mgrID]").setAttribute('readonly', true);
+            document.querySelector("input[name=mgrID]").value = 0;
+            checkbox.value = true;
+        } else {
+            document.querySelector("input[name=mgrFname]").setAttribute('readonly', true);
+            document.querySelector("input[name=mgrMname]").setAttribute('readonly', true);
+            document.querySelector("input[name=mgrLname]").setAttribute('readonly', true);
+            document.querySelector("input[name=mgrID]").removeAttribute('readonly');
+            checkbox.value = false;
+        }
+    });
+
+</script>
 

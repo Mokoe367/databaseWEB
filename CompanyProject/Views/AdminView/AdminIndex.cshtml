@@ -515,7 +515,7 @@
                         @Html.DisplayFor(modelItem => item.type)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.cost)
+                        $@Html.DisplayFor(modelItem => item.cost)
                     </td>
                     <td>
                         @if (item.supID != 0)
@@ -578,13 +578,13 @@
         <thead>
             <tr>
                 <th>
-                    Department ID
+                    Department
                 </th>
                 <th>
-                    Supplier ID
+                    Supplier
                 </th>
                 <th>
-                    Asset ID
+                    Asset
                 </th>
                 <th>
                     Field
@@ -597,13 +597,13 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.depID)
+                        @Html.DisplayFor(modelItem => item.depName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.supID)
+                        @Html.DisplayFor(modelItem => item.supName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.assetID)
+                        @Html.DisplayFor(modelItem => item.assetName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.field)
