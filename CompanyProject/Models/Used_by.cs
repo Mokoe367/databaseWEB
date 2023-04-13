@@ -18,5 +18,11 @@ namespace CompanyProject.Models
         public int tempemployeeID { get; set; }
         public int tempsupID { get; set; }
         public int tempassetID { get; set; }
+        public string Fname { get; set; }
+        public string Mname { get; set; }
+        public string Lname { get; set; }
+        public string supName { get; set; }
+        public string assetName { get; set; }
+        public string fullName { get; set; }
     }
 }

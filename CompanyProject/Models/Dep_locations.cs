@@ -10,7 +10,7 @@ namespace CompanyProject.Models
     {
         [Required (ErrorMessage = "Department ID required")]
         public int depID { get; set; }
-
+        public string depName { get; set; }
         public int pastDepID { get; set; }
         [Required(ErrorMessage = "Location name required")]
         public string loc_name { get; set; }

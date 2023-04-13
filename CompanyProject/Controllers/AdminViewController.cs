@@ -208,14 +208,29 @@ namespace CompanyProject.Controllers
                 {
                     employee.SuperID = 0;
                 }
+                if(string.IsNullOrEmpty(employee.superFname) || string.IsNullOrEmpty(employee.superLname))
+                {
+                    ModelState.AddModelError("superFname", "First and last name required");
+                }
                 else
                 {
-                    cmd2 = new MySqlCommand("select employeeID from employee where " +
+                    if (string.IsNullOrEmpty(employee.superMname))
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
+                        "(employee.Fname = @superFname and employee.Mname is null and employee.Lname = @superLname);", conn);
+                        cmd2.Parameters.AddWithValue("@superFname", employee.superFname);
+                        cmd2.Parameters.AddWithValue("@superLname", employee.superLname);
+                    }
+                    else
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
                         "(employee.Fname = @superFname and employee.Mname = @superMname and employee.Lname = @superLname);", conn);
-                    cmd2.Parameters.AddWithValue("@superFname", employee.superFname);
-                    cmd2.Parameters.AddWithValue("@superMname", employee.superMname);
-                    cmd2.Parameters.AddWithValue("@superLname", employee.superLname);
+                        cmd2.Parameters.AddWithValue("@superFname", employee.superFname);
+                        cmd2.Parameters.AddWithValue("@superMname", employee.superMname);
+                        cmd2.Parameters.AddWithValue("@superLname", employee.superLname);
 
+                    }
+                    
                     reader = cmd2.ExecuteReader();
                     if (!reader.HasRows)
                     {
@@ -269,51 +284,59 @@ namespace CompanyProject.Controllers
 
             if (ModelState.IsValid)
             {
-                
-                string query = "UPDATE employee SET Fname=@Fname, Mname=@Mname, Lname=@Lname, sex=@sex , birthdate=@birthdate , salary=@salary, ssn=@ssn, address=@address " +
+                try
+                {
+                    string query = "UPDATE employee SET Fname=@Fname, Mname=@Mname, Lname=@Lname, sex=@sex , birthdate=@birthdate , salary=@salary, ssn=@ssn, address=@address " +
                     ", depId=@depId, roleId=@roleId, superID=@superID where employeeID = " + employee.ID + ";";
-              
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.CommandText = query;
-                cmd.Parameters.AddWithValue("@Fname", employee.Fname);
-                cmd.Parameters.AddWithValue("@Mname", employee.Mname);
-                cmd.Parameters.AddWithValue("@Lname", employee.Lname);
-                cmd.Parameters.AddWithValue("@sex", employee.Sex);
-                cmd.Parameters.AddWithValue("@birthdate", employee.BirthDate);
-                cmd.Parameters.AddWithValue("@salary", employee.Salary);
-                cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
-                cmd.Parameters.AddWithValue("@address", employee.Address);
-                if (string.IsNullOrEmpty(employee.DepName))
-                {
-                    cmd.Parameters.AddWithValue("@depId", DBNull.Value);
-                }
-                else
-                {
-                    cmd.Parameters.AddWithValue("@depId", employee.DepID);
-                }
 
-                if (string.IsNullOrEmpty(employee.RoleName))
-                {
-                    cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
-                }
-                else
-                {
-                    cmd.Parameters.AddWithValue("@roleId", employee.RoleID);
-                }
+                    MySqlCommand cmd = new MySqlCommand();
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@Fname", employee.Fname);
+                    cmd.Parameters.AddWithValue("@Mname", employee.Mname);
+                    cmd.Parameters.AddWithValue("@Lname", employee.Lname);
+                    cmd.Parameters.AddWithValue("@sex", employee.Sex);
+                    cmd.Parameters.AddWithValue("@birthdate", employee.BirthDate);
+                    cmd.Parameters.AddWithValue("@salary", employee.Salary);
+                    cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
+                    cmd.Parameters.AddWithValue("@address", employee.Address);
+                    if (string.IsNullOrEmpty(employee.DepName))
+                    {
+                        cmd.Parameters.AddWithValue("@depId", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@depId", employee.DepID);
+                    }
 
-                if (employee.SuperID == 0)
-                {
-                    cmd.Parameters.AddWithValue("@superID", DBNull.Value);
+                    if (string.IsNullOrEmpty(employee.RoleName))
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", employee.RoleID);
+                    }
+
+                    if (employee.SuperID == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@superID", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@superID", employee.SuperID);
+                    }
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    TempData["success"] = "Employee edited successfully";
+                    conn.Close();
+                    return RedirectToAction("Index");
                 }
-                else
+                catch(MySqlException e)
                 {
-                    cmd.Parameters.AddWithValue("@superID", employee.SuperID);
-                }               
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
-                TempData["success"] = "Employee edited successfully";
-                conn.Close();
-                return RedirectToAction("Index");
+                    ModelState.AddModelError("SuperID", e.Message);
+                    conn.Close();
+                    return View(employee);
+                }                
 
             }
 
@@ -466,12 +489,32 @@ namespace CompanyProject.Controllers
                 {
                     obj.mgrID = 0;
                 }
+                if (string.IsNullOrEmpty(obj.mgrFname) || string.IsNullOrEmpty(obj.mgrLname))
+                {
+                    ModelState.AddModelError("mgrLname", "First and last name required");
+                }
                 else
                 {
-                    MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employee.Fname = @mgrFname and employee.Mname = @mgrMname and employee.Lname = @mgrLname", conn);
-                    cmd.Parameters.AddWithValue("@mgrFname", obj.mgrFname);
-                    cmd.Parameters.AddWithValue("@mgrMname", obj.mgrMname);
-                    cmd.Parameters.AddWithValue("@mgrLname", obj.mgrLname);
+                    MySqlCommand cmd = new MySqlCommand();
+                    string test;
+                    if (string.IsNullOrEmpty(obj.mgrMname))
+                    {
+                        test = "select employeeID from employee where " +
+                        "employee.Fname = @mgrFname and employee.Mname is null and employee.Lname = @mgrLname;";
+                        cmd.CommandText = test;
+                        cmd.Parameters.AddWithValue("@mgrFname", obj.mgrFname);
+                        cmd.Parameters.AddWithValue("@mgrLname", obj.mgrLname);
+                    }
+                    else
+                    {
+                        test = "select employeeID from employee where employee.Fname = @mgrFname and employee.Mname = @mgrMname and employee.Lname = @mgrLname";
+                        cmd.CommandText = test;
+                        cmd.Parameters.AddWithValue("@mgrFname", obj.mgrFname);
+                        cmd.Parameters.AddWithValue("@mgrMname", obj.mgrMname);
+                        cmd.Parameters.AddWithValue("@mgrLname", obj.mgrLname);
+
+                    }
+                    cmd.Connection = conn;
 
                     var reader = cmd.ExecuteReader();
 
@@ -572,13 +615,32 @@ namespace CompanyProject.Controllers
                 {
                     dep.mgrID = 0;
                 }
+                if (string.IsNullOrEmpty(dep.mgrFname) || string.IsNullOrEmpty(dep.mgrLname))
+                {
+                    ModelState.AddModelError("mgrLname", "First and last name required");
+                }
                 else
                 {
-                    MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employee.Fname = @mgrFname and employee.Mname = @mgrMname and employee.Lname = @mgrLname", conn);
-                    cmd.Parameters.AddWithValue("@mgrFname", dep.mgrFname);
-                    cmd.Parameters.AddWithValue("@mgrMname", dep.mgrMname);
-                    cmd.Parameters.AddWithValue("@mgrLname", dep.mgrLname);
+                    MySqlCommand cmd = new MySqlCommand();
+                    string test;
+                    if (string.IsNullOrEmpty(dep.mgrMname))
+                    {
+                        test = "select employeeID from employee where " +
+                        "employee.Fname = @mgrFname and employee.Mname is null and employee.Lname = @mgrLname;";
+                        cmd.CommandText = test;
+                        cmd.Parameters.AddWithValue("@mgrFname", dep.mgrFname);
+                        cmd.Parameters.AddWithValue("@mgrLname", dep.mgrLname);
+                    }
+                    else
+                    {
+                        test = "select employeeID from employee where employee.Fname = @mgrFname and employee.Mname = @mgrMname and employee.Lname = @mgrLname";
+                        cmd.CommandText = test;
+                        cmd.Parameters.AddWithValue("@mgrFname", dep.mgrFname);
+                        cmd.Parameters.AddWithValue("@mgrMname", dep.mgrMname);
+                        cmd.Parameters.AddWithValue("@mgrLname", dep.mgrLname);
 
+                    }
+                    cmd.Connection = conn;                  
                     var reader = cmd.ExecuteReader();
 
                     if (!reader.HasRows)
@@ -1339,13 +1401,18 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + obj.depID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = @name2 or depName = @name2", conn);
+            cmd.Parameters.AddWithValue("@name2", obj.depName);
             var reader = cmd.ExecuteReader();
 
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("depID", "Department ID doesn't exist");
+                ModelState.AddModelError("depName", "Department ID doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                obj.depID = getIntValue(reader["depID"]);
             }
             reader.Close();
             string query = "select loc_name from dep_locations where loc_name = @name and depID = " + obj.depID + ";";
@@ -1382,12 +1449,14 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = @name;", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, l.loc_name, l.depID from dep_locations as l left outer join department as d on d.depID = l.depID" +
+                " where l.depID = " + id + " and l.loc_name = @name;", conn);
             cmd.Parameters.AddWithValue("@name", name);
             var reader = cmd.ExecuteReader();
             reader.Read();
             location.depID = getIntValue(reader["depID"]);
             location.loc_name = getStringValue(reader["loc_name"]);
+            location.depName = getStringValue(reader["depName"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
             conn.Close();
@@ -1400,13 +1469,18 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + location.depID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = @name or depName = @name", conn);
+            cmd.Parameters.AddWithValue("@name", location.depName);
             var reader = cmd.ExecuteReader();
 
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("depID", "Department ID doesn't exist");
+                ModelState.AddModelError("depName", "Department ID doesn't exist");
+            }
+            else if(reader.HasRows)
+            {
+                reader.Read();
+                location.depID = getIntValue(reader["depID"]); 
             }
             reader.Close();           
             string test = "select depID, loc_name from dep_locations where loc_name = @lname " +
@@ -2179,17 +2253,19 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = @name;", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, l.loc_name, l.depID from dep_locations as l left outer join department as d on d.depID = l.depID" +
+                " where l.depID = " + id + " and l.loc_name = @name;", conn);
             cmd.Parameters.AddWithValue("@name", name);
             var reader = cmd.ExecuteReader();
             reader.Read();
             location.depID = getIntValue(reader["depID"]);
             location.loc_name = getStringValue(reader["loc_name"]);
+            location.depName = getStringValue(reader["depName"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
             conn.Close();
-
             return View(location);
+
         }
 
         [HttpPost]
@@ -2681,7 +2757,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select * from dep_locations", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, l.loc_name, l.depID from dep_locations as l left outer join department as d on d.depID = l.depID;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -2691,7 +2767,8 @@ namespace CompanyProject.Controllers
                     LocationsData.Add(new Dep_locations()
                     {
                         depID = getIntValue(reader["depID"]),
-                        loc_name = getStringValue(reader["loc_name"])
+                        loc_name = getStringValue(reader["loc_name"]),
+                        depName = getStringValue(reader["depName"])
                     });
                 }
             }
@@ -2740,20 +2817,31 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select * from used_by", conn);
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, e.Fname, e.Mname, e.Lname, a.type, s.name " +
+                "from used_by as u left outer join employee as e on e.employeeID = u.employeeID left outer join assets as a on a.assetID = u.assetID " +
+                "left outer join suppliers as s on s.supID = u.supID;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string fullName = Fname + " " + Mname + " " + Lname;
                     UsedByData.Add(new Used_by()
                     {
                         employeeID = getIntValue(reader["employeeID"]),
                         supID = getIntValue(reader["supID"]),
                         assetID = getIntValue(reader["assetID"]),
-                        field = getStringValue(reader["field"])
-                       
+                        field = getStringValue(reader["field"]),
+                        Fname = Fname,
+                        Mname = Mname,
+                        Lname = Lname,
+                        supName = getStringValue(reader["name"]),
+                        assetName = getStringValue(reader["type"]),
+                        fullName = fullName
+
                     });
                 }
             }
