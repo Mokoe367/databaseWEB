@@ -411,10 +411,14 @@ namespace CompanyProject.Controllers
             emp.Sex = getStringValue(reader["sex"]);
             emp.BirthDate = sqlDate;
             emp.RoleID = getIntValue(reader["roleId"]);
+            emp.RoleName = getRoleName(getIntValue(reader["roleId"]));
             emp.DepID = getIntValue(reader["depId"]);
+            emp.DepName = getDepartmentName(getIntValue(reader["depId"]));
             emp.Ssn = getIntValue(reader["ssn"]);
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
+            emp.SupervisorName = getSuperName(getIntValue(reader["superID"]));
+            
 
             reader.Close();
             return View(emp);

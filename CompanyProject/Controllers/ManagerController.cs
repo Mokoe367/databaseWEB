@@ -2504,7 +2504,8 @@ namespace CompanyProject.Controllers
                         taskName = getStringValue(reader["taskName"]),
                         cost = getIntValue(reader["cost"]),
                         taskDueDate = sqlDate,
-                        projID = getIntValue(reader["projID"])                     
+                        projID = getIntValue(reader["projID"]),
+                        projName = getTaskProjName(getIntValue(reader["projID"]))
 
                     });
                 }
@@ -2512,6 +2513,30 @@ namespace CompanyProject.Controllers
             conn.Close();
 
             return TaskData;
+        }
+
+        public string getTaskProjName(int projID)
+        {
+            if (projID == 0)
+            {
+                return "";
+            }
+
+            string taskProjName = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select projName from project " +
+                "where  projID = " + projID, conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                taskProjName = getStringValue(reader["projName"]);
+                
+            }
+            conn.Close();
+            return taskProjName;
         }
 
         public List<Supplier> getSupplierData()
@@ -2533,7 +2558,8 @@ namespace CompanyProject.Controllers
                         supID = getIntValue(reader["supID"]),
                         product = getStringValue(reader["product"]),
                         name = getStringValue(reader["name"]),
-                        roleID = getIntValue(reader["roleID"])                 
+                        roleID = getIntValue(reader["roleID"]),
+                        roleName = getRoleName(getIntValue(reader["roleID"]))
                     });
                 }
             }

@@ -239,7 +239,7 @@
                     Task Due Date
                 </th>
                 <th>
-                    Task Project ID
+                    Task Project Name
                 </th>
                 <th>                   
                 </th>           
@@ -264,7 +264,7 @@
                     <td>
                         @if (item.projID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.projID)
+                            @Html.DisplayFor(modelItem => item.projName)
                         }
                     </td>                    
                     <td>
@@ -294,7 +294,7 @@
                     Supplier product
                 </th>
                 <th>
-                    Role ID
+                    Role Name
                 </th>               
                 <th></th>
             </tr>
@@ -315,7 +315,7 @@
                     <td>
                         @if (item.roleID != 0)
                         {
-                            @Html.DisplayFor(modelItem => item.roleID)
+                            @Html.DisplayFor(modelItem => item.roleName)
                         }
                     </td>                   
                     <td>

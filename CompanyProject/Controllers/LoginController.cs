@@ -38,7 +38,12 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
 
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from login where username='" + acc.username + "';", conn);
+            string query = "select * from login where username=@username;";
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.CommandText = query;
+            cmd.Connection = conn;
+            
+            cmd.Parameters.AddWithValue("@username", acc.username);
             var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
