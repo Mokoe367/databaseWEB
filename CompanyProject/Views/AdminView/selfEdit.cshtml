@@ -1,16 +1,22 @@
 ﻿@model CompanyProject.Models.Employee
 
 @{
-    ViewData["Title"] = "AddEmployee";
+    ViewData["Title"] = "selfEdit";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 style="margin: 25px;">Add Employee</h2>
 
-<div class="row" style="margin: 25px;">
+<h2 style="margin:25px">Edit Employee</h2>
+
+<div class="row" style="margin:25px">
     <div class="col-md-4">
-        <form asp-action="AddEmployee">
+        <form asp-action="selfEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="ID" class="control-label">First Name</label>
+                <input asp-for="ID" class="form-control" readonly/>
+                <span asp-validation-for="ID" class="text-danger"></span>
+            </div>
             <div class="form-group mb-3">
                 <label asp-for="Fname" class="control-label">First Name</label>
                 <input asp-for="Fname" class="form-control" />
@@ -32,9 +38,14 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Sex" class="control-label"></label>
+                <label asp-for="Sex" class="control-label">Gender</label>
                 <input asp-for="Sex" class="form-control" />
                 <span asp-validation-for="Sex" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Ssn" class="control-label">Gender</label>
+                <input asp-for="Ssn" class="form-control" />
+                <span asp-validation-for="Ssn" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="BirthDate" class="control-label">Birth Day (YYYY-MM-DD)</label>
@@ -42,19 +53,37 @@
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
+                <label asp-for="RoleID">Roles</label>
+                <select asp-for="RoleID" class="form-select" asp-items="@Model.Roles">
+                    <option value="0">none</option>
+                </select>
+                <span asp-validation-for="RoleID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="DepID" class="control-label">Department</label>
+                <select asp-for="DepID" class="form-select" asp-items="@Model.departments">
+                    <option value="0">none</option>
+                </select>
+                <span asp-validation-for="DepID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="Salary" class="control-label"></label>
                 <input asp-for="Salary" class="form-control" />
                 <span asp-validation-for="Salary" class="text-danger"></span>
-            </div>            
+            </div>
             <div class="form-group mb-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="SuperID" class="control-label">Supervisor</label>
+                <select asp-for="SuperID" class="form-select" asp-items="@Model.supervisors">
+                    <option value="0">none</option>
+                </select>
+                <span asp-validation-for="SuperID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
     <div class="mb-3">
         <a asp-action="Index">Back to List</a>
     </div>
-
 </div>
-
-

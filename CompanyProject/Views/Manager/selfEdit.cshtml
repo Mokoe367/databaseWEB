@@ -1,44 +1,55 @@
 ﻿@model CompanyProject.Models.Employee
 
 @{
-    ViewData["Title"] = "EditEmployee";
+    ViewData["Title"] = "selfEdit";
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
 }
+
 
 <h2 style="margin:25px">Edit Employee</h2>
 
 <div class="row" style="margin:25px">
     <div class="col-md-4">
-        <form asp-action="EditEmployee">
+        <form asp-action="selfEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
+                <label asp-for="ID" class="control-label">First Name</label>
+                <input asp-for="ID" class="form-control" readonly/>
+                <span asp-validation-for="ID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="Fname" class="control-label">First Name</label>
-                <input asp-for="Fname" class="form-control" readonly/>
+                <input asp-for="Fname" class="form-control" />
                 <span asp-validation-for="Fname" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Lname" class="control-label">Last Name</label>
-                <input asp-for="Lname" class="form-control" readonly/>
+                <input asp-for="Lname" class="form-control" />
                 <span asp-validation-for="Lname" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Mname" class="control-label">Middle Initial</label>
-                <input asp-for="Mname" class="form-control" readonly/>
+                <input asp-for="Mname" class="form-control" />
                 <span asp-validation-for="Mname" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" readonly/>
+                <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Sex" class="control-label">Gender</label>
-                <input asp-for="Sex" class="form-control" readonly/>
+                <input asp-for="Sex" class="form-control" />
                 <span asp-validation-for="Sex" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
+                <label asp-for="Ssn" class="control-label">SSN</label>
+                <input asp-for="Ssn" class="form-control" />
+                <span asp-validation-for="Ssn" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="BirthDate" class="control-label">Birth Day (YYYY-MM-DD)</label>
-                <input asp-for="BirthDate" type="date" class="form-control" readonly/>
+                <input asp-for="BirthDate" type="date" class="form-control" />
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -47,8 +58,8 @@
                 <span asp-validation-for="RoleName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="DepName" class="control-label">Department</label>
-                <input asp-for="DepName" type="text" class="form-control" readonly/>
+                <label asp-for="DepName" class="control-label">Department (Insert either name or ID)</label>
+                <input asp-for="DepName" type="text" class="form-control" />
                 <span asp-validation-for="DepName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -111,4 +122,3 @@
     });
 
 </script>
-

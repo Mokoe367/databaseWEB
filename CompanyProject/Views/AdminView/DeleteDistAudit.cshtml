@@ -1,0 +1,70 @@
+﻿@model CompanyProject.Models.distributed_to_audit
+
+@{
+    ViewData["Title"] = "DeleteDistAudit";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="margin: 25px;">Delete Dist. Audit</h2>
+
+
+<div class="row" style="margin: 25px;">
+    <div class="col-md-4">
+        <form asp-action="DeleteDistAudit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="id" class="control-label"></label>
+                <input asp-for="id" class="form-control" readonly />
+                <span asp-validation-for="id" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="supID" class="control-label">Sup ID</label>
+                <input asp-for="supID" class="form-control" readonly />
+                <span asp-validation-for="supID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="assetID" class="control-label">Asset ID</label>
+                <input asp-for="assetID" class="form-control" readonly />
+                <span asp-validation-for="assetID" class="text-danger"></span>
+            </div> 
+            <div class="form-group mb-3">
+                <label asp-for="depID" class="control-label">Department ID</label>
+                <input asp-for="depID" class="form-control" readonly />
+                <span asp-validation-for="depID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="field" class="control-label"></label>
+                <input asp-for="field" class="form-control" readonly />
+                <span asp-validation-for="field" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="deleted_at" class="control-label"></label>
+                <input asp-for="deleted_at" class="form-control" readonly />
+                <span asp-validation-for="deleted_at" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="depName" class="control-label">Department Name</label>
+                <input asp-for="depName" class="form-control" readonly />
+                <span asp-validation-for="depName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="supName" class="control-label">Supplier Name</label>
+                <input asp-for="supName" class="form-control" readonly />
+                <span asp-validation-for="supName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="assetName" class="control-label">Asset Name</label>
+                <input asp-for="assetName" class="form-control" readonly />
+                <span asp-validation-for="assetName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+

@@ -25,10 +25,19 @@
                     Department ID
                 </th>
                 <th>
+                    Department
+                </th>
+                <th>
                     Supplier ID
                 </th>
                 <th>
+                    Supplier 
+                </th>
+                <th>
                     Asset ID
+                </th>
+                <th>
+                    Asset 
                 </th>
                 <th>
                     Field
@@ -36,6 +45,7 @@
                 <th>
                     Deleted At
                 </th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -49,16 +59,28 @@
                     @Html.DisplayFor(modelItem => item.depID)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.depName)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.supID)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.supName)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.assetID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.field)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.deleted_at)
+                </td>
+                <td>
+                    @Html.ActionLink("Delete", "DeleteDistAudit", new { id = item.id })
                 </td>
             </tr>
             }

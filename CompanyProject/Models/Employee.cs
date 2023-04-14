@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -45,6 +46,9 @@ namespace CompanyProject.Models
         public string SupervisorName { get; set; }
         public string superFname { get; set; }
         public string superLname { get; set; }
-        public string superMname { get; set; }       
+        public string superMname { get; set; }
+        public List<SelectListItem> Roles { get; set; }
+        public List<SelectListItem> supervisors { get; set; }
+        public List<SelectListItem> departments { get; set; }
     }
 }

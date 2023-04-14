@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CompanyProject.Models;
 using Microsoft.AspNetCore.Http;
@@ -191,7 +192,9 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from employee where employeeID = " + id + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.employeeID, e.Fname, e.Lname, e.Mname, e.Address, e.sex, e.birthDate, e.deleted_flag, e.roleID, e.depID, e.ssn, e.salary, e.superID, r.roleName, " +
+                "s.Fname as superFname, s.Lname as superLname, s.Mname as superMname, d.depName" +
+                " from employee as e left outer join employee as s on e.superID = s.employeeID left outer join roles as r on r.roleID = e.roleID left outer join department as d on d.depID = e.depID where e.employeeID = " + id + " ;", conn);
 
             var reader = cmd.ExecuteReader();
             reader.Read();
@@ -209,7 +212,10 @@ namespace CompanyProject.Controllers
                 dateTemp[1] = "0" + dateTemp[1];
             }
             string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
-
+            string superFname = getStringValue(reader["superFname"]);
+            string superMname = getStringValue(reader["superMname"]);
+            string superLname = getStringValue(reader["superLname"]);
+            string supervisorName = superFname + " " + superMname + " " + superLname;
             emp.Fname = getStringValue(reader["Fname"]);
             emp.ID = getIntValue(reader["employeeID"]);
             emp.Fname = getStringValue(reader["Fname"]);
@@ -223,11 +229,25 @@ namespace CompanyProject.Controllers
             emp.Ssn = getIntValue(reader["ssn"]);
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
-
+            emp.SupervisorName = supervisorName;
+            emp.DepName = getStringValue(reader["depName"]);
+            emp.RoleName = getStringValue(reader["roleName"]);
+            emp.superFname = superFname;
+            emp.superMname = superMname;
+            emp.superLname = superLname;
             conn.Close();
-            return View(emp);
-        }
+            string empID = HttpContext.Session.GetString("id");
+            if (emp.ID.ToString() == empID)
+            {
+                return View("selfEdit", emp);
+            }
+            else
+            {
+                return View(emp);
+            }
 
+        }
+    
         public IActionResult EditProject(int id)
         {
             Project proj = new Project();
@@ -915,94 +935,163 @@ namespace CompanyProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddEmployee(Employee obj)
+        public IActionResult AddEmployee(Employee obj, bool check)
         {
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand();
+            MySqlCommand cmd2 = new MySqlCommand();
             string empID = HttpContext.Session.GetString("id");
             obj.ID = Convert.ToInt32(empID);
-            
-            string query = "select roleId from roles where roleId = " + obj.RoleID + ";";
-            cmd.CommandText = query;
-            cmd.Connection = conn;
-            var reader = cmd.ExecuteReader();
-            if (!reader.HasRows && obj.RoleID != 0)
+
+            cmd2 = new MySqlCommand("select roleId from roles where (roleId = @roleName or roleName = @roleName);", conn);
+            cmd2.Parameters.AddWithValue("@roleName", obj.RoleName);
+            var reader = cmd2.ExecuteReader();
+            if (!reader.HasRows && !string.IsNullOrEmpty(obj.RoleName))
             {
-                ModelState.AddModelError("RoleId", "Role number doesn't exist");
+                ModelState.AddModelError("roleName", "Role doesn't exist");
             }
-            reader.Close();
-            query = "select employeeID from employee where employeeID = " + obj.SuperID + ";";
-            cmd.CommandText = query;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows && obj.SuperID != 0)
-            {
-                ModelState.AddModelError("superID", "superviser Id number doesn't exist");
-            }
-            if (reader.HasRows && obj.SuperID != 0)
+            else if (reader.HasRows)
             {
                 reader.Read();
-                int id = getIntValue(reader["employeeID"]);
-                if (id == obj.ID)
-                {
-                    ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
-                }
-
+                obj.RoleID = getIntValue(reader["roleId"]);
             }
             reader.Close();
+
+            if (check)
+            {
+                if (string.IsNullOrEmpty(obj.superFname) && string.IsNullOrEmpty(obj.superMname) && string.IsNullOrEmpty(obj.superLname))
+                {
+                    obj.SuperID = 0;
+                }
+                if (string.IsNullOrEmpty(obj.superFname) || string.IsNullOrEmpty(obj.superLname))
+                {
+                    ModelState.AddModelError("superFname", "First and last name required");
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(obj.superMname))
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
+                        "(employee.Fname = @superFname and employee.Mname is null and employee.Lname = @superLname);", conn);
+                        cmd2.Parameters.AddWithValue("@superFname", obj.superFname);
+                        cmd2.Parameters.AddWithValue("@superLname", obj.superLname);
+                    }
+                    else
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
+                        "(employee.Fname = @superFname and employee.Mname = @superMname and employee.Lname = @superLname);", conn);
+                        cmd2.Parameters.AddWithValue("@superFname", obj.superFname);
+                        cmd2.Parameters.AddWithValue("@superMname", obj.superMname);
+                        cmd2.Parameters.AddWithValue("@superLname", obj.superLname);
+
+                    }
+
+                    reader = cmd2.ExecuteReader();
+                    if (!reader.HasRows)
+                    {
+                        ModelState.AddModelError("superLname", "superviser doesn't exist");
+                    }
+                    if (reader.Read())
+                    {
+                        int id = getIntValue(reader["employeeID"]);
+                        if (id == obj.ID)
+                        {
+                            ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                        }
+                        else
+                        {
+                            obj.SuperID = id;
+                        }
+
+                    }
+                    reader.Close();
+                }
+            }
+            else
+            {
+                cmd2 = new MySqlCommand("select employeeID from employee where employeeID = " + obj.SuperID + ";", conn);
+
+                reader = cmd2.ExecuteReader();
+                if (!reader.HasRows && obj.SuperID != 0)
+                {
+                    ModelState.AddModelError("superID", "superviser doesn't exist");
+                }
+                if (reader.Read())
+                {
+                    int id = getIntValue(reader["employeeID"]);
+                    if (id == obj.ID)
+                    {
+                        ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                    }
+                    else
+                    {
+                        obj.SuperID = id;
+                    }
+                }
+                reader.Close();
+            }
             if (obj.Sex != "M" && obj.Sex != "F")
             {
                 ModelState.AddModelError("Sex", "Gender Must be either M or F");
             }
             if (ModelState.IsValid)
             {
-                string depID = HttpContext.Session.GetString("depID");
-                int department = Convert.ToInt32(depID);
-                MySqlCommand insert = new MySqlCommand();
-                query = "insert into employee(Fname, Mname, Lname, salary, address, birthDate, sex, roleID, superID, depID) " +
-                    "Values( @Fname, @Mname, @Lname, @salary , @address, @birthdate, @sex " +
-                    ", @roleId, @superID, @depId);";
-                insert.CommandText = query;
-                insert.Parameters.AddWithValue("@Fname", obj.Fname);
-                if (string.IsNullOrEmpty(obj.Mname))
+                try
                 {
-                    insert.Parameters.AddWithValue("@Mname", DBNull.Value);
-                }
-                else
-                {
-                    insert.Parameters.AddWithValue("@Mname", obj.Mname);
-                }
-                insert.Parameters.AddWithValue("@Lname", obj.Lname);
-                insert.Parameters.AddWithValue("@sex", obj.Sex);
-                insert.Parameters.AddWithValue("@birthdate", obj.BirthDate);
-                insert.Parameters.AddWithValue("@salary", obj.Salary);               
-                insert.Parameters.AddWithValue("@address", obj.Address);
-                insert.Parameters.AddWithValue("@depId", department);
-                if (obj.RoleID == 0)
-                {
-                    insert.Parameters.AddWithValue("@roleId", DBNull.Value);
-                }
-                else
-                {
-                    insert.Parameters.AddWithValue("@roleId", obj.RoleID);
-                }
+                    string depID = HttpContext.Session.GetString("depID");
+                    int department = Convert.ToInt32(depID);
+                    MySqlCommand insert = new MySqlCommand();
+                    string query = "insert into employee(Fname, Mname, Lname, salary, address, birthDate, sex, roleID, superID, depID) " +
+                        "Values( @Fname, @Mname, @Lname, @salary , @address, @birthdate, @sex " +
+                        ", @roleId, @superID, @depId);";
+                    insert.CommandText = query;
+                    insert.Parameters.AddWithValue("@Fname", obj.Fname);
+                    if (string.IsNullOrEmpty(obj.Mname))
+                    {
+                        insert.Parameters.AddWithValue("@Mname", DBNull.Value);
+                    }
+                    else
+                    {
+                        insert.Parameters.AddWithValue("@Mname", obj.Mname);
+                    }
+                    insert.Parameters.AddWithValue("@Lname", obj.Lname);
+                    insert.Parameters.AddWithValue("@sex", obj.Sex);
+                    insert.Parameters.AddWithValue("@birthdate", obj.BirthDate);
+                    insert.Parameters.AddWithValue("@salary", obj.Salary);
+                    insert.Parameters.AddWithValue("@address", obj.Address);
+                    insert.Parameters.AddWithValue("@depId", department);
+                    if (string.IsNullOrEmpty(obj.RoleName))
+                    {
+                        insert.Parameters.AddWithValue("@roleId", DBNull.Value);
+                    }
+                    else
+                    {
+                        insert.Parameters.AddWithValue("@roleId", obj.RoleID);
+                    }
 
-                if (obj.SuperID == 0)
-                {
-                    insert.Parameters.AddWithValue("@superID", DBNull.Value);
+                    if (obj.SuperID == 0)
+                    {
+                        insert.Parameters.AddWithValue("@superID", DBNull.Value);
+                    }
+                    else
+                    {
+                        insert.Parameters.AddWithValue("@superID", obj.SuperID);
+                    }
+                    insert.Connection = conn;
+                    insert.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Employee added successfully";
+                    return RedirectToAction("Index");
                 }
-                else
+                catch(MySqlException e)
                 {
-                    insert.Parameters.AddWithValue("@superID", obj.SuperID);
+                    conn.Close();
+                    string depID = "Adding Employee into Department number " + HttpContext.Session.GetString("depID");
+                    ViewData["AddInfo"] = depID;
+                    ModelState.AddModelError("superID", e.Message);
+                    return View(obj);
                 }
-                insert.Connection = conn;
-                insert.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Employee added successfully";
-                return RedirectToAction("Index");
-
-
             }
             else
             {
@@ -1017,45 +1106,114 @@ namespace CompanyProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditEmployee(Employee employee)
+        public IActionResult EditEmployee(Employee employee, bool check)
         {
 
             MySqlConnection conn = GetConnection();
             conn.Open();
 
-            MySqlCommand cmd2 = new MySqlCommand("select depID from department where depID = " + employee.DepID + ";", conn);
+            MySqlCommand cmd2 = new MySqlCommand("select depID from department where (depID = @depName or depName = @depName);", conn);
+            cmd2.Parameters.AddWithValue("@depName", employee.DepName);
             var reader = cmd2.ExecuteReader();
-            if (!reader.Read() && employee.DepID != 0)
+            if (!reader.HasRows && !string.IsNullOrEmpty(employee.DepName))
             {
-                ModelState.AddModelError("DepId", "Department number doesn't exist");
+                ModelState.AddModelError("depName", "Department doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                employee.DepID = getIntValue(reader["depID"]);
             }
             reader.Close();
 
-            cmd2 = new MySqlCommand("select roleId from roles where roleId = " + employee.RoleID + ";", conn);
+            cmd2 = new MySqlCommand("select roleId from roles where (roleId = @roleName or roleName = @roleName);", conn);
+            cmd2.Parameters.AddWithValue("@roleName", employee.RoleName);
             reader = cmd2.ExecuteReader();
-            if (!reader.Read() && employee.RoleID != 0)
+            if (!reader.HasRows && !string.IsNullOrEmpty(employee.RoleName))
             {
-                ModelState.AddModelError("RoleId", "Role number doesn't exist");
+                ModelState.AddModelError("roleName", "Role doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                employee.RoleID = getIntValue(reader["roleId"]);
             }
             reader.Close();
 
-            cmd2 = new MySqlCommand("select employeeID from employee where employeeID = " + employee.SuperID + ";", conn);
-            reader = cmd2.ExecuteReader();
-            if (!reader.HasRows && employee.SuperID != 0)
+            if (check)
             {
-                ModelState.AddModelError("superID", "superviser Id number doesn't exist");
-            }
-            if (reader.Read() && employee.SuperID != 0)
-            {
-                int id = getIntValue(reader["employeeID"]);
-                if (id == employee.ID)
+                if (string.IsNullOrEmpty(employee.superFname) && string.IsNullOrEmpty(employee.superMname) && string.IsNullOrEmpty(employee.superLname))
                 {
-                    ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                    employee.SuperID = 0;
                 }
+                if (string.IsNullOrEmpty(employee.superFname) || string.IsNullOrEmpty(employee.superLname))
+                {
+                    ModelState.AddModelError("superFname", "First and last name required");
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(employee.superMname))
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
+                        "(employee.Fname = @superFname and employee.Mname is null and employee.Lname = @superLname);", conn);
+                        cmd2.Parameters.AddWithValue("@superFname", employee.superFname);
+                        cmd2.Parameters.AddWithValue("@superLname", employee.superLname);
+                    }
+                    else
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
+                        "(employee.Fname = @superFname and employee.Mname = @superMname and employee.Lname = @superLname);", conn);
+                        cmd2.Parameters.AddWithValue("@superFname", employee.superFname);
+                        cmd2.Parameters.AddWithValue("@superMname", employee.superMname);
+                        cmd2.Parameters.AddWithValue("@superLname", employee.superLname);
 
+                    }
+
+                    reader = cmd2.ExecuteReader();
+                    if (!reader.HasRows)
+                    {
+                        ModelState.AddModelError("superLname", "superviser doesn't exist");
+                    }
+                    if (reader.Read())
+                    {
+                        int id = getIntValue(reader["employeeID"]);
+                        if (id == employee.ID)
+                        {
+                            ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                        }
+                        else
+                        {
+                            employee.SuperID = id;
+                        }
+
+                    }
+                    reader.Close();
+                }
             }
-            reader.Close();
+            else
+            {
+                cmd2 = new MySqlCommand("select employeeID from employee where employeeID = " + employee.SuperID + ";", conn);
 
+                reader = cmd2.ExecuteReader();
+                if (!reader.HasRows && employee.SuperID != 0)
+                {
+                    ModelState.AddModelError("superID", "superviser doesn't exist");
+                }
+                if (reader.Read())
+                {
+                    int id = getIntValue(reader["employeeID"]);
+                    if (id == employee.ID)
+                    {
+                        ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                    }
+                    else
+                    {
+                        employee.SuperID = id;
+                    }
+
+                }
+                reader.Close();
+            }
             if (employee.Sex != "M" && employee.Sex != "F")
             {
                 ModelState.AddModelError("Sex", "Gender Must be either M or F");
@@ -1070,7 +1228,7 @@ namespace CompanyProject.Controllers
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("@salary", employee.Salary);
-                if (employee.RoleID == 0)
+                if (string.IsNullOrEmpty(employee.RoleName))
                 {
                     cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
                 }
@@ -1093,6 +1251,207 @@ namespace CompanyProject.Controllers
                 TempData["success"] = "Employee edited successfully";
                 conn.Close();
                 return RedirectToAction("Index");
+
+            }
+
+            conn.Close();
+            return View(employee);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult selfEdit(Employee employee, bool check)
+        {
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd2 = new MySqlCommand("select employee.ssn from employee where employee.employeeID != " + employee.ID + " and employee.ssn = " + employee.Ssn + "; ", conn);
+            var reader = cmd2.ExecuteReader();
+
+            if (reader.Read())
+            {
+                ModelState.AddModelError("Ssn", "Invalidss SSN");
+            }
+            if (employee.Ssn != 0)
+            {
+                Regex regex = new Regex("[0-9]{9}$");
+                Match match = regex.Match(employee.Ssn.ToString());
+                if (!match.Success)
+                {
+                    ModelState.AddModelError("Ssn", "Invalid SSN");
+                }
+            }
+            reader.Close();
+            cmd2 = new MySqlCommand("select depID from department where (depID = @depName or depName = @depName);", conn);
+            cmd2.Parameters.AddWithValue("@depName", employee.DepName);
+            reader = cmd2.ExecuteReader();
+            if (!reader.HasRows && !string.IsNullOrEmpty(employee.DepName))
+            {
+                ModelState.AddModelError("depName", "Department doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                employee.DepID = getIntValue(reader["depID"]);
+            }
+            reader.Close();
+
+            cmd2 = new MySqlCommand("select roleId from roles where (roleId = @roleName or roleName = @roleName);", conn);
+            cmd2.Parameters.AddWithValue("@roleName", employee.RoleName);
+            reader = cmd2.ExecuteReader();
+            if (!reader.HasRows && !string.IsNullOrEmpty(employee.RoleName))
+            {
+                ModelState.AddModelError("roleName", "Role doesn't exist");
+            }
+            else if (reader.HasRows)
+            {
+                reader.Read();
+                employee.RoleID = getIntValue(reader["roleId"]);
+            }
+            reader.Close();
+
+            if (check)
+            {
+                if (string.IsNullOrEmpty(employee.superFname) && string.IsNullOrEmpty(employee.superMname) && string.IsNullOrEmpty(employee.superLname))
+                {
+                    employee.SuperID = 0;
+                }
+                if (string.IsNullOrEmpty(employee.superFname) || string.IsNullOrEmpty(employee.superLname))
+                {
+                    ModelState.AddModelError("superFname", "First and last name required");
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(employee.superMname))
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
+                        "(employee.Fname = @superFname and employee.Mname is null and employee.Lname = @superLname);", conn);
+                        cmd2.Parameters.AddWithValue("@superFname", employee.superFname);
+                        cmd2.Parameters.AddWithValue("@superLname", employee.superLname);
+                    }
+                    else
+                    {
+                        cmd2 = new MySqlCommand("select employeeID from employee where " +
+                        "(employee.Fname = @superFname and employee.Mname = @superMname and employee.Lname = @superLname);", conn);
+                        cmd2.Parameters.AddWithValue("@superFname", employee.superFname);
+                        cmd2.Parameters.AddWithValue("@superMname", employee.superMname);
+                        cmd2.Parameters.AddWithValue("@superLname", employee.superLname);
+
+                    }
+
+                    reader = cmd2.ExecuteReader();
+                    if (!reader.HasRows)
+                    {
+                        ModelState.AddModelError("superLname", "superviser doesn't exist");
+                    }
+                    if (reader.Read())
+                    {
+                        int id = getIntValue(reader["employeeID"]);
+                        if (id == employee.ID)
+                        {
+                            ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                        }
+                        else
+                        {
+                            employee.SuperID = id;
+                        }
+
+                    }
+                    reader.Close();
+                }
+            }
+            else
+            {
+                cmd2 = new MySqlCommand("select employeeID from employee where employeeID = " + employee.SuperID + ";", conn);
+
+                reader = cmd2.ExecuteReader();
+                if (!reader.HasRows && employee.SuperID != 0)
+                {
+                    ModelState.AddModelError("superID", "superviser doesn't exist");
+                }
+                if (reader.Read())
+                {
+                    int id = getIntValue(reader["employeeID"]);
+                    if (id == employee.ID)
+                    {
+                        ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
+                    }
+                    else
+                    {
+                        employee.SuperID = id;
+                    }
+
+                }
+                reader.Close();
+            }
+
+            if (employee.Sex != "M" && employee.Sex != "F")
+            {
+                ModelState.AddModelError("Sex", "Gender Must be either M or F");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    string query = "UPDATE employee SET Fname=@Fname, Mname=@Mname, Lname=@Lname, sex=@sex , birthdate=@birthdate , salary=@salary, ssn=@ssn, address=@address " +
+                    ", depId=@depId, roleId=@roleId, superID=@superID where employeeID = " + employee.ID + ";";
+
+                    MySqlCommand cmd = new MySqlCommand();
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@Fname", employee.Fname);
+                    cmd.Parameters.AddWithValue("@Mname", employee.Mname);
+                    cmd.Parameters.AddWithValue("@Lname", employee.Lname);
+                    cmd.Parameters.AddWithValue("@sex", employee.Sex);
+                    if (employee.Ssn == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@ssn", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
+                    }
+                    cmd.Parameters.AddWithValue("@birthdate", employee.BirthDate);
+                    cmd.Parameters.AddWithValue("@salary", employee.Salary);
+                    cmd.Parameters.AddWithValue("@address", employee.Address);
+                    if (string.IsNullOrEmpty(employee.DepName))
+                    {
+                        cmd.Parameters.AddWithValue("@depId", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@depId", employee.DepID);
+                    }
+
+                    if (string.IsNullOrEmpty(employee.RoleName))
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", employee.RoleID);
+                    }
+
+                    if (employee.SuperID == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@superID", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@superID", employee.SuperID);
+                    }
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    TempData["success"] = "Employee edited successfully";
+                    conn.Close();
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    ModelState.AddModelError("SuperID", e.Message);
+                    conn.Close();
+                    return View(employee);
+                }
 
             }
 
