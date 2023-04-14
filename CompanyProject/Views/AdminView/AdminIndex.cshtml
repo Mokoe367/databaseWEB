@@ -96,10 +96,7 @@
                 </th>
                 <th>
                     Last Name
-                </th>
-                <th>
-                    SSN
-                </th>
+                </th>               
                 <th>
                     Address
                 </th>
@@ -145,9 +142,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Lname)
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Ssn)
-                    </td>
+             <!--   <td>
+                        @Html.DisplayFor(modelItem => item.Ssn) 
+                    </td>  -->
                     <td>
                         @Html.DisplayFor(modelItem => item.Address)
                     </td>
@@ -672,10 +669,10 @@
         <thead>
             <tr>
                 <th>
-                    Employee ID
+                    Employee
                 </th>
                 <th>
-                    Task ID
+                    Task
                 </th>
                 <th>
                     Hours
@@ -688,10 +685,10 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.employeeID)
+                        @Html.DisplayFor(modelItem => item.fullName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TaskID)
+                        @Html.DisplayFor(modelItem => item.taskName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.hours)

@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 namespace CompanyProject.Models
 {
     public class Used_by
-    {
-        [Required (ErrorMessage = "EmployeeID Required")]
-        public int employeeID { get; set; }
-        [Required(ErrorMessage = "SupplierID Required")]
-        public int supID { get; set; }
-        [Required(ErrorMessage = "AssetID Required")]
+    {        
+        public int employeeID { get; set; }        
+        public int supID { get; set; }    
         public int assetID { get; set; }      
         public string field { get; set; }
         public int tempemployeeID { get; set; }
@@ -21,7 +18,9 @@ namespace CompanyProject.Models
         public string Fname { get; set; }
         public string Mname { get; set; }
         public string Lname { get; set; }
+        [Required(ErrorMessage = "Supplier Required")]
         public string supName { get; set; }
+        [Required(ErrorMessage = "Asset Required")]
         public string assetName { get; set; }
         public string fullName { get; set; }
     }

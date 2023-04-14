@@ -12,19 +12,38 @@
         <form asp-action="EditUse">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
+                <label for="check">check to insert employee by name</label>
+                <input type="checkbox" id="check" name="check" />
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="employeeID" class="control-label">EmployeeID</label>
-                <input asp-for="employeeID" class="form-control" />
+                <input asp-for="employeeID" name="employeeID" class="form-control" />
                 <span asp-validation-for="employeeID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="supID" class="control-label">Suplier ID</label>
-                <input asp-for="supID" class="form-control" />
-                <span asp-validation-for="supID" class="text-danger"></span>
+                <label asp-for="Fname" class="control-label">First Name</label>
+                <input asp-for="Fname" name="Fname" class="form-control" readonly/>
+                <span asp-validation-for="Fname" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="assetID" class="control-label">Asset ID</label>
-                <input asp-for="assetID" class="form-control" />
-                <span asp-validation-for="assetID" class="text-danger"></span>
+                <label asp-for="Lname" class="control-label">Last Name</label>
+                <input asp-for="Lname" name="Lname" class="form-control" readonly/>
+                <span asp-validation-for="Lname" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Mname" class="control-label">Middle Name</label>
+                <input asp-for="Mname" name="Mname" class="form-control" readonly/>
+                <span asp-validation-for="Mname" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="supName" class="control-label">Supplier</label>
+                <input asp-for="supName" class="form-control" />
+                <span asp-validation-for="supName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="assetName" class="control-label">Asset</label>
+                <input asp-for="assetName" class="form-control" />
+                <span asp-validation-for="assetName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="field" class="control-label">Status</label>
@@ -33,7 +52,7 @@
             </div>
             <div class="form-group" style="display: none">
                 <label asp-for="tempemployeeID" class="control-label"></label>
-                <input asp-for="tempemployeeID" class="form-control" readonly />
+                <input asp-for="tempemployeeID" name="tempemployeeID" class="form-control" readonly />
                 <span asp-validation-for="tempemployeeID" class="text-danger"></span>
             </div>
             <div class="form-group" style="display: none">
@@ -57,4 +76,26 @@
 </div>
 
 
+<script>
 
+    var checkbox = document.querySelector("input[name=check]");
+
+    checkbox.addEventListener("change", function () {
+        if (this.checked) {
+            document.querySelector("input[name=Fname]").removeAttribute('readonly');
+            document.querySelector("input[name=Mname]").removeAttribute('readonly');
+            document.querySelector("input[name=Lname]").removeAttribute('readonly');
+            document.querySelector("input[name=employeeID]").setAttribute('readonly', true);
+            document.querySelector("input[name=employeeID]").value = 0;
+            checkbox.value = true;
+        } else {
+            document.querySelector("input[name=Fname]").setAttribute('readonly', true);
+            document.querySelector("input[name=Mname]").setAttribute('readonly', true);
+            document.querySelector("input[name=Lname]").setAttribute('readonly', true);
+            document.querySelector("input[name=employeeID]").removeAttribute('readonly');
+            document.querySelector("input[name=employeeID]").value = document.querySelector("input[name=tempemployeeID]").value;
+            checkbox.value = false;
+        }
+    });
+
+</script>

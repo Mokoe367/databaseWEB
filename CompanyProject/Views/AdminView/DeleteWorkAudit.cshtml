@@ -1,0 +1,59 @@
+﻿@model CompanyProject.Models.works_on_audit
+
+@{
+    ViewData["Title"] = "DeleteWorkAudit";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="margin: 25px;">Delete Work Audit</h2>
+
+<div class="row" style="margin: 25px;">
+    <div class="col-md-4">
+        <form asp-action="DeleteWorkAudit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="id" class="control-label">ID</label>
+                <input asp-for="id" class="form-control" readonly />
+                <span asp-validation-for="id" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="empID" class="control-label">Employee ID</label>
+                <input asp-for="empID" class="form-control" readonly />
+                <span asp-validation-for="empID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="taskID" class="control-label">Task ID</label>
+                <input asp-for="taskID" class="form-control" readonly />
+                <span asp-validation-for="taskID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="hours" class="control-label">Hours</label>
+                <input asp-for="hours" class="form-control" readonly />
+                <span asp-validation-for="hours" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="deleted_at" class="control-label">Deleted At</label>
+                <input asp-for="deleted_at" class="form-control" readonly />
+                <span asp-validation-for="deleted_at" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="fullName" class="control-label">Name</label>
+                <input asp-for="fullName" class="form-control" readonly />
+                <span asp-validation-for="fullName" class="text-danger"></span>
+            </div>         
+            <div class="form-group mb-3">
+                <label asp-for="taskName" class="control-label">Task Name</label>
+                <input asp-for="taskName" class="form-control" readonly />
+                <span asp-validation-for="taskName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+    <div class="mb-3">
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+

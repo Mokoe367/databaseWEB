@@ -12,5 +12,7 @@ namespace CompanyProject.Models
         public int taskID { get; set; }
         public decimal hours { get; set; }
         public string deleted_at { get; set; }
+        public string fullName { get; set; }
+        public string taskName { get; set; }
     }
 }

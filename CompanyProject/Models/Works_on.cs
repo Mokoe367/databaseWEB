@@ -8,10 +8,15 @@ namespace CompanyProject.Models
 {
     public class Works_on
     {
-        [Required (ErrorMessage = "EmployeeID Required")]
+       
         public int employeeID { get; set; }
-        [Required(ErrorMessage = "TaskID Required")]
+        public string Fname { get; set; }
+        public string Mname { get; set; }
+        public string Lname { get; set; }
+        public string fullName { get; set; }
         public int TaskID { get; set; }
+        [Required(ErrorMessage = "Task Required")]
+        public string taskName { get; set; }
         [Range(0.0, double.MaxValue, ErrorMessage = "Can't be less than 0")]
         public decimal hours { get; set; }     
         public int tempemployeeID { get; set; }

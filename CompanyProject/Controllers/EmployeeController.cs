@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CompanyProject.Models;
 using Microsoft.AspNetCore.Http;
@@ -255,7 +256,16 @@ namespace CompanyProject.Controllers
 
             if (reader.Read())
             {
-                ModelState.AddModelError("Ssn", "No Duplicate SSN");
+                ModelState.AddModelError("Ssn", "Invalid SSN");
+            }
+            if(employee.Ssn != 0)
+            {
+                Regex regex = new Regex("[0-9]{9}$");
+                Match match = regex.Match(employee.Ssn.ToString());
+                if(!match.Success)
+                {
+                    ModelState.AddModelError("Ssn", "Invalid SSN");
+                }
             }
 
             reader.Close();
@@ -310,8 +320,15 @@ namespace CompanyProject.Controllers
                 cmd.Parameters.AddWithValue("@Lname", employee.Lname);
                 cmd.Parameters.AddWithValue("@sex", employee.Sex);
                 cmd.Parameters.AddWithValue("@birthdate", employee.BirthDate);
-                cmd.Parameters.AddWithValue("@salary", employee.Salary);
-                cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
+                cmd.Parameters.AddWithValue("@salary", employee.Salary);                
+                if (employee.Ssn == 0)
+                {
+                    cmd.Parameters.AddWithValue("@ssn", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
+                }
                 cmd.Parameters.AddWithValue("@address", employee.Address);
                 if (employee.DepID == 0)
                 {

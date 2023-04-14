@@ -920,20 +920,14 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select employee.ssn from employee where employee.ssn = " + obj.Ssn + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand();
             string empID = HttpContext.Session.GetString("id");
             obj.ID = Convert.ToInt32(empID);
-            var reader = cmd.ExecuteReader();
-
-            if (reader.Read())
-            {
-                ModelState.AddModelError("Ssn", "No Duplicate SSN");
-            }
-            reader.Close();
+            
             string query = "select roleId from roles where roleId = " + obj.RoleID + ";";
             cmd.CommandText = query;
             cmd.Connection = conn;
-            reader = cmd.ExecuteReader();
+            var reader = cmd.ExecuteReader();
             if (!reader.HasRows && obj.RoleID != 0)
             {
                 ModelState.AddModelError("RoleId", "Role number doesn't exist");
@@ -966,17 +960,23 @@ namespace CompanyProject.Controllers
                 string depID = HttpContext.Session.GetString("depID");
                 int department = Convert.ToInt32(depID);
                 MySqlCommand insert = new MySqlCommand();
-                query = "insert into employee(Fname, Mname, Lname, salary, ssn, address, birthDate, sex, roleID, superID, depID) " +
-                    "Values( @Fname, @Mname, @Lname, @salary , @ssn , @address, @birthdate, @sex " +
+                query = "insert into employee(Fname, Mname, Lname, salary, address, birthDate, sex, roleID, superID, depID) " +
+                    "Values( @Fname, @Mname, @Lname, @salary , @address, @birthdate, @sex " +
                     ", @roleId, @superID, @depId);";
                 insert.CommandText = query;
                 insert.Parameters.AddWithValue("@Fname", obj.Fname);
-                insert.Parameters.AddWithValue("@Mname", obj.Mname);
+                if (string.IsNullOrEmpty(obj.Mname))
+                {
+                    insert.Parameters.AddWithValue("@Mname", DBNull.Value);
+                }
+                else
+                {
+                    insert.Parameters.AddWithValue("@Mname", obj.Mname);
+                }
                 insert.Parameters.AddWithValue("@Lname", obj.Lname);
                 insert.Parameters.AddWithValue("@sex", obj.Sex);
                 insert.Parameters.AddWithValue("@birthdate", obj.BirthDate);
-                insert.Parameters.AddWithValue("@salary", obj.Salary);
-                insert.Parameters.AddWithValue("@ssn", obj.Ssn);
+                insert.Parameters.AddWithValue("@salary", obj.Salary);               
                 insert.Parameters.AddWithValue("@address", obj.Address);
                 insert.Parameters.AddWithValue("@depId", department);
                 if (obj.RoleID == 0)

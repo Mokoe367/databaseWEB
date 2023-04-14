@@ -78,17 +78,27 @@
                     Employee ID
                 </th>
                 <th>
+                    Name
+                </th>                
+                <th>
                     Supplier ID
                 </th>
                 <th>
+                    Supplier Name
+                </th>
+                <th>
                     Asset ID
+                </th>
+                <th>
+                    Asset Name
                 </th>
                 <th>
                     Field
                 </th>
                 <th>
                     Deleted At
-                </th>               
+                </th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -102,16 +112,28 @@
                     @Html.DisplayFor(modelItem => item.empID)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.fullName)
+                </td>               
+                <td>
                     @Html.DisplayFor(modelItem => item.supID)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.supName)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.assetID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.field)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.deleted_at)
+                </td>
+                <td>
+                    @Html.ActionLink("Delete", "DeleteUsedAudit", new { id = item.id })
                 </td>
             </tr>
             }
@@ -131,7 +153,13 @@
                     Employee ID
                 </th>
                 <th>
+                    Name
+                </th>       
+                <th>
                     Task ID
+                </th>
+                <th>
+                    Task Name
                 </th>
                 <th>
                     Hours
@@ -139,6 +167,7 @@
                 <th>
                     Deleted At
                 </th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -152,13 +181,22 @@
                     @Html.DisplayFor(modelItem => item.empID)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.fullName)
+                </td>                              
+                <td>
                     @Html.DisplayFor(modelItem => item.taskID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.hours)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.deleted_at)
+                </td>
+                <td>                   
+                    @Html.ActionLink("Delete", "DeleteWorkAudit", new { id = item.id })
                 </td>
             </tr>
             }

@@ -12,18 +12,18 @@
         <form asp-action="AddDistribution">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
-                <label asp-for="depName" class="control-label">Department (Enter either ID or name)</label>
-                <input asp-for="depName" class="form-control" />
+                <label asp-for="depName" class="control-label">Department</label>
+                <input asp-for="depName" class="form-control" placeholder="insert either name or ID"/>
                 <span asp-validation-for="depName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="supName" class="control-label">Supplier (Enter either ID or name)</label>
-                <input asp-for="supName" class="form-control" />
+                <label asp-for="supName" class="control-label">Supplier</label>
+                <input asp-for="supName" class="form-control" placeholder="insert either name or ID"/>
                 <span asp-validation-for="supName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="assetName" class="control-label">Asset (Enter either ID or name)</label>
-                <input asp-for="assetName" class="form-control" />
+                <label asp-for="assetName" class="control-label">Asset</label>
+                <input asp-for="assetName" class="form-control" placeholder="insert either name or ID" />
                 <span asp-validation-for="assetName" class="text-danger"></span>
             </div>           
             <div class="form-group mb-3">
