@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,12 +18,13 @@ namespace CompanyProject.Models
         public int tempSupID { get; set; }
         public int tempAssetID { get; set; }
         public int tempDepID { get; set; }
-        public string field { get; set; }
-        [Required(ErrorMessage = "Supplier required")]
-        public string supName { get; set; }
-        [Required(ErrorMessage = "Supplier required")]
-        public string depName { get; set; }
-        [Required(ErrorMessage = "Supplier required")]
+        public string field { get; set; }        
+        public string supName { get; set; }      
+        public string depName { get; set; }      
         public string assetName { get; set; }
+        public List<SelectListItem> departments { get; set; }
+        public List<SelectListItem> suppliers { get; set; }
+        public List<SelectListItem> assets { get; set; }
+
     }
 }

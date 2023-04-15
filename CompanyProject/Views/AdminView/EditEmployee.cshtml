@@ -33,7 +33,7 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Sex" class="control-label">Gender</label>
-                <input asp-for="Sex" class="form-control" />
+                <select asp-for="Sex" asp-items="@Model.genders"></select>
                 <span asp-validation-for="Sex" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -43,14 +43,14 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="RoleID">Roles</label>
-                <select asp-for="RoleID" class="form-select" asp-items="@Model.Roles">
+                <select asp-for="RoleID" asp-items="@Model.Roles">
                     <option value="0">none</option>
                 </select>
                 <span asp-validation-for="RoleID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="DepID" class="control-label">Department</label>
-                <select asp-for="DepID" class="form-select" asp-items="@Model.departments">
+                <select asp-for="DepID" asp-items="@Model.departments">
                     <option value="0">none</option>
                 </select>
                 <span asp-validation-for="DepID" class="text-danger"></span>
@@ -62,7 +62,7 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="SuperID" class="control-label">Supervisor</label>
-                <select asp-for="SuperID" class="form-select" asp-items="@Model.supervisors">
+                <select asp-for="SuperID" asp-items="@Model.supervisors">
                     <option value="0">none</option>
                 </select>
                 <span asp-validation-for="SuperID" class="text-danger"></span>
@@ -77,3 +77,14 @@
     </div>
 </div>
 
+<script>
+
+    $(document).ready(function () {
+        $('select').selectize({
+            sortField: 'text'
+        });
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />

@@ -8,7 +8,7 @@
 <h2 style="margin: 25px;">Add Asset</h2>
 
 <div class="row" style="margin: 25px;">
-    <div class="col-md-4" >
+    <div class="col-md-4">
         <form asp-action="AddAsset">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
@@ -22,9 +22,9 @@
                 <span asp-validation-for="cost" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="supName" class="control-label">Supplier</label>
-                <input asp-for="supName" class="form-control" placeholder="insert either name or ID"/>
-                <span asp-validation-for="supName" class="text-danger"></span>
+                <label asp-for="supID">Supplier</label>
+                <select asp-for="supID" asp-items="@Model.suppliers"></select>
+                <span asp-validation-for="supID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -38,3 +38,14 @@
 
 
 
+<script>
+
+    $(document).ready(function () {
+        $('select').selectize({
+            sortField: 'text'
+        });
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace CompanyProject.Models
         [Required(ErrorMessage = "Location name required")]
         public string loc_name { get; set; }
         public string pastLoc_name { get; set; }
+        public List<SelectListItem> departments { get; set; }
     }
 }

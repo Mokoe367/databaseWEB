@@ -50,5 +50,10 @@ namespace CompanyProject.Models
         public List<SelectListItem> Roles { get; set; }
         public List<SelectListItem> supervisors { get; set; }
         public List<SelectListItem> departments { get; set; }
+        public List<SelectListItem> genders { get; } = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "M", Text = "M" },
+            new SelectListItem { Value = "F", Text = "F" }      
+        };
     }
 }

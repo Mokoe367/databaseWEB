@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,5 +22,7 @@ namespace CompanyProject.Models
         public string mgrFname { get; set; }
         public string mgrMname { get; set; }
         public string mgrLname { get; set; }
+        public List<SelectListItem> managers { get; set; }
+        public List<SelectListItem> locations { get; set; }
     }
 }

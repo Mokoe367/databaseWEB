@@ -12,33 +12,14 @@
         <form asp-action="AddWork">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
-                <label for="check">check to insert employee by name</label>
-                <input type="checkbox" id="check" name="check" />
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="employeeID" class="control-label">EmployeeID</label>
-                <input asp-for="employeeID" name="employeeID" class="form-control" />
+                <label asp-for="employeeID" class="control-label">Employee</label>
+                <select asp-for="employeeID" asp-items="@Model.employees"></select>
                 <span asp-validation-for="employeeID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Fname" class="control-label">First Name</label>
-                <input asp-for="Fname" name="Fname" class="form-control" readonly />
-                <span asp-validation-for="Fname" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Lname" class="control-label">Last Name</label>
-                <input asp-for="Lname" name="Lname" class="form-control" readonly />
-                <span asp-validation-for="Lname" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Mname" class="control-label">Middle Name</label>
-                <input asp-for="Mname" name="Mname" class="form-control" readonly />
-                <span asp-validation-for="Mname" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="taskName" class="control-label">Task Name</label>
-                <input asp-for="taskName" class="form-control" />
-                <span asp-validation-for="taskName" class="text-danger"></span>
+                <label asp-for="TaskID">Task</label>
+                <select asp-for="TaskID" asp-items="@Model.tasks"></select>
+                <span asp-validation-for="TaskID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="hours" class="control-label">Hours</label>
@@ -54,28 +35,16 @@
         <a asp-action="Index">Back to List</a>
     </div>
 </div>
+
 <script>
 
-    var checkbox = document.querySelector("input[name=check]");
-
-    checkbox.addEventListener("change", function () {
-        if (this.checked) {
-            document.querySelector("input[name=Fname]").removeAttribute('readonly');
-            document.querySelector("input[name=Mname]").removeAttribute('readonly');
-            document.querySelector("input[name=Lname]").removeAttribute('readonly');
-            document.querySelector("input[name=employeeID]").setAttribute('readonly', true);
-            document.querySelector("input[name=employeeID]").value = 0;
-            checkbox.value = true;
-        } else {
-            document.querySelector("input[name=Fname]").setAttribute('readonly', true);
-            document.querySelector("input[name=Mname]").setAttribute('readonly', true);
-            document.querySelector("input[name=Lname]").setAttribute('readonly', true);
-            document.querySelector("input[name=employeeID]").removeAttribute('readonly');
-            document.querySelector("input[name=employeeID]").value = document.querySelector("input[name=tempemployeeID]").value;
-            checkbox.value = false;
-        }
+    $(document).ready(function () {
+        $('select').selectize({
+            sortField: 'text'
+        });
     });
-
 </script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 

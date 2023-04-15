@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,5 +18,6 @@ namespace CompanyProject.Models
         public int supID { get; set; }
         public string supName { get; set; }
         public int deleted_flag { get; set; }
+        public List<SelectListItem> suppliers { get; set; }
     }
 }
