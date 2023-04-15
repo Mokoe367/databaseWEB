@@ -180,9 +180,21 @@
                     <td>
                         @Html.ActionLink("Edit", "EditEmployee", new { id = item.ID }) |
                         @Html.ActionLink("Login Details", "LoginDetails", new { id = item.ID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteEmployee", new { id = item.ID })
+                        @Html.ActionLink("Delete/Restore", "DeleteEmployee", new { id = item.ID }) |
+                        @if (ViewData["id"] != null)
+                        {
+                            if (Convert.ToInt32(ViewData["id"]) != item.ID)
+                            {
+                                @Html.ActionLink("Actual Delete", "ActualDeleteEmployee", new { id = item.ID });
+                            }
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Actual Delete", "ActualDeleteEmployee", new { id = item.ID });
+                        }
                     </td>
-                </tr>
+
+            </tr>
             }
         </tbody>
     </table>
@@ -236,7 +248,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditDepartment", new { id = item.depID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteDepartment", new { id = item.depID })
+                        @Html.ActionLink("Delete/Restore", "DeleteDepartment", new { id = item.depID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteDepartment", new { id = item.depID })
                     </td>
                 </tr>
             }
@@ -316,7 +329,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditProject", new { id = item.projID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteProject", new { id = item.projID })
+                        @Html.ActionLink("Delete/Restore", "DeleteProject", new { id = item.projID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteProject", new { id = item.projID })
                     </td>
                 </tr>
             }
@@ -372,7 +386,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditSupplier", new { id = item.supID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteSupplier", new { id = item.supID })
+                        @Html.ActionLink("Delete/Restore", "DeleteSupplier", new { id = item.supID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteSupplier", new { id = item.supID })
                     </td>
                 </tr>
             }
@@ -407,7 +422,7 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditRole", new { id = item.roleID }) |
-                        @Html.ActionLink("Delete", "DeleteRole", new { id = item.roleID })
+                        @Html.ActionLink("Delete", "DeleteRole", new { id = item.roleID })                       
                     </td>
                 </tr>
             }
@@ -469,7 +484,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteTask", new { id = item.taskID })
+                        @Html.ActionLink("Delete/Restore", "DeleteTask", new { id = item.taskID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteTask", new { id = item.taskID })
                     </td>
                 </tr>
             }
@@ -525,7 +541,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditAsset", new { id = item.assetID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteAsset", new { id = item.assetID })
+                        @Html.ActionLink("Delete/Restore", "DeleteAsset", new { id = item.assetID })|
+                        @Html.ActionLink("ActualDelete", "ActualDeleteAsset", new { id = item.assetID })
                     </td>
                 </tr>
             }

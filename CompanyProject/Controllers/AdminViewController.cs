@@ -41,7 +41,7 @@ namespace CompanyProject.Controllers
             conn.Close();
             string msg = "Signed in as " + user.Fname + " " + user.Lname;
             ViewData["userInfo"] = msg;
-
+            ViewData["id"] = empID;
 
             return View("AdminIndex", getViewData());
         }
@@ -137,8 +137,7 @@ namespace CompanyProject.Controllers
             string superLname = getStringValue(reader["superLname"]);
             string supervisorName = superFname + " " + superMname + " " + superLname;
             emp.Fname = getStringValue(reader["Fname"]);
-            emp.ID = getIntValue(reader["employeeID"]);
-            emp.Fname = getStringValue(reader["Fname"]);
+            emp.ID = getIntValue(reader["employeeID"]);           
             emp.Lname = getStringValue(reader["Lname"]);
             emp.Mname = getStringValue(reader["Mname"]);
             emp.Address = getStringValue(reader["address"]);
@@ -734,8 +733,8 @@ namespace CompanyProject.Controllers
                 query = "insert into department(location, depName, mgrID) Values(@location, @depName, @mgrID);";
                 MySqlCommand cmd2 = new MySqlCommand();
                 cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@depName", DBNull.Value);
-                cmd2.Parameters.AddWithValue("@location", obj.location);              
+                cmd2.Parameters.AddWithValue("@depName", obj.depName);
+                cmd2.Parameters.AddWithValue("@location", DBNull.Value);              
                 cmd2.Parameters.AddWithValue("@mgrID", DBNull.Value);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
@@ -2048,6 +2047,117 @@ namespace CompanyProject.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult ActualDeleteEmployee(int id)
+        {
+            var emp = new Employee();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select e.employeeID, e.Fname, e.Lname, e.Mname, e.Address, e.sex, e.birthDate, e.deleted_flag, e.roleID, e.depID, e.ssn, e.salary, e.superID, r.roleName, " +
+                "s.Fname as superFname, s.Lname as superLname, s.Mname as superMname, d.depName" +
+                " from employee as e left outer join employee as s on e.superID = s.employeeID left outer join roles as r on r.roleID = e.roleID left outer join department as d on d.depID = e.depID where e.employeeID = " + id + " ;", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            DateTime date = Convert.ToDateTime(getStringValue(reader["birthdate"]));
+            string dateNoTime = date.ToShortDateString();
+            string[] dateTemp = dateNoTime.Split('/');
+            int month = Int32.Parse(dateTemp[0]);
+            int day = Int32.Parse(dateTemp[1]);
+            if (month < 10)
+            {
+                dateTemp[0] = "0" + dateTemp[0];
+            }
+            if (day < 10)
+            {
+                dateTemp[1] = "0" + dateTemp[1];
+            }
+            string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+            string superFname = getStringValue(reader["superFname"]);
+            string superMname = getStringValue(reader["superMname"]);
+            string superLname = getStringValue(reader["superLname"]);
+            string supervisorName = superFname + " " + superMname + " " + superLname;
+            emp.Fname = getStringValue(reader["Fname"]);
+            emp.ID = getIntValue(reader["employeeID"]);
+            emp.Lname = getStringValue(reader["Lname"]);
+            emp.Mname = getStringValue(reader["Mname"]);
+            emp.Address = getStringValue(reader["address"]);
+            emp.Sex = getStringValue(reader["sex"]);
+            emp.BirthDate = sqlDate;                                  
+            emp.Salary = getIntValue(reader["salary"]);            
+            emp.SupervisorName = supervisorName;
+            emp.DepName = getStringValue(reader["depName"]);
+            emp.RoleName = getStringValue(reader["roleName"]);
+            emp.Deleted_flag = getIntValue(reader["deleted_flag"]);
+            reader.Close();
+            conn.Close();            
+                       
+            return View(emp);
+            
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualDeleteEmployee(Employee employee)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select superID from employee where superID = @id union select mgrID from department where mgrID = @id " +
+                "union select employeeID from works_on where employeeID = @id union select employeeID from used_by where employeeID = @id;";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@id", employee.ID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if(reader.HasRows)
+            {
+                ModelState.AddModelError("ID", "Employee still involed with supervisor, manager, works_on, and/or used_by");
+            }
+            reader.Close();
+            if(ModelState.IsValid)
+            {
+                try
+                {
+                    MySqlCommand delete = new MySqlCommand();
+                    query = "select * from login where employeeID = @ID";
+                    delete.CommandText = query;
+                    delete.Parameters.AddWithValue("@ID", employee.ID);
+                    delete.Connection = conn;
+                    reader = delete.ExecuteReader();
+                    if(reader.HasRows)
+                    {
+                        reader.Close();
+                        query = "delete from login where employeeID = @deleteID";
+                        delete.CommandText = query;
+                        delete.Parameters.AddWithValue("@deleteID", employee.ID);
+                        delete.Connection = conn;
+                        reader = delete.ExecuteReader();
+                    }
+                    reader.Close();
+
+                    query = "delete from employee where employeeID = @actualDelete";
+                    delete.CommandText = query;
+                    delete.Parameters.AddWithValue("@actualDelete", employee.ID);
+                    delete.Connection = conn;
+                    delete.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Employee successfully deleted";
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("ID", e.Message);
+                    return View(employee);
+                }
+            }
+            else
+            {
+                conn.Close();
+                return View(employee);
+            }
+        }
+
         public IActionResult DeleteDepartment(int id)
         {
             MySqlConnection conn = GetConnection();
@@ -2075,6 +2185,77 @@ namespace CompanyProject.Controllers
             return RedirectToAction("Index");       
         }
 
+        public IActionResult ActualDeleteDepartment(int id)
+        {
+            Department dep = new Department();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select d.depID, d.location, d.depName, d.mgrID, d.deleted_flag, s.Fname, s.Lname, s.Mname " +
+                "from department as d left outer join employee as s on d.mgrID = s.employeeID where d.depID = " + id + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            string Fname = getStringValue(reader["Fname"]);
+            string Mname = getStringValue(reader["Mname"]);
+            string Lname = getStringValue(reader["Lname"]);
+            string mgrName = Fname + " " + Mname + " " + Lname;
+            dep.depID = getIntValue(reader["depID"]);
+            dep.location = getStringValue(reader["location"]);
+            dep.depName = getStringValue(reader["depName"]);            
+            dep.mgrName = mgrName;
+            dep.deleted_flag = getIntValue(reader["deleted_flag"]);    
+            conn.Close();
+            return View(dep);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualDeleteDepartment(Department department)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select depID from employee where depID = @id union select depID from dep_locations where depID = @id " +
+                "union select depID from project where depID = @id union select depID from distributed_to where depID = @id;";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@id", department.depID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("depID", "department still involed with employee, project, distribution, and/or location");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    MySqlCommand delete = new MySqlCommand();
+                    
+                    query = "delete from department where depID = @actualDelete";
+                    delete.CommandText = query;
+                    delete.Parameters.AddWithValue("@actualDelete", department.depID);
+                    delete.Connection = conn;
+                    delete.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Department successfully deleted";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("depID", e.Message);
+                    return View(department);
+                }
+            }
+            else
+            {
+                conn.Close();
+                return View(department);
+            }
+        }
+    
         public IActionResult DeleteSupplier(int id)
         {
             MySqlConnection conn = GetConnection();
@@ -2102,6 +2283,73 @@ namespace CompanyProject.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult ActualDeleteSupplier(int id)
+        {
+            Supplier sup = new Supplier();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select s.supID, s.product, s.name, s.deleted_flag, s.roleID, r.roleName " +
+                "from suppliers as s left outer join roles as r on r.roleID = s.roleID where supID = " + id + "; ", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+
+            sup.supID = getIntValue(reader["supID"]);
+            sup.product = getStringValue(reader["product"]);
+            sup.name = getStringValue(reader["name"]);           
+            sup.roleName = getStringValue(reader["roleName"]);
+            sup.deleted_flag = getIntValue(reader["deleted_flag"]);
+            return View(sup);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualDeleteSupplier(Supplier supplier)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select supID from assets where supID = @id union select supID from used_by where supID = @id" +
+                " union select supID from distributed_to where supID = @id;";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@id", supplier.supID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("supID", "supplier still involed with task and/or distribution");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    MySqlCommand delete = new MySqlCommand();
+
+                    query = "delete from suppliers where supID = @actualDelete";
+                    delete.CommandText = query;
+                    delete.Parameters.AddWithValue("@actualDelete", supplier.supID);
+                    delete.Connection = conn;
+                    delete.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Supplier successfully deleted";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("supID", e.Message);
+                    return View(supplier);
+                }
+            }
+            else
+            {
+                conn.Close();
+                return View(supplier);
+            }
+        }
+
         public IActionResult DeleteProject(int id)
         {
             MySqlConnection conn = GetConnection();
@@ -2127,6 +2375,89 @@ namespace CompanyProject.Controllers
             cmd.ExecuteNonQuery();
             conn.Close();
             return RedirectToAction("Index");
+        }
+
+        public IActionResult ActualDeleteProject(int id)
+        {
+            Project proj = new Project();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select p.projID, p.projName, p.dueDate, p.projID, p.location, p.cost, p.field, p.projStatus, p.deleted_flag, p.depID, d.depName" +
+                " from project as p left outer join department as d on d.depID = p.depID where p.projID = " + id + ";", conn);
+
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            DateTime date = Convert.ToDateTime(getStringValue(reader["dueDate"]));
+            string dateNoTime = date.ToShortDateString();
+            string[] dateTemp = dateNoTime.Split('/');
+            int month = Int32.Parse(dateTemp[0]);
+            int day = Int32.Parse(dateTemp[1]);
+            if (month < 10)
+            {
+                dateTemp[0] = "0" + dateTemp[0];
+            }
+            if (day < 10)
+            {
+                dateTemp[1] = "0" + dateTemp[1];
+            }
+            string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+            proj.projID = getIntValue(reader["projID"]);
+            proj.dueDate = sqlDate;           
+            proj.projName = getStringValue(reader["projName"]);
+            proj.location = getStringValue(reader["location"]);
+            proj.cost = getIntValue(reader["cost"]);
+            proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
+            proj.field = getStringValue(reader["field"]);
+            proj.depName = getStringValue(reader["depName"]);            
+            conn.Close();
+            return View(proj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualDeleteProject(Project project)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select projID from task where projID = @id;";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@id", project.projID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("projID", "project still involed with tasks");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    MySqlCommand delete = new MySqlCommand();
+
+                    query = "delete from project where projID = @actualDelete";
+                    delete.CommandText = query;
+                    delete.Parameters.AddWithValue("@actualDelete", project.projID);
+                    delete.Connection = conn;
+                    delete.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Project successfully deleted";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("projID", e.Message);
+                    return View(project);
+                }
+            }
+            else
+            {
+                conn.Close();
+                return View(project);
+            }
         }
 
         public IActionResult DeleteRole(int id)
@@ -2173,6 +2504,72 @@ namespace CompanyProject.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult ActualDeleteAsset(int id)
+        {
+            Asset asset = new Asset();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select a.assetID, a.type, a.cost, a.deleted_flag, a.supID, s.name " +
+                "from assets as a left outer join suppliers as s on s.supID = a.supID where assetID = " + id + "; ", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            asset.assetID = getIntValue(reader["assetID"]);
+            asset.type = getStringValue(reader["type"]);
+            asset.cost = getIntValue(reader["cost"]);
+            asset.supID = getIntValue(reader["supID"]);
+            asset.supName = getStringValue(reader["name"]);
+            asset.deleted_flag = getIntValue(reader["deleted_flag"]);
+            conn.Close();
+            return View(asset);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualDeleteAsset(Asset asset)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select assetID from used_by where assetID = @id union select assetID from distributed_to where assetID = @id;";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@id", asset.assetID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("assetID", "asset still involed with used_by and distribution");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    MySqlCommand delete = new MySqlCommand();
+
+                    query = "delete from assets where assetID = @actualDelete";
+                    delete.CommandText = query;
+                    delete.Parameters.AddWithValue("@actualDelete", asset.assetID);
+                    delete.Connection = conn;
+                    delete.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Asset successfully deleted";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("assetID", e.Message);
+                    return View(asset);
+                }
+            }
+            else
+            {
+                conn.Close();
+                return View(asset);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteRole(Role role)
@@ -2206,6 +2603,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(role);
             }           
         }
@@ -2236,6 +2634,86 @@ namespace CompanyProject.Controllers
             conn.Close();
 
             return RedirectToAction("Index");
+        }
+
+        public IActionResult ActualDeleteTask(int id)
+        {
+            Tasks task = new Tasks();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag " +
+                "from task as t left outer join project as p on p.projID = t.projID where taskID = " + id + "; ", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
+            string dateNoTime = date.ToShortDateString();
+            string[] dateTemp = dateNoTime.Split('/');
+            int month = Int32.Parse(dateTemp[0]);
+            int day = Int32.Parse(dateTemp[1]);
+            if (month < 10)
+            {
+                dateTemp[0] = "0" + dateTemp[0];
+            }
+            if (day < 10)
+            {
+                dateTemp[1] = "0" + dateTemp[1];
+            }
+            string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
+            task.taskID = getIntValue(reader["taskID"]);
+            task.taskName = getStringValue(reader["taskName"]);
+            task.cost = getIntValue(reader["cost"]);
+            task.taskDueDate = sqlDate;            
+            task.deleted_flag = getIntValue(reader["deleted_flag"]);
+            task.projName = getStringValue(reader["projName"]);            
+            conn.Close();
+            return View(task);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualDeleteTask(Tasks task)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select taskID from works_on where taskID = @id;";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@id", task.taskID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("taskID", "project still involed with works_on");
+            }
+            reader.Close();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    MySqlCommand delete = new MySqlCommand();
+
+                    query = "delete from task where taskID = @actualDelete";
+                    delete.CommandText = query;
+                    delete.Parameters.AddWithValue("@actualDelete", task.taskID);
+                    delete.Connection = conn;
+                    delete.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Task successfully deleted";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("projID", e.Message);
+                    return View(task);
+                }
+            }
+            else
+            {
+                conn.Close();
+                return View(task);
+            }
         }
 
         public IActionResult DeleteLocation(int id, string name)

@@ -10,15 +10,13 @@ namespace CompanyProject.Models
     public class Department
     {
         
-        public int depID { get; set; }
-        [Required]
+        public int depID { get; set; }        
         public string location { get; set; }
         [Required]
         public string depName { get; set; }
         public int mgrID { get; set; }
         public string mgrName { get; set; }
-        public int deleted_flag { get; set; }
-        public bool check { get; set; }
+        public int deleted_flag { get; set; }        
         public string mgrFname { get; set; }
         public string mgrMname { get; set; }
         public string mgrLname { get; set; }
