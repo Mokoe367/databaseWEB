@@ -1927,7 +1927,7 @@ namespace CompanyProject.Controllers
             work.TaskID = getIntValue(reader["taskID"]);           
             work.tempemployeeID = getIntValue(reader["employeeID"]);
             work.tempTaskID = getIntValue(reader["taskID"]);
-            work.hours = getIntValue(reader["hours"]);
+            work.hours = Convert.ToDecimal(reader["hours"]);
             work.Fname = getStringValue(reader["Fname"]);
             work.Mname = getStringValue(reader["Mname"]);
             work.Lname = getStringValue(reader["Lname"]);
@@ -2870,7 +2870,7 @@ namespace CompanyProject.Controllers
             reader.Read();
             work.employeeID = getIntValue(reader["employeeID"]);
             work.TaskID = getIntValue(reader["taskID"]);           
-            work.hours = getIntValue(reader["hours"]);
+            work.hours = Convert.ToDecimal(reader["hours"]);
             string Fname = getStringValue(reader["Fname"]);
             string Mname = getStringValue(reader["Mname"]);
             string Lname = getStringValue(reader["Lname"]);

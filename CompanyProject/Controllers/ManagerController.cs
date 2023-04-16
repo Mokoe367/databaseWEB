@@ -867,8 +867,9 @@ namespace CompanyProject.Controllers
 
         public IActionResult ProjectDetails(int id)
         {
-            IEnumerable<ProjectDetails> list = GetProjectDetails(id);
-
+            ProjectInfo list = new ProjectInfo();
+            list.details = GetProjectDetails(id);
+            list.tasks = getTasks(id);
             MySqlConnection conn = GetConnection();
             conn.Open();           
             MySqlCommand cmd = new MySqlCommand("select projName from project where projID = " + id + ";", conn);
@@ -934,14 +935,14 @@ namespace CompanyProject.Controllers
             reader.Read();
             work.employeeID = getIntValue(reader["employeeID"]);
             work.TaskID = getIntValue(reader["taskID"]);
-            work.hours = getIntValue(reader["hours"]);
+            work.hours = Convert.ToDecimal(reader["hours"]);
             string Fname = getStringValue(reader["Fname"]);
             string Mname = getStringValue(reader["Mname"]);
             string Lname = getStringValue(reader["Lname"]);
             work.Fname = Fname + " " + Mname + " " + Lname;
             work.taskName = getStringValue(reader["taskName"]);
             ViewData["employee"] = empid;
-
+            conn.Close();
             return View(work);
         }
 
@@ -3061,10 +3062,11 @@ namespace CompanyProject.Controllers
             List<TaskDetails> TaskData = new List<TaskDetails>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, t.taskName, t.cost, t.taskDueDate, p.projName, w.taskID, p.projID " +
-                "from task as t left outer join works_on as w on w.taskID = t.taskID left outer join project as p on p.projID = t.projID where w.employeeID = " + id + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, t.taskName, t.cost, t.taskDueDate, p.projName, w.taskID " +
+                "from project as p left outer join task as t on t.projID = p.projID " +
+                "left outer join works_on as w on w.taskID = t.taskID where w.employeeID = " + id + ";", conn);
 
-            using(var reader = cmd.ExecuteReader())
+            using (var reader = cmd.ExecuteReader())
             {
                 while(reader.Read())
                 {
@@ -3086,15 +3088,14 @@ namespace CompanyProject.Controllers
                     TaskData.Add(new TaskDetails()
                     {
                         empID = getIntValue(reader["employeeID"]),
-                        taskID = getIntValue(reader["taskID"]),
-                        projID = getIntValue(reader["projID"]),
+                        projName = getStringValue(reader["projName"]),
                         dueDate = sqlDate,
-                        hours = getIntValue(reader["hours"]),
+                        hours = Convert.ToDecimal(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
                         budget = getIntValue(reader["cost"]),
-                        projName = getStringValue(reader["projName"])
+                        taskID = getIntValue(reader["taskID"])
                     });
-                    
+
                 }
             }
             conn.Close();
@@ -3107,39 +3108,24 @@ namespace CompanyProject.Controllers
             List<ProjectDetails> ProjectData = new List<ProjectDetails>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select distinct e.Fname, e.Lname, r.roleName, t.taskID, t.taskName, t.taskDueDate, w.hours, t.cost " +
-                "from employee as e, project as p, task as t, works_on as w, roles as r where " +
-                "t.projID = " + id + " and t.taskID = w.taskID and w.employeeID = e.employeeID and r.roleID = e.roleID order by t.taskID;", conn);
+            MySqlCommand cmd = new MySqlCommand("select distinct e.Fname, e.Mname ,e.Lname, r.roleName, t.taskName, w.hours " +
+                "from works_on as w left outer join task as t on t.taskID = w.taskID left outer join employee as e on e.employeeID = w.employeeID " +
+                "left outer join roles as r on r.roleID = e.roleID where t.projID = " + id + ";", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
-                    string dateNoTime = date.ToShortDateString();
-                    string[] dateTemp = dateNoTime.Split('/');
-                    int month = Int32.Parse(dateTemp[0]);
-                    int day = Int32.Parse(dateTemp[1]);
-                    if (month < 10)
-                    {
-                        dateTemp[0] = "0" + dateTemp[0];
-                    }
-                    if (day < 10)
-                    {
-                        dateTemp[1] = "0" + dateTemp[1];
-                    }
-                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
-
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
                     ProjectData.Add(new ProjectDetails()
                     {
-                        Fname = getStringValue(reader["Fname"]),
-                        Lname = getStringValue(reader["Lname"]),
+                        name = name,
                         roleName = getStringValue(reader["roleName"]),
-                        taskName = getStringValue(reader["taskName"]),
-                        taskID = getIntValue(reader["taskID"]),
-                        taskDueDate = sqlDate,
-                        hours = Convert.ToDecimal(reader["hours"]),                       
-                        cost = getIntValue(reader["cost"])
+                        taskName = getStringValue(reader["taskName"]),                       
+                        hours = Convert.ToDecimal(reader["hours"])                                             
                     });
 
                 }
@@ -3154,21 +3140,23 @@ namespace CompanyProject.Controllers
             List<TaskInformation> TaskInfo = new List<TaskInformation>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, w.hours, r.roleName " +
-                "from employee as e, works_on as w, roles as r where " +
-                "w.taskID = " + id + " and e.employeeID = w.employeeID and e.roleID = r.roleID;", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Mname, e.Lname, w.hours, r.roleName " +
+                "from works_on as w left outer join employee as e on e.employeeID = w.employeeID " +
+                "left outer join roles as r on r.roleID = e.roleID where w.taskID = " + id + ";", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
-                {                
+                {
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
                     TaskInfo.Add(new TaskInformation()
                     {
-                        Fname = getStringValue(reader["Fname"]),
-                        Lname = getStringValue(reader["Lname"]),
+                        name = name,
                         roleName = getStringValue(reader["roleName"]),                      
-                        hours = Convert.ToDecimal(reader["hours"])
-                       
+                        hours = Convert.ToDecimal(reader["hours"])                       
                     });
 
                 }
@@ -3435,7 +3423,6 @@ namespace CompanyProject.Controllers
 
             return Report;
         }
-
 
         public List<Tasks> getTasks(int id)
         {

@@ -66,6 +66,7 @@ namespace CompanyProject.Controllers
             {
                 ID = getStringValue(reader["depID"]);
             }
+            conn.Close();
             return ID;
         }
 
@@ -82,6 +83,7 @@ namespace CompanyProject.Controllers
             {
                 roleName = getStringValue(reader["roleName"]);
             }
+            conn.Close();
             return roleName;
         }
 
@@ -98,6 +100,7 @@ namespace CompanyProject.Controllers
             {
                 depName = getStringValue(reader["depName"]);
             }
+            conn.Close();
             return depName;
         }
 
@@ -124,6 +127,7 @@ namespace CompanyProject.Controllers
                 superMname = getStringValue(reader["Mname"]);
                 superLname = getStringValue(reader["Lname"]);
             }
+            conn.Close();
             return superFname + " " + superMname + " " + superLname;
         }
 
@@ -183,9 +187,6 @@ namespace CompanyProject.Controllers
             return employeeData;
         }
 
-
-
-
         public static string getStringValue(object value)
         {
             if (value == DBNull.Value) return string.Empty;
@@ -238,7 +239,7 @@ namespace CompanyProject.Controllers
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
 
-
+            conn.Close();
             return View(emp);
 
 
@@ -359,12 +360,13 @@ namespace CompanyProject.Controllers
 
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
+                conn.Close();
                 TempData["success"] = "Employee edited successfully";
                 return RedirectToAction("Index");
 
             }
 
-
+            conn.Close();
             return View(employee);
         }
 
@@ -391,6 +393,7 @@ namespace CompanyProject.Controllers
             }
             cmd.Connection = conn;
             cmd.ExecuteNonQuery();
+            conn.Close();
             return RedirectToAction("Index");
         }
 
@@ -435,8 +438,8 @@ namespace CompanyProject.Controllers
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
             emp.SupervisorName = getSuperName(getIntValue(reader["superID"]));
-            
 
+            conn.Close();
             reader.Close();
             return View(emp);
 
@@ -465,7 +468,7 @@ namespace CompanyProject.Controllers
             work.tempemployeeID = getIntValue(reader["employeeID"]);
             work.tempTaskID = getIntValue(reader["taskID"]);
             work.hours = getIntValue(reader["hours"]);
-
+            conn.Close();
             return View(work);
         }
 
@@ -522,6 +525,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(work);
             }
         }
@@ -541,6 +545,7 @@ namespace CompanyProject.Controllers
             login.username = getStringValue(reader["username"]);
             login.password = getStringValue(reader["user_password"]);
             login.privilege = getStringValue(reader["user_privilege"]);
+            conn.Close();
             return View(login);
            
         }
@@ -610,6 +615,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
                 return View(login);
             }
         }
@@ -619,8 +625,9 @@ namespace CompanyProject.Controllers
             List<TaskDetails> TaskData = new List<TaskDetails>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, t.taskName, t.cost, t.taskDueDate, t.projID " +
-                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, t.taskName, t.cost, t.taskDueDate, p.projName, w.taskID " +
+                "from project as p left outer join task as t on t.projID = p.projID " +
+                "left outer join works_on as w on w.taskID = t.taskID where w.employeeID = " + id + ";", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -644,12 +651,12 @@ namespace CompanyProject.Controllers
                     TaskData.Add(new TaskDetails()
                     {
                         empID = getIntValue(reader["employeeID"]),
-                        taskID = getIntValue(reader["taskID"]),
-                        projID = getIntValue(reader["projID"]),
+                        projName = getStringValue(reader["projName"]),
                         dueDate = sqlDate,
-                        hours = getIntValue(reader["hours"]),
+                        hours = Convert.ToDecimal(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
-                        budget = getIntValue(reader["cost"])
+                        budget = getIntValue(reader["cost"]),
+                        taskID = getIntValue(reader["taskID"])
                     });
 
                 }
