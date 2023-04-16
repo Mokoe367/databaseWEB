@@ -22,6 +22,8 @@ namespace CompanyProject.Models
         public string supName { get; set; }      
         public string depName { get; set; }      
         public string assetName { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Range should be 0 or more")]
+        public int amount { get; set; }
         public List<SelectListItem> departments { get; set; }
         public List<SelectListItem> suppliers { get; set; }
         public List<SelectListItem> assets { get; set; }

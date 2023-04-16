@@ -7,9 +7,10 @@ namespace CompanyProject.Models
 {
     public class EmployeeAssetReport
     {
-        public string Fname { get; set; }
-        public string Lname { get; set; }
+        public string name { get; set; }
         public string type { get; set; }
         public int cost { get; set; }
+        public int amount { get; set; }
+        public int total { get; set; }
     }
 }

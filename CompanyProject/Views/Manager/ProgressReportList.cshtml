@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CompanyProject.Models.ProgressReport>
+﻿@model CompanyProject.Models.ProgressReport
 
 @{
     ViewData["Title"] = "ProgressReportList";
@@ -18,19 +18,13 @@
         <h2>Project Progress Report For @ViewData["ProjectInfo"]</h2>
 
     }
-
-    @if (ViewData["status"] != null)
-    {
-        <h3>Current status = @ViewData["status"]%</h3>
-    }
-    @if (ViewData["dueDate"] != null)
-    {
-        <h3>Project Due Date = @ViewData["dueDate"]</h3>
-    }
-    @if (ViewData["cost"] != null)
-    {
-        <h3>Project Budget = $@ViewData["cost"]</h3>
-    }
+  
+    <h3>Current status = @Model.status%</h3>
+   
+    <h3>Project Due Date = @Model.dueDate</h3>
+   
+    <h3>Project Budget = $@Model.budget</h3>
+    
 </div>
 
 <div id="table-div">
@@ -53,7 +47,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.FirstOrDefault().tasks)
+            @foreach (var item in Model.tasks)
             {
             <tr>
                 <td>
@@ -80,10 +74,7 @@
         <thead>
             <tr>
                 <th>
-                    First Name
-                </th>
-                <th>
-                    Last Name
+                    Employee Name
                 </th>
                 <th>
                     Role Name
@@ -97,15 +88,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.FirstOrDefault().progress)
+            @foreach (var item in Model.progress)
             {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Fname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lname)
-                </td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>               
                 <td>
                     @Html.DisplayFor(modelItem => item.roleName)
                 </td>
@@ -120,3 +108,39 @@
         </tbody>
     </table>
 </div>
+
+<div id="table-div">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Employee Hours</caption>
+        <thead>
+            <tr>
+                <th>
+                    Employee Name
+                </th>                
+                <th>
+                    Hours
+                </th>              
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.EmployeeHours)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>                   
+                    <td>
+                        @Html.DisplayFor(modelItem => item.hours)
+                    </td>                   
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p style="margin: 25px"><strong>Total Hours = @Model.totalHours.ToString()</strong></p>
+<script>
+    $(document).ready(function () {
+        $('table').DataTable();
+    });
+</script>

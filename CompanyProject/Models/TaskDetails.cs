@@ -10,6 +10,7 @@ namespace CompanyProject.Models
     {
         public int empID { get; set; }
         public int projID { get; set; }
+        public string projName { get; set; }
         public int taskID { get; set; }
         [Range(0.0, double.MaxValue, ErrorMessage = "Can't be less than 0")]
         public decimal hours { get; set; }

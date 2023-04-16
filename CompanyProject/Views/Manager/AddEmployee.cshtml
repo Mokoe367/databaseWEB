@@ -37,7 +37,7 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Sex" class="control-label">Gender</label>
-                <input asp-for="Sex" class="form-control" />
+                <select asp-for="Sex" readonly asp-items="@Model.genders"></select>
                 <span asp-validation-for="Sex" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -46,38 +46,23 @@
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="RoleName" class="control-label">Role (Insert either name or ID)</label>
-                <input asp-for="RoleName" type="text" class="form-control" />
-                <span asp-validation-for="RoleName" class="text-danger"></span>
-            </div>          
+                <label asp-for="RoleID">Roles</label>
+                <select asp-for="RoleID" asp-items="@Model.Roles">
+                    <option value="0">none</option>
+                </select>
+                <span asp-validation-for="RoleID" class="text-danger"></span>
+            </div>
             <div class="form-group mb-3">
                 <label asp-for="Salary" class="control-label"></label>
                 <input asp-for="Salary" class="form-control" />
                 <span asp-validation-for="Salary" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label for="check">check to insert by name</label>
-                <input type="checkbox" id="check" name="check" />
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="SuperID" class="control-label">Supervisor ID (insert 0 for null)</label>
-                <input asp-for="SuperID" name="SuperID" class="form-control" />
+                <label asp-for="SuperID" class="control-label">Supervisor</label>
+                <select asp-for="SuperID" asp-items="@Model.supervisors">
+                    <option value="0">none</option>
+                </select>
                 <span asp-validation-for="SuperID" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="superFname" class="control-label">Supervisor First Name</label>
-                <input asp-for="superFname" name="superFname" class="form-control" readonly />
-                <span asp-validation-for="superFname" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="superMname" class="control-label">Supervisor Middle Initial</label>
-                <input asp-for="superMname" name="superMname" class="form-control" readonly />
-                <span asp-validation-for="superMname" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="superLname" class="control-label">Supervisor Last Name</label>
-                <input asp-for="superLname" name="superLname" class="form-control" readonly />
-                <span asp-validation-for="superLname" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -91,26 +76,15 @@
 
 <script>
 
-    var checkbox = document.querySelector("input[name=check]");
-
-    checkbox.addEventListener("change", function () {
-        if (this.checked) {
-            document.querySelector("input[name=superFname]").removeAttribute('readonly');
-            document.querySelector("input[name=superMname]").removeAttribute('readonly');
-            document.querySelector("input[name=superLname]").removeAttribute('readonly');
-            document.querySelector("input[name=SuperID]").setAttribute('readonly', true);
-            document.querySelector("input[name=SuperID]").value = 0;
-            checkbox.value = true;
-        } else {
-            document.querySelector("input[name=superFname]").setAttribute('readonly', true);
-            document.querySelector("input[name=superMname]").setAttribute('readonly', true);
-            document.querySelector("input[name=superLname]").setAttribute('readonly', true);
-            document.querySelector("input[name=SuperID]").removeAttribute('readonly');
-            checkbox.value = false;
-        }
+    $(document).ready(function () {
+        $('select').selectize({
+            sortField: 'text'
+        });
     });
-
 </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
 
 

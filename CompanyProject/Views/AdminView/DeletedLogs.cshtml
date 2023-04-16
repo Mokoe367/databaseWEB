@@ -31,16 +31,19 @@
                     Supplier ID
                 </th>
                 <th>
-                    Supplier 
+                    Supplier
                 </th>
                 <th>
                     Asset ID
                 </th>
                 <th>
-                    Asset 
+                    Asset
                 </th>
                 <th>
                     Field
+                </th>
+                <th>
+                    Amount
                 </th>
                 <th>
                     Deleted At
@@ -77,6 +80,9 @@
                     @Html.DisplayFor(modelItem => item.field)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.amount)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.deleted_at)
                 </td>
                 <td>
@@ -101,7 +107,7 @@
                 </th>
                 <th>
                     Name
-                </th>                
+                </th>
                 <th>
                     Supplier ID
                 </th>
@@ -116,6 +122,9 @@
                 </th>
                 <th>
                     Field
+                </th>
+                <th>
+                    Amount
                 </th>
                 <th>
                     Deleted At
@@ -135,7 +144,7 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.fullName)
-                </td>               
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.supID)
                 </td>
@@ -150,6 +159,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.field)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.amount)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.deleted_at)

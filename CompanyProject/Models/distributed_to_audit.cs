@@ -16,5 +16,6 @@ namespace CompanyProject.Models
         public string depName { get; set; }
         public string supName { get; set; }
         public string assetName { get; set; }
+        public int amount { get; set; }
     }
 }

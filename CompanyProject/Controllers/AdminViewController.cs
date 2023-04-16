@@ -150,10 +150,7 @@ namespace CompanyProject.Controllers
             emp.SuperID = getIntValue(reader["superID"]);
             emp.SupervisorName = supervisorName;
             emp.DepName = getStringValue(reader["depName"]);
-            emp.RoleName = getStringValue(reader["roleName"]);
-            emp.superFname = superFname;
-            emp.superMname = superMname;
-            emp.superLname = superLname;
+            emp.RoleName = getStringValue(reader["roleName"]);          
             reader.Close();
             conn.Close();
             emp.Roles = getRoles();
@@ -219,7 +216,7 @@ namespace CompanyProject.Controllers
                         string Fname = getStringValue(reader["Fname"]);
                         string Mname = getStringValue(reader["Mname"]);
                         string Lname = getStringValue(reader["Lname"]);
-                        string Name = Fname + " " + Mname + " " + Lname;
+                        string Name = id + " " + Fname + " " + Mname + " " + Lname;
                         supervisors.Add(new SelectListItem()
                         {
                             Value = id,
@@ -249,7 +246,7 @@ namespace CompanyProject.Controllers
                     string Fname = getStringValue(reader["Fname"]);
                     string Mname = getStringValue(reader["Mname"]);
                     string Lname = getStringValue(reader["Lname"]);
-                    string Name = Fname + " " + Mname + " " + Lname;
+                    string Name = id + " " + Fname + " " + Mname + " " + Lname;
                     employees.Add(new SelectListItem()
                     {
                         Value = id,
@@ -370,16 +367,19 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select type, assetID from assets where deleted_flag = 1;", conn);
+            MySqlCommand cmd = new MySqlCommand("select a.type, a.assetID, s.name from assets as a " +
+                "left outer join suppliers as s on s.supID = a.supID where a.deleted_flag = 1;", conn);
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-
+                    string assetName = getStringValue(reader["type"]);
+                    string supName = getStringValue(reader["name"]);
+                    string text = supName + " - " + assetName;
                     assets.Add(new SelectListItem()
                     {
                         Value = getStringValue(reader["assetID"]),
-                        Text = getStringValue(reader["type"])
+                        Text = text
                     });
                 }
             }
@@ -489,7 +489,7 @@ namespace CompanyProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult selfEdit(Employee employee, bool check)
+        public IActionResult selfEdit(Employee employee)
         {
 
             MySqlConnection conn = GetConnection();
@@ -962,26 +962,13 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = @depName or depName = @depName", conn);
-            cmd.Parameters.AddWithValue("@depName", obj.depName);
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows && !string.IsNullOrEmpty(obj.depName))
-            {
-                ModelState.AddModelError("depID", "Department doesn't exist");
-            }
-            else if(reader.HasRows)
-            {
-                reader.Read();
-                obj.depID = getIntValue(reader["depID"]);
-            }
-            reader.Close();
-
+            MySqlCommand cmd = new MySqlCommand();
+            
             string query = "select projName from project where projName = @projName;";
             cmd.Parameters.AddWithValue("@projName", obj.projName);
             cmd.CommandText = query;
             cmd.Connection = conn;
-            reader = cmd.ExecuteReader();
+            var reader = cmd.ExecuteReader();
             if(reader.HasRows)
             {
                 ModelState.AddModelError("projName", "Duplicate project name not allowed");
@@ -1268,11 +1255,8 @@ namespace CompanyProject.Controllers
                 try
                 {
                     string query;
-
                     query = "insert into task (taskName, cost, taskDueDate, projID) VALUES (@taskName, @cost, @date, @projID);";
-
                     MySqlCommand cmd2 = new MySqlCommand();
-
                     cmd2.CommandText = query;
                     cmd2.Parameters.AddWithValue("@taskName", obj.taskName);
                     cmd2.Parameters.AddWithValue("@cost", obj.cost);
@@ -1343,20 +1327,7 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select projID from project where projID = @projName or projName = @projName", conn);
-            cmd.Parameters.AddWithValue("@projName", task.projName);
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows && !string.IsNullOrEmpty(task.projName))
-            {
-                ModelState.AddModelError("projName", "Project doesn't exist");
-            }
-            else if (reader.HasRows)
-            {
-                reader.Read();
-                task.projID = getIntValue(reader["projID"]);
-            }
-            reader.Close();
+           
             if (ModelState.IsValid)
             {
                 try
@@ -1640,10 +1611,11 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into distributed_to (depID, supID, assetID, field) VALUES ('" + obj.depID + 
-                    "', '" + obj.supID + "', '" + obj.assetID + "', @field);"; 
+                string query = "insert into distributed_to (depID, supID, assetID, field, amount) VALUES ('" + obj.depID + 
+                    "', '" + obj.supID + "', '" + obj.assetID + "', @field, @amount);"; 
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("@field", obj.field);
+                cmd.Parameters.AddWithValue("@amount", obj.amount);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1666,7 +1638,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID " +
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID, t.amount " +
                 "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
                 " left outer join department as d on d.depID = t.depID where t.depID = " + depId + " and " +
                 "t.supID = " + supId + " and t.assetID = " + assetId + ";", conn);
@@ -1682,6 +1654,7 @@ namespace CompanyProject.Controllers
             distribution.depName = getStringValue(reader["depName"]);
             distribution.supName = getStringValue(reader["name"]);
             distribution.assetName = getStringValue(reader["type"]);
+            distribution.amount = getIntValue(reader["amount"]);
             distribution.departments = getDepartments();
             distribution.assets = getAssets();
             distribution.suppliers = getSuppliers();
@@ -1724,10 +1697,11 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into used_by (employeeID, supID, assetID, field) VALUES ('" + obj.employeeID +
-                    "', '" + obj.supID + "', '" + obj.assetID + "', @field);"; ;
+                string query = "insert into used_by (employeeID, supID, assetID, field, amount) VALUES ('" + obj.employeeID +
+                    "', '" + obj.supID + "', '" + obj.assetID + "', @field, @amount);"; ;
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("@field", obj.field);
+                cmd.Parameters.AddWithValue("@amount", obj.amount);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1750,7 +1724,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, e.Fname, e.Mname, e.Lname, a.type, s.name " +
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, u.amount, e.Fname, e.Mname, e.Lname, a.type, s.name " +
                 "from used_by as u left outer join employee as e on e.employeeID = u.employeeID left outer join assets as a on a.assetID = u.assetID " +
                 "left outer join suppliers as s on s.supID = u.supID where u.employeeID = " + empId + " and " +
                 "u.supID = " + supId + " and u.assetID = " + assetId + ";", conn);
@@ -1768,12 +1742,14 @@ namespace CompanyProject.Controllers
             use.Lname = getStringValue(reader["Lname"]);
             use.supName = getStringValue(reader["name"]);
             use.assetName = getStringValue(reader["type"]);
+            use.amount = getIntValue(reader["amount"]);
             use.suppliers = getSuppliers();
             use.assets = getAssets();
             use.employees = getEmployees();
             conn.Close();
             return View(use);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult EditUse(Used_by use)
@@ -1801,7 +1777,7 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE used_by SET employeeID=@emp, supID=@sup, assetID=@asset, field=@field WHERE employeeID = '" + use.tempemployeeID + "' " +
+                string query = "UPDATE used_by SET employeeID=@emp, supID=@sup, assetID=@asset, field=@field, amount=@amount WHERE employeeID = '" + use.tempemployeeID + "' " +
                     "and supID = " + use.tempsupID + " and assetID = " + use.tempassetID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
@@ -1810,6 +1786,7 @@ namespace CompanyProject.Controllers
                 cmd2.Parameters.AddWithValue("@sup", use.supID);
                 cmd2.Parameters.AddWithValue("@asset", use.assetID);
                 cmd2.Parameters.AddWithValue("@field", use.field);
+                cmd2.Parameters.AddWithValue("@amount", use.amount);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
 
@@ -1854,7 +1831,7 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE distributed_to SET depID=@dep, supID=@sup, assetID=@asset, field=@field WHERE depID = '" + distribution.tempDepID + "' " +
+                string query = "UPDATE distributed_to SET depID=@dep, supID=@sup, assetID=@asset, field=@field, amount=@amount WHERE depID = '" + distribution.tempDepID + "' " +
                     "and supID = " + distribution.tempSupID + " and assetID = " + distribution.tempAssetID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
@@ -1863,6 +1840,7 @@ namespace CompanyProject.Controllers
                 cmd2.Parameters.AddWithValue("@sup", distribution.supID);
                 cmd2.Parameters.AddWithValue("@asset", distribution.assetID);
                 cmd2.Parameters.AddWithValue("@field", distribution.field);
+                cmd2.Parameters.AddWithValue("@amount", distribution.amount);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
 
@@ -2752,7 +2730,7 @@ namespace CompanyProject.Controllers
             var reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
-                ModelState.AddModelError("depName", "Department or Project still assigned this role");
+                ModelState.AddModelError("depName", "Department or Project still assigned this location");
             }
             reader.Close();
 
@@ -2790,7 +2768,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID " +
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID, t.amount " +
                 "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
                 " left outer join department as d on d.depID = t.depID where t.depID = " + depId + " and " +
                 "t.supID = " + supId + " and t.assetID = " + assetId + ";", conn);
@@ -2804,6 +2782,7 @@ namespace CompanyProject.Controllers
             distribution.depName = getStringValue(reader["depName"]);
             distribution.supName = getStringValue(reader["name"]);
             distribution.assetName = getStringValue(reader["type"]);
+            distribution.amount = getIntValue(reader["amount"]);
             conn.Close();
 
             return View(distribution);
@@ -2835,7 +2814,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, e.Fname, e.Mname, e.Lname, a.type, s.name " +
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, u.amount, e.Fname, e.Mname, e.Lname, a.type, s.name " +
                 "from used_by as u left outer join employee as e on e.employeeID = u.employeeID left outer join assets as a on a.assetID = u.assetID " +
                 "left outer join suppliers as s on s.supID = u.supID where u.employeeID = " + empId + " and " +
                 "u.supID = " + supId + " and u.assetID = " + assetId + ";", conn);
@@ -2854,6 +2833,7 @@ namespace CompanyProject.Controllers
             use.fullName = Fname + " " + Mname + " " + Lname;
             use.supName = getStringValue(reader["name"]);
             use.assetName = getStringValue(reader["type"]);
+            use.amount = getIntValue(reader["amount"]);
             conn.Close();
             return View(use);
         }
@@ -2981,6 +2961,7 @@ namespace CompanyProject.Controllers
             use.fullName = fullName;
             use.assetName = getStringValue(reader["assetName"]);
             use.supName = getStringValue(reader["supName"]);
+            use.amount = getIntValue(reader["amount"]);
             conn.Close();
             return View(use);
         }
@@ -3021,6 +3002,7 @@ namespace CompanyProject.Controllers
             dist.depName = getStringValue(reader["depName"]);
             dist.supName = getStringValue(reader["supName"]);
             dist.assetName = getStringValue(reader["assetName"]);
+            dist.amount = getIntValue(reader["amount"]);
             conn.Close();
             return View(dist);
         }
@@ -3410,7 +3392,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID " +
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID, t.amount " +
                 "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
                 " left outer join department as d on d.depID = t.depID", conn);
 
@@ -3427,7 +3409,8 @@ namespace CompanyProject.Controllers
                         field = getStringValue(reader["field"]),
                         depName = getStringValue(reader["depName"]),
                         supName = getStringValue(reader["name"]),
-                        assetName = getStringValue(reader["type"])
+                        assetName = getStringValue(reader["type"]),
+                        amount = getIntValue(reader["amount"])
                     });
                 }
             }
@@ -3443,7 +3426,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, e.Fname, e.Mname, e.Lname, a.type, s.name " +
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, u.amount, e.Fname, e.Mname, e.Lname, a.type, s.name " +
                 "from used_by as u left outer join employee as e on e.employeeID = u.employeeID left outer join assets as a on a.assetID = u.assetID " +
                 "left outer join suppliers as s on s.supID = u.supID;", conn);
 
@@ -3466,8 +3449,8 @@ namespace CompanyProject.Controllers
                         Lname = Lname,
                         supName = getStringValue(reader["name"]),
                         assetName = getStringValue(reader["type"]),
-                        fullName = fullName
-
+                        fullName = fullName,
+                        amount = getIntValue(reader["amount"])              
                     });
                 }
             }
@@ -3536,8 +3519,8 @@ namespace CompanyProject.Controllers
                         deleted_at = getStringValue(reader["deleted_at"]),
                         depName = getStringValue(reader["depName"]),
                         supName = getStringValue(reader["supName"]),
-                        assetName  = getStringValue(reader["assetName"])
-
+                        assetName  = getStringValue(reader["assetName"]),
+                        amount = getIntValue(reader["amount"])
                     });
                 }
             }
@@ -3573,7 +3556,8 @@ namespace CompanyProject.Controllers
                         deleted_at = getStringValue(reader["deleted_at"]),
                         fullName = fullName,
                         assetName = getStringValue(reader["assetName"]),
-                        supName = getStringValue(reader["supName"])
+                        supName = getStringValue(reader["supName"]),
+                        amount = getIntValue(reader["amount"])
                     });
                 }
             }
