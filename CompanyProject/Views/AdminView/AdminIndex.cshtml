@@ -96,10 +96,7 @@
                 </th>
                 <th>
                     Last Name
-                </th>
-                <th>
-                    SSN
-                </th>
+                </th>               
                 <th>
                     Address
                 </th>
@@ -145,9 +142,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Lname)
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Ssn)
-                    </td>
+             <!--   <td>
+                        @Html.DisplayFor(modelItem => item.Ssn) 
+                    </td>  -->
                     <td>
                         @Html.DisplayFor(modelItem => item.Address)
                     </td>
@@ -183,9 +180,21 @@
                     <td>
                         @Html.ActionLink("Edit", "EditEmployee", new { id = item.ID }) |
                         @Html.ActionLink("Login Details", "LoginDetails", new { id = item.ID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteEmployee", new { id = item.ID })
+                        @Html.ActionLink("Delete/Restore", "DeleteEmployee", new { id = item.ID }) |
+                        @if (ViewData["id"] != null)
+                        {
+                            if (Convert.ToInt32(ViewData["id"]) != item.ID)
+                            {
+                                @Html.ActionLink("Actual Delete", "ActualDeleteEmployee", new { id = item.ID });
+                            }
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Actual Delete", "ActualDeleteEmployee", new { id = item.ID });
+                        }
                     </td>
-                </tr>
+
+            </tr>
             }
         </tbody>
     </table>
@@ -239,7 +248,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditDepartment", new { id = item.depID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteDepartment", new { id = item.depID })
+                        @Html.ActionLink("Delete/Restore", "DeleteDepartment", new { id = item.depID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteDepartment", new { id = item.depID })
                     </td>
                 </tr>
             }
@@ -319,7 +329,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditProject", new { id = item.projID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteProject", new { id = item.projID })
+                        @Html.ActionLink("Delete/Restore", "DeleteProject", new { id = item.projID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteProject", new { id = item.projID })
                     </td>
                 </tr>
             }
@@ -375,7 +386,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditSupplier", new { id = item.supID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteSupplier", new { id = item.supID })
+                        @Html.ActionLink("Delete/Restore", "DeleteSupplier", new { id = item.supID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteSupplier", new { id = item.supID })
                     </td>
                 </tr>
             }
@@ -410,7 +422,7 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditRole", new { id = item.roleID }) |
-                        @Html.ActionLink("Delete", "DeleteRole", new { id = item.roleID })
+                        @Html.ActionLink("Delete", "DeleteRole", new { id = item.roleID })                       
                     </td>
                 </tr>
             }
@@ -472,7 +484,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteTask", new { id = item.taskID })
+                        @Html.ActionLink("Delete/Restore", "DeleteTask", new { id = item.taskID }) |
+                        @Html.ActionLink("Actual Delete", "ActualDeleteTask", new { id = item.taskID })
                     </td>
                 </tr>
             }
@@ -515,7 +528,7 @@
                         @Html.DisplayFor(modelItem => item.type)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.cost)
+                        $@Html.DisplayFor(modelItem => item.cost)
                     </td>
                     <td>
                         @if (item.supID != 0)
@@ -528,7 +541,8 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditAsset", new { id = item.assetID }) |
-                        @Html.ActionLink("Delete/Restore", "DeleteAsset", new { id = item.assetID })
+                        @Html.ActionLink("Delete/Restore", "DeleteAsset", new { id = item.assetID })|
+                        @Html.ActionLink("ActualDelete", "ActualDeleteAsset", new { id = item.assetID })
                     </td>
                 </tr>
             }
@@ -556,7 +570,7 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.depID)
+                        @Html.DisplayFor(modelItem => item.depName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.loc_name)
@@ -578,16 +592,19 @@
         <thead>
             <tr>
                 <th>
-                    Department ID
+                    Department
                 </th>
                 <th>
-                    Supplier ID
+                    Supplier
                 </th>
                 <th>
-                    Asset ID
+                    Asset
                 </th>
                 <th>
                     Field
+                </th>
+                <th>
+                    Amount
                 </th>
                 <th></th>
             </tr>
@@ -595,24 +612,27 @@
         <tbody>
             @foreach (var item in Model.FirstOrDefault().Distributions)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.depID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.supID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.assetID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.field)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "EditDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID }) |
-                        @Html.ActionLink("Delete", "DeleteDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID })
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.depName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.field)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.amount)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID }) |
+                    @Html.ActionLink("Delete", "DeleteDistribution", new { depId = item.depID, supId = item.supID, assetId = item.assetID })
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -636,30 +656,36 @@
                 <th>
                     Field
                 </th>
+                <th>
+                    Amount
+                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.FirstOrDefault().UsedBy)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.employeeID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.supID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.assetID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.field)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "EditUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID }) |
-                        @Html.ActionLink("Delete", "DeleteUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID })
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.fullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.field)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.amount)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID }) |
+                    @Html.ActionLink("Delete", "DeleteUse", new { empId = item.employeeID, supId = item.supID, assetId = item.assetID })
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -672,10 +698,10 @@
         <thead>
             <tr>
                 <th>
-                    Employee ID
+                    Employee
                 </th>
                 <th>
-                    Task ID
+                    Task
                 </th>
                 <th>
                     Hours
@@ -688,10 +714,10 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.employeeID)
+                        @Html.DisplayFor(modelItem => item.fullName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TaskID)
+                        @Html.DisplayFor(modelItem => item.taskName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.hours)

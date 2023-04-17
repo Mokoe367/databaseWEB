@@ -15,6 +15,13 @@
 {
     <h2 style="margin: 25px">@ViewData["SupplierInfo"].ToString()</h2>
 }
+<div style="margin: 25px">
+    @if (TempData["success"] != null)
+    {
+        @TempData["success"];
+
+    }
+</div>
 
 
 <h5 style="margin: 25px">Assets Distributed by this supplier</h5>
@@ -32,10 +39,13 @@
                     Type
                 </th>
                 <th>
-                    Cost
+                    Cost per 1
                 </th>
                 <th>
                     Field
+                </th>
+                <th>
+                    Amount
                 </th>
                 <th>
 
@@ -45,24 +55,27 @@
         <tbody>
             @foreach (var item in Model.FirstOrDefault().supplierDetails)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.assetID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.type)
-                    </td>
-                    <td>
-                        $@Html.DisplayFor(modelItem => item.cost)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.field)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "EditDistribution", new { supId = ViewData["supplier"], assetId = item.assetID }) |
-                        @Html.ActionLink("Delete", "DeleteDistribution", new { supId = ViewData["supplier"], assetId = item.assetID })
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.assetID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.type)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.field)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.amount)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditDistribution", new { supId = ViewData["supplier"], assetId = item.assetID }) |
+                    @Html.ActionLink("Delete", "DeleteDistribution", new { supId = ViewData["supplier"], assetId = item.assetID })
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -82,10 +95,7 @@
                 </th>
                 <th>
                     Cost
-                </th>
-                <th>
-                    Supplier ID
-                </th>                
+                </th>                             
                 <th></th>
             </tr>
         </thead>
@@ -101,13 +111,7 @@
                     </td>
                     <td>
                         $@Html.DisplayFor(modelItem => item.cost)
-                    </td>
-                    <td>
-                        @if (item.supID != 0)
-                        {
-                            @Html.DisplayFor(modelItem => item.supID)
-                        }
-                    </td>                   
+                    </td>                                     
                     <td>
                         @Html.ActionLink("Edit", "EditAsset", new { id = item.assetID }) |
                         @Html.ActionLink("Delete", "DeleteAsset", new { id = item.assetID })

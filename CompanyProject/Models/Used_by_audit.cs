@@ -12,6 +12,10 @@ namespace CompanyProject.Models
         public int empID { get; set; }
         public int supID { get; set; }
         public int assetID { get; set; }
-        public string deleted_at { get; set; }
+        public string deleted_at { get; set; }        
+        public string supName { get; set; }
+        public string assetName { get; set; }
+        public string fullName { get; set; }
+        public int amount { get; set; }
     }
 }

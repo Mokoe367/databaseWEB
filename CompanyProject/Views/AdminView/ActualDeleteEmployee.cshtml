@@ -1,0 +1,86 @@
+﻿@model CompanyProject.Models.Employee
+
+@{
+    ViewData["Title"] = "ActualDeleteEmployee";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="margin: 25px;">Actual Delete Employee</h2>
+
+
+<div class="row" style="margin: 25px;">
+    <div class="col-md-4">
+        <form asp-action="ActualDeleteEmployee">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="ID" class="control-label"></label>
+                <input asp-for="ID" class="form-control" readonly />
+                <span asp-validation-for="ID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Fname" class="control-label">First Name</label>
+                <input asp-for="Fname" class="form-control" readonly />
+                <span asp-validation-for="Fname" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Lname" class="control-label">Last Name</label>
+                <input asp-for="Lname" class="form-control" readonly />
+                <span asp-validation-for="Lname" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Mname" class="control-label">Middle Initial</label>
+                <input asp-for="Mname" class="form-control" readonly />
+                <span asp-validation-for="Mname" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" readonly />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Sex" class="control-label"></label>
+                <input asp-for="Sex" class="form-control" readonly />
+                <span asp-validation-for="Sex" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="BirthDate" class="control-label"></label>
+                <input asp-for="BirthDate" class="form-control" readonly />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="RoleName" class="control-label">Role</label>
+                <input asp-for="RoleName" class="form-control" readonly />
+                <span asp-validation-for="RoleName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="DepName" class="control-label">Department</label>
+                <input asp-for="DepName" class="form-control" readonly />
+                <span asp-validation-for="DepName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Salary" class="control-label"></label>
+                <input asp-for="Salary" class="form-control" readonly />
+                <span asp-validation-for="Salary" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SupervisorName" class="control-label">Supervisor</label>
+                <input asp-for="SupervisorName" class="form-control" readonly />
+                <span asp-validation-for="SupervisorName" class="text-danger"></span>
+            </div>    
+            <div class="form-group mb-3">
+                <label asp-for="Deleted_flag" class="control-label">Supervisor</label>
+                <input asp-for="Deleted_flag" class="form-control" readonly />
+                <span asp-validation-for="Deleted_flag" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+    <div class="mb-3">
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+
+

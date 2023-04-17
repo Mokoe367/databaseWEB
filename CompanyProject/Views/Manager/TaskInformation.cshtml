@@ -20,16 +20,13 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Fname)
+                        Name
+                    </th>                  
+                    <th>
+                        Hours
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Lname)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.hours)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.roleName)
+                       Role Name
                     </th>                   
                 </tr>
             </thead>
@@ -38,11 +35,8 @@
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Fname)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Lname)
-                        </td>
+                            @Html.DisplayFor(modelItem => item.name)
+                        </td>                        
                         <td>
                             @Html.DisplayFor(modelItem => item.hours)
                         </td>

@@ -13,5 +13,6 @@ namespace CompanyProject.Models
         [Range(0, int.MaxValue, ErrorMessage = "Range should be more than 0")]
         public int cost { get; set; }
         public string field { get; set; }
+        public int amount { get; set; }
     }
 }

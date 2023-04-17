@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -34,9 +35,8 @@ namespace CompanyProject.Models
         public string DepName { get; set; }
 
         public int DepID { get; set; }
-
-        [Required(ErrorMessage = "SSN Required")]
-        [RegularExpression("[0-9]{9}", ErrorMessage = "Invalid SSN Format")]
+       
+      //  [RegularExpression("[0-9]{9}", ErrorMessage = "Invalid SSN Format")]
         public int Ssn { get; set; }
 
         [Required(ErrorMessage = "Salary Required")]
@@ -46,6 +46,14 @@ namespace CompanyProject.Models
         public string SupervisorName { get; set; }
         public string superFname { get; set; }
         public string superLname { get; set; }
-        public string superMname { get; set; }       
+        public string superMname { get; set; }
+        public List<SelectListItem> Roles { get; set; }
+        public List<SelectListItem> supervisors { get; set; }
+        public List<SelectListItem> departments { get; set; }
+        public List<SelectListItem> genders { get; } = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "M", Text = "M" },
+            new SelectListItem { Value = "F", Text = "F" }      
+        };
     }
 }

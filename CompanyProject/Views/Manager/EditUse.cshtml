@@ -13,23 +13,28 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
                 <label asp-for="employeeID" class="control-label">EmployeeID</label>
-                <input asp-for="employeeID" class="form-control" readonly/>
+                <input asp-for="employeeID" class="form-control" readonly />
                 <span asp-validation-for="employeeID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="supID" class="control-label">Suplier ID</label>
-                <input asp-for="supID" class="form-control" />
+                <label asp-for="supID">Supplier</label>
+                <select asp-for="supID" asp-items="@Model.suppliers"></select>
                 <span asp-validation-for="supID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="assetID" class="control-label">Asset ID</label>
-                <input asp-for="assetID" class="form-control" />
+                <label asp-for="assetID">Asset</label>
+                <select asp-for="assetID" asp-items="@Model.assets"></select>
                 <span asp-validation-for="assetID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="field" class="control-label">Field</label>
                 <input asp-for="field" class="form-control" />
                 <span asp-validation-for="field" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="amount" class="control-label">Amount</label>
+                <input asp-for="amount" class="form-control" />
+                <span asp-validation-for="amount" class="text-danger"></span>
             </div>
             <div class="form-group" style="display: none">
                 <label asp-for="tempemployeeID" class="control-label"></label>
@@ -55,6 +60,16 @@
         <a asp-action="EmployeeDetails" asp-route-id=@ViewData["use"]>Back to List</a>
     </div>
 </div>
+<script>
 
+    $(document).ready(function () {
+        $('select').selectize({
+            sortField: 'text'
+        });
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
 

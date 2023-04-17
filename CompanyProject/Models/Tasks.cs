@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace CompanyProject.Models
         [Required (ErrorMessage = "Task Name Required")]
         public string taskName { get; set; }
         [Required(ErrorMessage = "Budget Required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Range should be above 0 or more")]
         public int cost { get; set; }
         [Required(ErrorMessage = "Due Date Required")]
         [RegularExpression("([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))", ErrorMessage = "Invalid Date Format")]
@@ -19,5 +21,6 @@ namespace CompanyProject.Models
         public int projID { get; set; }
         public string projName { get; set; }
         public int deleted_flag { get; set; }
+        public List<SelectListItem> projects { get; set; }
     }
 }
