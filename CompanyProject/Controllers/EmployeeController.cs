@@ -15,7 +15,7 @@ namespace CompanyProject.Controllers
     {
         private MySqlConnection GetConnection()
         {
-            return new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
+            return new MySqlConnection("server = 127.0.0.1; port=3306;database=company_project;user=root;password=Ram1500trx@mopar");
         }
 
 
@@ -537,7 +537,9 @@ namespace CompanyProject.Controllers
             MySqlCommand cmd = new MySqlCommand("select e.depID from employee as e where e.employeeID = " + id + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();                      
-            depID = getIntValue(reader["depID"]);         
+            depID = getIntValue(reader["depID"]);
+            string depName = getDepartmentName(depID);
+            ViewData["DepName"] = depName;
             conn.Close();
 
             List<EmployeeTaskReportView> data = new List<EmployeeTaskReportView>();
@@ -545,6 +547,7 @@ namespace CompanyProject.Controllers
 
             model.taskDetails = getTaskDetails(id);
             model.projects = getProjectData(depID);
+            
 
             data.Add(model);
             return data;
@@ -604,7 +607,7 @@ namespace CompanyProject.Controllers
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, t.taskName, t.cost, t.taskDueDate, t.projID " +
                 "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
-
+            int projNum = 0;
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -632,14 +635,75 @@ namespace CompanyProject.Controllers
                         dueDate = sqlDate,
                         hours = getIntValue(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
-                        budget = getIntValue(reader["cost"])
+                        budget = getIntValue(reader["cost"]),
+                        UntilDueDate = getTaskDaysLeft(getIntValue(reader["taskID"])),
+                        projName = getProjectName(getIntValue(reader["projID"]))
                     });
+                    
 
                 }
             }
+
+            projNum = countUniqueProj(TaskData);
+            ViewData["projNum"] = projNum;
             conn.Close();
 
             return TaskData;
+        }
+
+        public int countUniqueProj(List<TaskDetails> TaskData)
+        {
+            int count = 0; // num of unique projects
+            List<int> projects = new List<int>();
+            foreach(var item in TaskData)
+            {
+                if (projects.Contains(item.projID))
+                {
+                    continue;
+                }
+                else
+                {
+                    projects.Add(item.projID);
+                    count++;
+                }
+            }
+            return count;
+        }
+        public string getProjectName(int projectID)
+        {
+            if (projectID == 0) { return ""; }
+            string projName = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select projName from project where projID=" + projectID + ";", conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                projName = getStringValue(reader["projName"]);
+            }
+            
+            return projName;
+        }
+
+        public string getTaskDaysLeft(int taskID)
+        {
+            if (taskID == 0) { return ""; }
+            string daysLeft = "";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+
+            MySqlCommand cmd1 = new MySqlCommand("select datediff(taskDueDate,(select curdate())) as days from task where taskID =" + taskID + ";", conn);
+            var reader = cmd1.ExecuteReader();
+
+            if (reader.Read())
+            {
+                daysLeft = getStringValue(reader["days"]);
+            }
+            int temp = getIntValue(daysLeft);
+            if (temp < 0) { return "Overdue!"; }
+            return daysLeft;
         }
 
         public List<Project> getProjectData(int id)
@@ -674,6 +738,7 @@ namespace CompanyProject.Controllers
                         projID = getIntValue(reader["projID"]),
                         dueDate = sqlDate,
                         depID = getIntValue(reader["depID"]),
+                        depName = getDepartmentName(getIntValue(reader["depID"])),
                         projName = getStringValue(reader["projName"]),
                         location = getStringValue(reader["location"]),
                         cost = getIntValue(reader["cost"]),
