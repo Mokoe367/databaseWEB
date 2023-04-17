@@ -9,5 +9,7 @@ namespace CompanyProject.Models
     {
         public List<Project> projects { get; set; }
         public List<TaskDetails> taskDetails { get; set; }
+
+
     }
 }

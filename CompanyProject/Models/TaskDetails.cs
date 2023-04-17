@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace CompanyProject.Models
         [Range(0, int.MaxValue, ErrorMessage = "Range should be more than 0")]
         public int budget { get; set; }
         public string dueDate { get; set; }
-
+        [DisplayName("Time until due date")]
+        public string UntilDueDate { get; set; }
+        public string projName { get; set; }
     }
 }

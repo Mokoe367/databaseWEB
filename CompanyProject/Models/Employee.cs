@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,11 +12,13 @@ namespace CompanyProject.Models
        
         public int ID { get; set; }
         [Required(ErrorMessage = "First Name Required")]
+        [DisplayName("First Name")]
         public string Fname { get; set; }
 
         [Required(ErrorMessage = "Last Name Required")]
+        [DisplayName("Last Name")]
         public string Lname { get; set; }
-
+        [DisplayName("Middle Name")]
         public string Mname { get; set; }
 
         [Required(ErrorMessage = "Address Required")]
@@ -29,8 +32,10 @@ namespace CompanyProject.Models
         public string BirthDate { get; set; }
 
         public int Deleted_flag { get; set; }
+        [DisplayName("Role Name")]
         public string RoleName { get; set; }
         public int RoleID { get; set; }
+        [DisplayName("Department Name")]
         public string DepName { get; set; }
 
         public int DepID { get; set; }
@@ -43,6 +48,7 @@ namespace CompanyProject.Models
         [Range(0, 100000, ErrorMessage = "Range should be between 0 and 100k")]
         public int Salary { get; set; }
         public int SuperID { get; set; }
+        [DisplayName("Supervisor Name")]
         public string SupervisorName { get; set; }
         public string superFname { get; set; }
         public string superLname { get; set; }

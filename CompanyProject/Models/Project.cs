@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,8 +17,10 @@ namespace CompanyProject.Models
         public string dueDate { get; set; }
 
         public int depID { get; set; }
-
+        [DisplayName("Department Name")]
         public string depName { get; set; }
+
+        
         [Required(ErrorMessage = "Project Name Required")]
         public string projName { get; set; }
 

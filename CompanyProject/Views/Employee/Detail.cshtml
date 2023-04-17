@@ -70,24 +70,36 @@
         <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.Salary)
         </dd>
-        <dt class="col-sm-2">
+            @if (Model.RoleID != 0)
+            {
+                <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.RoleName)
-        </dt>
-        <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.RoleName)
-        </dd>
-        <dt class="col-sm-2">
+                </dt>
+                <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.RoleName)
+                </dd>
+            }
+            @if (Model.DepID != 0)
+            {
+                <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.DepName)
-        </dt>
-        <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.DepName)
-        </dd>
-        <dt class="col-sm-2">
+                </dt>
+                <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.DepName)
+                </dd>
+            }
+        
+            @if (Model.SuperID != 0)
+            {
+                <dt class="col-sm-2">
+            
                 @Html.DisplayNameFor(model => model.SupervisorName)
-        </dt>
-        <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.SupervisorName)
-        </dd>
+                </dt>
+                <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.SupervisorName)
+                </dd>
+            }
+            
     </dl>
 </div>
 <div>
