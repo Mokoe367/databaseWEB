@@ -3,6 +3,17 @@
 @{
     ViewData["Title"] = "TaskReport";
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+    int projNum = (int)ViewData["projNum"];
+    List<string> projs = new List<string>(); 
+    foreach (var item in Model.FirstOrDefault().taskDetails)
+    {
+        if(!projs.Contains(item.projName))
+        {
+            projs.Add(item.projName);
+        }
+        
+    }
+    string[] projArr = projs.ToArray();
 }
 
 <style>
@@ -15,7 +26,7 @@
 
 <div id="table-div">    
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
-        <caption>Projects</caption>
+        <caption>Projects within the Department @ViewData["DepName"]</caption>
         <thead>
             <tr>
                 <th>
@@ -73,15 +84,19 @@
 </div>
 
 <div id="table-div">
-    <table class="table">
+    @for (int i = 0; i < projNum; i++)
+    {
+        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption> Showing tasks for Project @projArr[i]</caption>
+        
         <thead>
             <tr>
-                <th>
+                @*<th>
                     Employee ID
-                </th>
-                <th>
-                    Project ID
-                </th>
+                </th>*@
+                @*<th>
+                    Project Name
+                </th>*@
                 <th>
                     Task ID
                 </th>
@@ -98,40 +113,62 @@
                     Task Due Date
                 </th>  
                 <th>
+                    Days Until Due Date
+                </th>
+                <th>
 
                 </th>
             </tr>
         </thead>
+        
         <tbody>
             @foreach (var item in Model.FirstOrDefault().taskDetails)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.empID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.projID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.hours)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.budget)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.dueDate)
-                    </td>   
-                    <td>
-                        @Html.ActionLink("Edit", "EditWork", new { empid = item.empID, taskid = item.taskID })
-                    </td>
-                </tr>
+                
+             @*start the change here*@   
+                    @if(item.projName == projArr[i])
+                    {
+                        <tr>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.empID)
+                        </td>*@
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.projName)
+                        </td>*@
+                        @*<td>
+                            @Html.DropDownListFor(modelItem => item.projID,new SelectList(Enum.GetValues(typeof(TaskDetails))),"Select Project ID")
+                        </td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.taskID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.taskName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.hours)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.budget)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.dueDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UntilDueDate)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "EditWork", new { empid = item.empID, taskid = item.taskID })
+                        </td>
+
+                        </tr>
+                    }
+                    
             }
+            @*@{
+                projArr = projArr.Skip(1).ToArray();
+            }*@
         </tbody>
     </table>
+    }
+    
 </div>

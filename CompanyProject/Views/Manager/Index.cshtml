@@ -125,9 +125,9 @@
         <caption>Locations</caption>
         <thead>
             <tr>
-                <th>
+                @*<th>
                     Department ID
-                </th>
+                </th>*@
                 <th>
                     Location Name
                 </th>
@@ -138,9 +138,9 @@
             @foreach (var item in Model.FirstOrDefault().locations)
             {
                 <tr>
-                    <td>
+                    @*<td>
                         @Html.DisplayFor(modelItem => item.depID)
-                    </td>
+                    </td>*@
                     <td>
                         @Html.DisplayFor(modelItem => item.loc_name)
                     </td>
