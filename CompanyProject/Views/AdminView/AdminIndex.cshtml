@@ -15,10 +15,15 @@
         flex-direction: row;
         align-items:center;
     }
-    .admin-nav h6 {
+    .admin-nav a {
         margin-right: 15px;
+        color: black;
+        font-weight: 500;
+        display: block;
+        position: relative;
+        padding: 0.2em 0;
     }
-    .admin-nav h6:hover {
+    .admin-nav a:hover {
         cursor: pointer;
         color: #0d6efd;
     }
@@ -28,14 +33,17 @@
     }
     .show-active{
         display:block;
-        /*animation: fade 0.5s;*/
+        animation: fade 0.3s;
     }
     .tab {
-
+        text-decoration: none;
     }
     .tab-active {
         font-size: 2.5rem;
+        text-decoration: underline;
+        text-underline-offset: 0.5em;
     }
+
     @@keyframes fade {
         from{
             opacity: 0
@@ -44,6 +52,29 @@
             opacity: 1
         }
     }
+
+    /* Fade in underline */
+    .admin-nav a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0.1em;
+        background-color: #0d6efd;
+        opacity: 0;
+        transition: opacity 300ms, transform 300ms;
+    }
+
+    .admin-nav a:hover::after {
+        opacity: 1;
+        transform: translate3d(0, 0.2em, 0);
+    } 
+    .admin-nav a:focus::after {
+        opacity: 1;
+        transform: translate3d(0, 0.2em, 0);
+    }
+
 </style>
 
 
@@ -66,17 +97,17 @@
 
 
 <div class="admin-nav">
-    <h6 class="tab tab-active">Employees</h6>
-    <h6 class="tab">Departments</h6>
-    <h6 class="tab">Projects</h6>
-    <h6 class="tab">Suppliers</h6>
-    <h6 class="tab">Roles</h6>
-    <h6 class="tab">Tasks</h6>
-    <h6 class="tab">Assets</h6>
-    <h6 class="tab">Locations</h6>
-    <h6 class="tab">Supplier Distributions</h6>
-    <h6 class="tab">Used By</h6>
-    <h6 class="tab">Works On</h6>
+    <a class="tab tab-active">Employees</a>
+    <a class="tab">Departments</a>
+    <a class="tab">Projects</a>
+    <a class="tab">Suppliers</a>
+    <a class="tab">Roles</a>
+    <a class="tab">Tasks</a>
+    <a class="tab">Assets</a>
+    <a class="tab">Locations</a>
+    <a class="tab">Supplier Distributions</a>
+    <a class="tab">Used By</a>
+    <a class="tab">Works On</a>
 </div>
 
 <div id="Employees" class="content-body show-active">
