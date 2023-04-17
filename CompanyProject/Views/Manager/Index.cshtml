@@ -6,8 +6,80 @@
 }
 
 <style>
-    #table-div {
+    .mngr-nav {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 25px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .mngr-nav a {
+        margin-right: 15px;
+        color: black;
+        font-weight: 500;
+        display: block;
+        position: relative;
+        padding: 0.2em 0;
+    }
+
+    .mngr-nav a:hover {
+        cursor: pointer;
+        color: #0d6efd;
+    }
+
+    .content-body {
         margin: 25px;
+        display: none;
+    }
+
+    .show-active {
+        display: block;
+        animation: fade 0.3s;
+    }
+
+    .tab {
+        text-decoration: none;
+    }
+
+    .tab-active {
+        font-size: 2.5rem;
+        text-decoration: underline;
+        text-underline-offset: 0.5em;
+    }
+
+    @@keyframes fade {
+        from {
+            opacity: 0
+        }
+
+        to {
+            opacity: 1
+        }
+    }
+
+    /* Fade in underline */
+    .mngr-nav a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0.1em;
+        background-color: #0d6efd;
+        opacity: 0;
+        transition: opacity 250ms, transform 500ms;
+    }
+
+    .mngr-nav a:hover::after {
+        opacity: 1;
+        transform: translate3d(0, 0.2em, 0);
+    }
+
+    .mngr-nav a:focus::after {
+        opacity: 1;
+        transform: translate3d(0, 0.2em, 0);
     }
 </style>
 
@@ -28,7 +100,16 @@
     }
 </div>
 
-<div id="table-div">
+<div class="mngr-nav">
+    <a class="tab tab-active">Employees</a>
+    <a class="tab">Locations</a>
+    <a class="tab">Projects</a>
+    <a class="tab">Tasks</a>
+    <a class="tab">Suppliers</a>
+    <a class="tab">Roles</a>
+</div>
+
+<div id="Employees" class="content-body show-active">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddEmployee">Add Employee</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Employees</caption>
@@ -119,7 +200,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Locations" class="content-body">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddLocations">Add Locations</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Locations</caption>
@@ -154,7 +235,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Projects" class="content-body">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddProject">Add Project</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Projects</caption>
@@ -220,7 +301,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Tasks" class="content-body">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddTask">Add Task</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Tasks</caption>
@@ -278,7 +359,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Suppliers" class="content-body">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddSupplier">Add Supplier</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Suppliers</caption>
@@ -329,7 +410,7 @@
     </table>
 </div>
 
-<div id="table-div">
+<div id="Roles" class="content-body">
     <a asp-controller="Manager" class="btn btn-primary" asp-action="AddRole">Add Role</a>
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Roles</caption>
@@ -369,4 +450,34 @@
     $(document).ready(function () {
         $('table').DataTable();
     });
+
+
+    //function to remove .show-active class and add to clicked
+    function setNewActive(el) {
+        // select all .content-body
+        var contentBodies = document.getElementsByClassName('content-body');
+        // remove .show-active
+        for (var contentBody of contentBodies) {
+            contentBody.classList.remove('show-active');
+        }
+        //add .show-active back
+        document.getElementById(el.textContent.replace(/\s+/g, '-')).classList.add('show-active');
+
+        var tabs = document.getElementsByClassName('tab');
+        for (var tab of tabs) {
+            tab.classList.remove('tab-active');
+        }
+        el.classList.add('tab-active');
+    }
+
+    //select tab class and loop through
+    var tabs = document.getElementsByClassName('tab');
+    for (var tab of tabs) {
+        //add click listener
+        tab.addEventListener('click', function (e) {
+            setNewActive(e.currentTarget);
+        })
+
+    }
+
 </script>
