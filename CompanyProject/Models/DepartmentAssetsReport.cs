@@ -10,5 +10,7 @@ namespace CompanyProject.Models
         public string name { get; set; }
         public string type { get; set; }
         public int cost { get; set; }
+        public int amount { get; set; }
+        public int total { get; set; }
     }
 }

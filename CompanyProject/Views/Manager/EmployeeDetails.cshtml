@@ -15,6 +15,13 @@
 {
     <h2 style="margin: 25px">@ViewData["TaskInfo"].ToString()</h2>
 }
+<div style="margin: 25px">
+    @if (TempData["success"] != null)
+    {
+        @TempData["success"];
+
+    }
+</div>
 
 <p style="margin:25px">
     <a asp-action="Enlist" class="btn btn-primary" asp-controller="Manager" asp-route-id="@ViewData["employee"]">
@@ -23,18 +30,15 @@
 </p>
 
 <div id="table-div">
-    <table class="table">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <thead>
             <tr>
                 <th>
                     Employee ID
                 </th>
                 <th>
-                    Project ID
-                </th>
-                <th>
-                    Task ID
-                </th>
+                    Project
+                </th>               
                 <th>
                     Task Name
                 </th>
@@ -58,11 +62,8 @@
                         @Html.DisplayFor(modelItem => item.empID)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.projID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskID)
-                    </td>
+                        @Html.DisplayFor(modelItem => item.projName)
+                    </td>                  
                     <td>
                         @Html.DisplayFor(modelItem => item.taskName)
                     </td>
@@ -70,7 +71,7 @@
                         @Html.DisplayFor(modelItem => item.hours)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.budget)
+                        $@Html.DisplayFor(modelItem => item.budget)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.dueDate)
@@ -94,19 +95,19 @@
                     Employee ID
                 </th>
                 <th>
-                    Supplier ID
+                    Supplier
                 </th>
                 <th>
-                    Asset ID
+                    Asset
                 </th>
                 <th>
                     Field
                 </th>
                 <th>
-                    Type
+                    Amount
                 </th>
                 <th>
-                    Cost
+                    Cost per 1
                 </th>
                 <th></th>
             </tr>
@@ -119,16 +120,16 @@
                     @Html.DisplayFor(modelItem => item.employeeID)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.supID)
-                </td>
+                    @Html.DisplayFor(modelItem => item.supName)
+                </td> 
                 <td>
-                    @Html.DisplayFor(modelItem => item.assetID)
+                    @Html.DisplayFor(modelItem => item.type)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.field)
-                </td>
+                </td>    
                 <td>
-                    @Html.DisplayFor(modelItem => item.type)
+                    @Html.DisplayFor(modelItem => item.amount)
                 </td>
                 <td>
                     $@Html.DisplayFor(modelItem => item.cost)

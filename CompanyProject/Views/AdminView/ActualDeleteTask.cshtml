@@ -1,0 +1,54 @@
+﻿@model CompanyProject.Models.Tasks
+
+@{
+    ViewData["Title"] = "ActualDeleteTask";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="margin: 25px;">Actual Delete Task</h2>
+
+<div class="row" style="margin: 25px;">
+    <div class="col-md-4">
+        <form asp-action="ActualDeleteTask">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="taskID" class="control-label">Task ID</label>
+                <input asp-for="taskID" class="form-control" readonly />
+                <span asp-validation-for="taskID" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="taskName" class="control-label">Task Name</label>
+                <input asp-for="taskName" class="form-control" readonly />
+                <span asp-validation-for="taskName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="cost" class="control-label"></label>
+                <input asp-for="cost" class="form-control" readonly />
+                <span asp-validation-for="cost" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="taskDueDate" class="control-label">Due Date</label>
+                <input asp-for="taskDueDate" class="form-control" readonly />
+                <span asp-validation-for="taskDueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="projName" class="control-label">Project Name</label>
+                <input asp-for="projName" class="form-control" readonly />
+                <span asp-validation-for="projName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="deleted_flag" class="control-label"></label>
+                <input asp-for="deleted_flag" class="form-control" readonly />
+                <span asp-validation-for="deleted_flag" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+    <div class="mb-3">
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+

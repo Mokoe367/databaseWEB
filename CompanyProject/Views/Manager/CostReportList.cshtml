@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CompanyProject.Models.CostReport>
+﻿@model CompanyProject.Models.CostReport
 
 @{
     ViewData["Title"] = "CostReportList";
@@ -21,8 +21,8 @@
 </div>
 
 <p style="margin: 25px">
-    Budget = $@Model.FirstOrDefault().projectBudget.ToString(), Budget Used = $@Model.FirstOrDefault().taskCost.ToString(),
-    Budget Remaining = $@ViewData["remaining"]
+    Budget = $@Model.projectBudget.ToString(), Budget Used = $@Model.taskCost.ToString(),
+    Budget Remaining = $@Model.remaining.ToString()
 </p>
 
 <div id="table-div">
@@ -42,7 +42,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.FirstOrDefault().tasks)
+            @foreach (var item in Model.tasks)
             {
                 <tr>
                     <td>
@@ -60,7 +60,7 @@
     </table>
 </div>
 
-<p style="margin: 25px">Total = $@Model.FirstOrDefault().taskCost.ToString()</p>
+<p style="margin: 25px"><strong>Task Total = $@Model.taskCost.ToString()</strong></p>
 
 <div id="table-div">
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
@@ -88,7 +88,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.FirstOrDefault().taskReports)
+            @foreach (var item in Model.taskReports)
             {
                 <tr>
                     <td>
@@ -115,84 +115,12 @@
     </table>
 </div>
 
-<p style="margin: 25px">Total = $@Model.FirstOrDefault().employeeSalary.ToString()</p>
+<p style="margin: 25px"><strong>Total Salary = $@Model.employeeSalary.ToString()</strong></p>
 
-<div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
-        <caption>Department Assets</caption>
-        <thead>
-            <tr>
-                <th>
-                    Supplier Name
-                </th>
-                <th>
-                    Asset Type
-                </th>
-                <th>
-                    Cost
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.FirstOrDefault().departmentAssets)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.type)
-                    </td>
-                    <td>
-                        $@Html.DisplayFor(modelItem => item.cost)
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+<p style="margin: 25px;"><strong>Total Budget with salary = $@Model.totalRemaining.ToString()</strong></p>
 
-<p style="margin: 25px">Total = $@Model.FirstOrDefault().departmentCost.ToString()</p>
-
-<div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
-        <caption>Employee Assets</caption>
-        <thead>
-            <tr>
-                <th>
-                    First Name
-                </th>
-                <th>
-                    Last Name
-                </th>
-                <th>
-                    Type
-                </th>
-                <th>
-                    Cost
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.FirstOrDefault().employeeAssets)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Fname)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Lname)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.type)
-                    </td>
-                    <td>
-                        $@Html.DisplayFor(modelItem => item.cost)
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-<p style="margin: 25px">Total = $@Model.FirstOrDefault().employeeCost.ToString()</p>
+<script>
+    $(document).ready(function () {
+        $('table').DataTable();
+    });
+</script>
