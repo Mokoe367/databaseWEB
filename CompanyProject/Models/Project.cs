@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +9,7 @@ using System.Threading.Tasks;
 namespace CompanyProject.Models
 {
     public class Project
-    {
-        private CompanyContext context;
+    {        
         public int projID { get; set; }
 
         [Required(ErrorMessage = "Due Date Required")]
@@ -38,5 +38,7 @@ namespace CompanyProject.Models
 
         public int deleted_flag { get; set; }
 
+        public List<SelectListItem> departments { get; set; }
+        public List<SelectListItem> locations { get; set; }
     }
 }

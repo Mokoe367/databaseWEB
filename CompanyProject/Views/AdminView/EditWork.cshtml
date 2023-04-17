@@ -12,13 +12,13 @@
         <form asp-action="EditWork">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
-                <label asp-for="employeeID" class="control-label"></label>
-                <input asp-for="employeeID" class="form-control" />
+                <label asp-for="employeeID" class="control-label">Employee</label>
+                <select asp-for="employeeID" asp-items="@Model.employees"></select>
                 <span asp-validation-for="employeeID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="TaskID" class="control-label"></label>
-                <input asp-for="TaskID" class="form-control" />
+                <label asp-for="TaskID">Task</label>
+                <select asp-for="TaskID" asp-items="@Model.tasks"></select>
                 <span asp-validation-for="TaskID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -28,14 +28,14 @@
             </div>
             <div class="form-group mb-3" style="display:none">
                 <label asp-for="tempemployeeID" class="control-label"></label>
-                <input asp-for="tempemployeeID" class="form-control" readonly />
+                <input asp-for="tempemployeeID" name="tempemployeeID" class="form-control" readonly />
                 <span asp-validation-for="tempemployeeID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3" style="display:none">
                 <label asp-for="tempTaskID" class="control-label"></label>
                 <input asp-for="tempTaskID" class="form-control" readonly />
                 <span asp-validation-for="tempTaskID" class="text-danger"></span>
-            </div>           
+            </div>
             <div class="form-group mb-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -46,4 +46,14 @@
     </div>
 </div>
 
+<script>
 
+    $(document).ready(function () {
+        $('select').selectize({
+            sortField: 'text'
+        });
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />

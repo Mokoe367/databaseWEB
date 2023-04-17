@@ -8,9 +8,7 @@ namespace CompanyProject.Models
 {
     public class TaskInformation
     {
-        public string Fname { get; set; }
-        public string Lname { get; set; }
-        [Range(0.0, double.MaxValue, ErrorMessage = "Can't be less than 0")]
+        public string name { get; set; }               
         public decimal hours { get; set; }
         public string roleName { get; set; }
     }

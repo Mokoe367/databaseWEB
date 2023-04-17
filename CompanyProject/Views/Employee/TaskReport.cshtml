@@ -93,13 +93,10 @@
             <tr>
                 @*<th>
                     Employee ID
-                </th>*@
-                @*<th>
-                    Project Name
-                </th>*@
-                <th>
-                    Task ID
                 </th>
+                <th>
+                    Project Name
+                </th>                
                 <th>
                     Task Name
                 </th>
@@ -124,49 +121,30 @@
         <tbody>
             @foreach (var item in Model.FirstOrDefault().taskDetails)
             {
-                
-             @*start the change here*@   
-                    @if(item.projName == projArr[i])
-                    {
-                        <tr>
-                        @*<td>
-                            @Html.DisplayFor(modelItem => item.empID)
-                        </td>*@
-                        @*<td>
-                            @Html.DisplayFor(modelItem => item.projName)
-                        </td>*@
-                        @*<td>
-                            @Html.DropDownListFor(modelItem => item.projID,new SelectList(Enum.GetValues(typeof(TaskDetails))),"Select Project ID")
-                        </td>*@
-                        <td>
-                            @Html.DisplayFor(modelItem => item.taskID)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.taskName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.hours)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.budget)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.dueDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UntilDueDate)
-                        </td>
-                        <td>
-                            @Html.ActionLink("Edit", "EditWork", new { empid = item.empID, taskid = item.taskID })
-                        </td>
-
-                        </tr>
-                    }
-                    
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.empID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.projName)
+                    </td>                    
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.hours)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.budget)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.dueDate)
+                    </td>   
+                    <td>
+                        @Html.ActionLink("Edit", "EditWork", new { empid = item.empID, taskid = item.taskID })
+                    </td>
+                </tr>
             }
-            @*@{
-                projArr = projArr.Skip(1).ToArray();
-            }*@
         </tbody>
     </table>
     }

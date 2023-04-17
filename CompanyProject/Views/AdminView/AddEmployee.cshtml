@@ -32,8 +32,8 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Sex" class="control-label"></label>
-                <input asp-for="Sex" class="form-control" />
+                <label asp-for="Sex" class="control-label">Gender</label>
+                <select asp-for="Sex" class="form-select" asp-items="@Model.genders"></select>
                 <span asp-validation-for="Sex" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -42,15 +42,10 @@
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Ssn" class="control-label">9 Digit SSN</label>
-                <input asp-for="Ssn" class="form-control" />
-                <span asp-validation-for="Ssn" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
                 <label asp-for="Salary" class="control-label"></label>
                 <input asp-for="Salary" class="form-control" />
                 <span asp-validation-for="Salary" class="text-danger"></span>
-            </div>
+            </div>            
             <div class="form-group mb-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

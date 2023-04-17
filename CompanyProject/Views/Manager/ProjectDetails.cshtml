@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CompanyProject.Models.ProjectDetails>
+﻿@model CompanyProject.Models.ProjectInfo
 
 @{
     ViewData["Title"] = "ProjectDetails";
@@ -16,20 +16,14 @@
     <h2 style="margin: 25px">@ViewData["ProjectInfo"].ToString()</h2>
 }
 <div id="table-div">
-    <table class="table">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <thead>
             <tr>
                 <th>
-                    First Name
-                </th>
-                <th>
-                    Last Name
+                    Name
                 </th>
                 <th>
                     Role Name
-                </th>
-                <th>
-                    Task ID
                 </th>
                 <th>
                     Task Name
@@ -37,29 +31,17 @@
                 <th>
                     Hours
                 </th>
-                <th>
-                    TaskDueDate
-                </th>
-                <th>
-                    Task Budget
-                </th>             
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.details)
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Fname)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Lname)
+                        @Html.DisplayFor(modelItem => item.name)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.roleName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskID)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.taskName)
@@ -67,14 +49,55 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.hours)
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskDueDate)
-                    </td>
-                    <td>
-                        $@Html.DisplayFor(modelItem => item.cost)
-                    </td>                    
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+<div id="table-div">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Tasks</caption>
+        <thead>
+            <tr>
+                <th>
+                    Task ID
+                </th>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Task Budget
+                </th>
+                <th>
+                    Task Due Date
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.tasks)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskName)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.taskDueDate)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('table').DataTable();
+    });
+</script>

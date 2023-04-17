@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CompanyProject.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MySql.Data.MySqlClient;
 
 namespace CompanyProject.Controllers
@@ -34,6 +36,7 @@ namespace CompanyProject.Controllers
             if (value == DBNull.Value) return 0;
             return Convert.ToInt32(value);
         }
+
         public string getDepartmentName(int depID)
         {
             string depName = "";
@@ -96,6 +99,7 @@ namespace CompanyProject.Controllers
             conn.Close();
             return superFname + " " + superMname + " " + superLname;
         }
+
         public IActionResult Index()
         {
             string empID = HttpContext.Session.GetString("id");
@@ -131,25 +135,287 @@ namespace CompanyProject.Controllers
 
         }
 
+        public List<SelectListItem> getRoles()
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> Roles = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select * from roles", conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    Roles.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["roleID"]),
+                        Text = getStringValue(reader["rolename"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return Roles;
+        }
+
+        public List<SelectListItem> getSupervisors(int depID, int empID)
+        {
+            if (depID == 0)
+            {
+                List<SelectListItem> empty = new List<SelectListItem>();
+                return empty;
+            }
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> supervisors = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select Fname, Lname, Mname, employeeID from employee where depID = " + depID + " and deleted_flag = 1;", conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string id = getStringValue(reader["employeeID"]);
+                    if (id != empID.ToString())
+                    {
+                        string Fname = getStringValue(reader["Fname"]);
+                        string Mname = getStringValue(reader["Mname"]);
+                        string Lname = getStringValue(reader["Lname"]);
+                        string Name = id + " " + Fname + " " + Mname + " " + Lname;
+                        supervisors.Add(new SelectListItem()
+                        {
+                            Value = id,
+                            Text = Name
+                        });
+                    }
+                }
+            }
+            conn.Close();
+
+            return supervisors;
+        }
+
+        public List<SelectListItem> getEmployees()
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> employees = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select Fname, Lname, Mname, employeeID from employee where deleted_flag = 1 and depID = @department;", conn);
+            cmd.Parameters.AddWithValue("@department", HttpContext.Session.GetString("depID"));
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string id = getStringValue(reader["employeeID"]);
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Name = id + " " + Fname + " " + Mname + " " + Lname;
+                    employees.Add(new SelectListItem()
+                    {
+                        Value = id,
+                        Text = Name
+                    });
+
+                }
+            }
+            conn.Close();
+
+            return employees;
+        }
+       
+        public List<SelectListItem> getLocations(int depID)
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> locations = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select loc_name from dep_locations where depID = " + depID + ";", conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    locations.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["loc_name"]),
+                        Text = getStringValue(reader["loc_name"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return locations;
+        }
+
+        public List<SelectListItem> getProjects()
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> departments = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select projName, projID from project where deleted_flag = 1 and depID = @department;", conn);
+            cmd.Parameters.AddWithValue("@department", HttpContext.Session.GetString("depID"));
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    departments.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["projID"]),
+                        Text = getStringValue(reader["projName"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return departments;
+        }
+
+        public List<SelectListItem> getSuppliers()
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> suppliers = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select name, supID from suppliers where deleted_flag = 1;", conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    suppliers.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["supID"]),
+                        Text = getStringValue(reader["name"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return suppliers;
+        }
+
+        public List<SelectListItem> getAssets()
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> assets = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select a.type, a.assetID, s.name from assets as a " +
+                "left outer join suppliers as s on s.supID = a.supID where a.deleted_flag = 1;", conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string assetName = getStringValue(reader["type"]);
+                    string supName = getStringValue(reader["name"]);
+                    string text = supName + " - " + assetName;
+                    assets.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["assetID"]),
+                        Text = text
+                    });
+                }
+            }
+            conn.Close();
+
+            return assets;
+        }
+
+        public List<SelectListItem> getSpecificAssets(int supID)
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> assets = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select a.type, a.assetID, s.name from assets as a " +
+                "left outer join suppliers as s on s.supID = a.supID where a.deleted_flag = 1 and a.supID = @supplier;", conn);
+            cmd.Parameters.AddWithValue("@supplier", supID);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string assetName = getStringValue(reader["type"]);
+                    string supName = getStringValue(reader["name"]);
+                    string text = supName + " - " + assetName;
+                    assets.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["assetID"]),
+                        Text = text
+                    });
+                }
+            }
+            conn.Close();
+
+            return assets;
+        }
+
+        public List<SelectListItem> getTasks()
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> tasks = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName " +
+                "from task as t, project as p where t.projID = p.projID and p.depID = @department and t.deleted_flag = 1;", conn);
+            cmd.Parameters.AddWithValue("@department", HttpContext.Session.GetString("depID"));
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    tasks.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["taskID"]),
+                        Text = getStringValue(reader["taskName"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return tasks;
+        }
+
         public IActionResult AddEmployee()
         {
             string depID = "Adding Employee into Department number " + HttpContext.Session.GetString("depID");
             ViewData["AddInfo"] = depID;
-            return View();
+            int department = int.Parse(HttpContext.Session.GetString("depID"));
+            Employee employee = new Employee();
+            employee.Roles = getRoles();
+            employee.supervisors = getSupervisors(department, -1);            
+            return View(employee);
         }
 
         public IActionResult AddProject()
         {
             string depID = "Adding Project into Department number " + HttpContext.Session.GetString("depID");
             ViewData["AddInfo"] = depID;
-            return View();
+            int department = Convert.ToInt32(HttpContext.Session.GetString("depID"));
+            Project proj = new Project();
+            proj.locations = getLocations(department);
+            return View(proj);
         }
 
         public IActionResult AddTask()
         {
             string depID = "Adding Task for Department number " + HttpContext.Session.GetString("depID");
             ViewData["AddInfo"] = depID;
-            return View();
+            Tasks task = new Tasks();
+            task.projects = getProjects();
+            return View(task);
         }
 
         public IActionResult AddRole()
@@ -159,13 +425,15 @@ namespace CompanyProject.Controllers
 
         public IActionResult AddSupplier()
         {
-            return View();
+            Supplier supplier = new Supplier();
+            supplier.Roles = getRoles();
+            return View(supplier);
         }
 
         public IActionResult AddAsset(int id)
         {
             Asset asset = new Asset();
-            asset.supID = id;
+            asset.supID = id;            
             ViewData["asset"] = id;
             return View(asset);           
         }
@@ -174,6 +442,8 @@ namespace CompanyProject.Controllers
         {
             Used_by use = new Used_by();
             use.employeeID = id;
+            use.assets = getAssets();
+            use.suppliers = getSuppliers();
             ViewData["use"] = id;
             return View(use);
         }
@@ -191,7 +461,9 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from employee where employeeID = " + id + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.employeeID, e.Fname, e.Lname, e.Mname, e.Address, e.sex, e.birthDate, e.deleted_flag, e.roleID, e.depID, e.ssn, e.salary, e.superID, r.roleName, " +
+                "s.Fname as superFname, s.Lname as superLname, s.Mname as superMname, d.depName" +
+                " from employee as e left outer join employee as s on e.superID = s.employeeID left outer join roles as r on r.roleID = e.roleID left outer join department as d on d.depID = e.depID where e.employeeID = " + id + " ;", conn);
 
             var reader = cmd.ExecuteReader();
             reader.Read();
@@ -209,7 +481,10 @@ namespace CompanyProject.Controllers
                 dateTemp[1] = "0" + dateTemp[1];
             }
             string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
-
+            string superFname = getStringValue(reader["superFname"]);
+            string superMname = getStringValue(reader["superMname"]);
+            string superLname = getStringValue(reader["superLname"]);
+            string supervisorName = superFname + " " + superMname + " " + superLname;
             emp.Fname = getStringValue(reader["Fname"]);
             emp.ID = getIntValue(reader["employeeID"]);
             emp.Fname = getStringValue(reader["Fname"]);
@@ -223,11 +498,25 @@ namespace CompanyProject.Controllers
             emp.Ssn = getIntValue(reader["ssn"]);
             emp.Salary = getIntValue(reader["salary"]);
             emp.SuperID = getIntValue(reader["superID"]);
-
+            emp.SupervisorName = supervisorName;
+            emp.DepName = getStringValue(reader["depName"]);
+            emp.RoleName = getStringValue(reader["roleName"]);           
+            reader.Close();
             conn.Close();
-            return View(emp);
-        }
+            emp.Roles = getRoles();
+            emp.supervisors = getSupervisors(emp.DepID, emp.ID);
+            string empID = HttpContext.Session.GetString("id");
+            if (emp.ID.ToString() == empID)
+            {
+                return View("selfEdit", emp);
+            }
+            else
+            {
+                return View(emp);
+            }
 
+        }
+    
         public IActionResult EditProject(int id)
         {
             Project proj = new Project();
@@ -261,6 +550,8 @@ namespace CompanyProject.Controllers
             proj.cost = getIntValue(reader["cost"]);
             proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
             proj.field = getStringValue(reader["field"]);
+            int department = Convert.ToInt32(HttpContext.Session.GetString("depID"));           
+            proj.locations = getLocations(department);
             conn.Close();
             return View(proj);
         }
@@ -271,7 +562,8 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from task where taskID = " + id + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag " +
+               "from task as t left outer join project as p on p.projID = t.projID where taskID = " + id + "; ", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
@@ -293,6 +585,8 @@ namespace CompanyProject.Controllers
             task.cost = getIntValue(reader["cost"]);
             task.taskDueDate = sqlDate;
             task.projID = getIntValue(reader["projID"]);
+            task.projName = getStringValue(reader["projName"]);
+            task.projects = getProjects();
             conn.Close();
             return View(task);
         }
@@ -303,15 +597,16 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from suppliers where supID = " + id + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand("select s.supID, s.product, s.name, s.deleted_flag, s.roleID, r.roleName " +
+               "from suppliers as s left outer join roles as r on r.roleID = s.roleID where supID = " + id + "; ", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
-
             sup.supID = getIntValue(reader["supID"]);
             sup.product = getStringValue(reader["product"]);
             sup.name = getStringValue(reader["name"]);
             sup.roleID = getIntValue(reader["roleID"]);
+            sup.roleName = getStringValue(reader["roleName"]);
+            sup.Roles = getRoles();
             conn.Close();
             return View(sup);
         }
@@ -338,14 +633,16 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from assets where assetID = " + id + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select a.assetID, a.type, a.cost, a.deleted_flag, a.supID, s.name " +
+                "from assets as a left outer join suppliers as s on s.supID = a.supID where assetID = " + id + "; ", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             asset.assetID = getIntValue(reader["assetID"]);
             asset.type = getStringValue(reader["type"]);
             asset.cost = getIntValue(reader["cost"]);
             asset.supID = getIntValue(reader["supID"]);
-
+            asset.supName = getStringValue(reader["name"]);
+          
             ViewData["asset"] = asset.supID;
             conn.Close();
             return View(asset);
@@ -359,8 +656,10 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from distributed_to where depID = " + department + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID, t.amount " +
+               "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
+               " left outer join department as d on d.depID = t.depID where t.depID = " + department + " and " +
+               "t.supID = " + supId + " and t.assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             distribution.depID = getIntValue(reader["depID"]);
@@ -370,6 +669,12 @@ namespace CompanyProject.Controllers
             distribution.tempSupID = getIntValue(reader["supID"]);
             distribution.tempAssetID = getIntValue(reader["assetID"]);
             distribution.field = getStringValue(reader["field"]);
+            distribution.depName = getStringValue(reader["depName"]);
+            distribution.supName = getStringValue(reader["name"]);
+            distribution.assetName = getStringValue(reader["type"]);
+            distribution.amount = getIntValue(reader["amount"]);
+            distribution.assets = getAssets();
+            distribution.suppliers = getSuppliers();
 
             ViewData["supplier"] = supId;
             conn.Close();
@@ -382,8 +687,10 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from used_by where employeeID = " + empId + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, u.amount, e.Fname, e.Mname, e.Lname, a.type, s.name " +
+                "from used_by as u left outer join employee as e on e.employeeID = u.employeeID left outer join assets as a on a.assetID = u.assetID " +
+                "left outer join suppliers as s on s.supID = u.supID where u.employeeID = " + empId + " and " +
+                "u.supID = " + supId + " and u.assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             use.employeeID = getIntValue(reader["employeeID"]);
@@ -393,6 +700,15 @@ namespace CompanyProject.Controllers
             use.tempsupID = getIntValue(reader["supID"]);
             use.tempassetID = getIntValue(reader["assetID"]);
             use.field = getStringValue(reader["field"]);
+            use.Fname = getStringValue(reader["Fname"]);
+            use.Mname = getStringValue(reader["Mname"]);
+            use.Lname = getStringValue(reader["Lname"]);
+            use.supName = getStringValue(reader["name"]);
+            use.assetName = getStringValue(reader["type"]);
+            use.amount = getIntValue(reader["amount"]);
+            use.suppliers = getSuppliers();
+            use.assets = getAssets();
+            use.employees = getEmployees();
 
             ViewData["use"] = empId;
             conn.Close();
@@ -405,11 +721,13 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = @name;", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, l.loc_name, l.depID from dep_locations as l left outer join department as d on d.depID = l.depID" +
+                " where l.depID = " + id + " and l.loc_name = @name;", conn);
             cmd.Parameters.AddWithValue("@name", name);
             var reader = cmd.ExecuteReader();
             reader.Read();
             location.depID = getIntValue(reader["depID"]);
+            location.depName = getStringValue(reader["depName"]);
             location.loc_name = getStringValue(reader["loc_name"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
@@ -424,8 +742,10 @@ namespace CompanyProject.Controllers
             int department = Convert.ToInt32(depID);
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from distributed_to where depID = " + department + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, s.name, a.type, t.field, t.assetID, t.depID, t.supID, t.amount " +
+               "from distributed_to as t left outer join suppliers as s on s.supID = t.supID left outer join assets as a on a.assetID = t.assetID" +
+               " left outer join department as d on d.depID = t.depID where t.depID = " + department + " and " +
+               "t.supID = " + supId + " and t.assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
 
@@ -433,7 +753,10 @@ namespace CompanyProject.Controllers
             distribution.supID = getIntValue(reader["supID"]);
             distribution.assetID = getIntValue(reader["assetID"]);
             distribution.field = getStringValue(reader["field"]);
-
+            distribution.depName = getStringValue(reader["depName"]);
+            distribution.supName = getStringValue(reader["name"]);
+            distribution.assetName = getStringValue(reader["type"]);
+            distribution.amount = getIntValue(reader["amount"]);
             ViewData["supplier"] = supId;
             conn.Close();
             return View(distribution);
@@ -544,8 +867,9 @@ namespace CompanyProject.Controllers
 
         public IActionResult ProjectDetails(int id)
         {
-            IEnumerable<ProjectDetails> list = GetProjectDetails(id);
-
+            ProjectInfo list = new ProjectInfo();
+            list.details = GetProjectDetails(id);
+            list.tasks = getTasks(id);
             MySqlConnection conn = GetConnection();
             conn.Open();           
             MySqlCommand cmd = new MySqlCommand("select projName from project where projID = " + id + ";", conn);
@@ -604,15 +928,21 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from works_on where employeeID = " + empid + " and taskID = '" + taskid + "';", conn);
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.taskID, e.Fname, e.Mname, e.Lname, t.taskName, w.hours " +
+                "from works_on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID where w.employeeID = " + empid + " and " +
+                "w.taskID = " + taskid + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             work.employeeID = getIntValue(reader["employeeID"]);
-            work.TaskID = getIntValue(reader["TaskID"]);
-            work.hours = getIntValue(reader["hours"]);
-
+            work.TaskID = getIntValue(reader["taskID"]);
+            work.hours = Convert.ToDecimal(reader["hours"]);
+            string Fname = getStringValue(reader["Fname"]);
+            string Mname = getStringValue(reader["Mname"]);
+            string Lname = getStringValue(reader["Lname"]);
+            work.Fname = Fname + " " + Mname + " " + Lname;
+            work.taskName = getStringValue(reader["taskName"]);
             ViewData["employee"] = empid;
-
+            conn.Close();
             return View(work);
         }
 
@@ -620,26 +950,20 @@ namespace CompanyProject.Controllers
         {
             Works_on work = new Works_on();
             work.employeeID = id;
+            work.employees = getEmployees();
+            work.tasks = getTasks();
             ViewData["employee"] = id;
             return View(work);
         }       
 
         public IActionResult RequestAssets(int id)
-        {
-            MySqlConnection conn = GetConnection();
-            conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select name from suppliers where supID = " + id + ";", conn);
-            var reader = cmd.ExecuteReader();
-            reader.Read();
-            string msg = "Requesting Assets from " + getStringValue(reader["name"]);
-            conn.Close();
-
-            ViewData["request"] = msg;
+        {          
             Distributed_to asset = new Distributed_to();
             string depID = HttpContext.Session.GetString("depID");
             int department = Convert.ToInt32(depID);
             asset.depID = department;
-            asset.supID = id;
+            asset.supID = id;            
+            asset.assets = getSpecificAssets(id); 
             ViewData["asset"] = id;
             return View(asset);
         }
@@ -717,13 +1041,15 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from assets where assetID = " + id + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand("select a.assetID, a.type, a.cost, a.deleted_flag, a.supID, s.name " +
+                "from assets as a left outer join suppliers as s on s.supID = a.supID where assetID = " + id + "; ", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             asset.assetID = getIntValue(reader["assetID"]);
             asset.type = getStringValue(reader["type"]);
             asset.cost = getIntValue(reader["cost"]);
             asset.supID = getIntValue(reader["supID"]);
+            asset.supName = getStringValue(reader["name"]);
 
             ViewData["asset"] = asset.supID;
             conn.Close();
@@ -736,15 +1062,26 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from used_by where employeeID = " + empId + " and " +
-                "supID = " + supId + " and assetID = " + assetId + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.assetID, u.supID, u.field, u.amount, e.Fname, e.Mname, e.Lname, a.type, s.name " +
+                "from used_by as u left outer join employee as e on e.employeeID = u.employeeID left outer join assets as a on a.assetID = u.assetID " +
+                "left outer join suppliers as s on s.supID = u.supID where u.employeeID = " + empId + " and " +
+                "u.supID = " + supId + " and u.assetID = " + assetId + ";", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
             use.employeeID = getIntValue(reader["employeeID"]);
             use.supID = getIntValue(reader["supID"]);
             use.assetID = getIntValue(reader["assetID"]);
             use.field = getStringValue(reader["field"]);
-
+            string Fname = getStringValue(reader["Fname"]);
+            string Mname = getStringValue(reader["Mname"]);
+            string Lname = getStringValue(reader["Lname"]);
+            use.Fname = Fname;
+            use.Mname = Mname;
+            use.Lname = Lname;
+            use.fullName = Fname + " " + Mname + " " + Lname;
+            use.supName = getStringValue(reader["name"]);
+            use.assetName = getStringValue(reader["type"]);
+            use.amount = getIntValue(reader["amount"]);
             ViewData["use"] = empId;
             conn.Close();
             return View(use);
@@ -757,12 +1094,14 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select * from dep_locations where depID = " + id + " and loc_name = @name;", conn);
+            MySqlCommand cmd = new MySqlCommand("select d.depName, l.loc_name, l.depID from dep_locations as l left outer join department as d on d.depID = l.depID" +
+               " where l.depID = " + id + " and l.loc_name = @name;", conn);
             cmd.Parameters.AddWithValue("@name", name);
             var reader = cmd.ExecuteReader();
             reader.Read();
             location.depID = getIntValue(reader["depID"]);
             location.loc_name = getStringValue(reader["loc_name"]);
+            location.depName = getStringValue(reader["depName"]);
             location.pastDepID = getIntValue(reader["depID"]);
             location.pastLoc_name = getStringValue(reader["loc_name"]);
             conn.Close();
@@ -771,7 +1110,43 @@ namespace CompanyProject.Controllers
 
         public IActionResult CostReport()
         {
-            return View();
+            ReportForm reportForm = new ReportForm();
+            reportForm.projects = getProjects();
+            return View(reportForm);
+        }
+
+        public IActionResult AssetReport()
+        {
+            string depID = HttpContext.Session.GetString("depID");
+            int department = Convert.ToInt32(depID);
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select depName from department where depID = " + department + ";", conn);
+            var reader = cmd.ExecuteReader();
+            string name = "";
+            if(reader.Read())
+            {
+                name = getStringValue(reader["depName"]);
+            }
+            reader.Close();
+            conn.Close();
+            AssetReport model = new AssetReport();
+            model.employeeAssets = GetEmployeeAssets(department);
+            model.departmentAssets = GetDepartmentAssets(department);
+            model.employeeTotal = 0;
+            model.departmentTotal = 0;
+            foreach (var item in model.employeeAssets)
+            {
+                model.employeeTotal += item.total;
+            }
+            foreach (var item in model.departmentAssets)
+            {
+                model.departmentTotal += item.total;
+            }
+            string msg = "Asset Info for department " + depID + ": " + name;
+            model.total = model.departmentTotal + model.employeeTotal;
+            ViewData["AssetInfo"] = msg;
+            return View(model);
         }
 
         public IActionResult LoginDetails()
@@ -796,38 +1171,28 @@ namespace CompanyProject.Controllers
 
         public IActionResult ProgressReport()
         {
-            return View();
+            ReportForm reportForm = new ReportForm();
+            reportForm.projects = getProjects();
+            return View(reportForm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ProgressReport(int projectID)
+        public IActionResult ProgressReport(ReportForm obj)
         {
-            MySqlConnection conn = GetConnection();
-            conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select projID, depID from project where projID = " + projectID + ";", conn);
-            var reader = cmd.ExecuteReader();
-            reader.Read();
+            
             string depID = HttpContext.Session.GetString("depID");
             int department = Convert.ToInt32(depID);
-            bool valid = true;
-            if (!reader.HasRows)
-            {
-                ViewData["inputError"] = "ProjectID doesn't exist";
-                valid = false;
-            }
-            else if (getIntValue(reader["depID"]) != department)
-            {
-                ViewData["inputError"] = "projectID not in this department";
-                valid = false;
-            }
-            reader.Close();
-            if (valid)
-            {
-                IEnumerable<ProgressReport> list = GetProgressReports(projectID);
-                string query = "select projName, projStatus, dueDate, cost from project where projID = " + projectID + ";";
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+            if (ModelState.IsValid)
+            {                
+                ProgressReport report = GetProgressReport(obj.projID);
+                string query = "select projName, projStatus, dueDate, cost from project where projID = " + obj.projID + ";";
                 cmd.CommandText = query;
-                reader = cmd.ExecuteReader();
+                cmd.Connection = conn;
+                var reader = cmd.ExecuteReader();
                 reader.Read();
                 string msg = getStringValue(reader["projName"]);
                 decimal status = Convert.ToDecimal(reader["projStatus"]);
@@ -848,13 +1213,13 @@ namespace CompanyProject.Controllers
                 string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
 
                 ViewData["ProjectInfo"] = msg;
-                ViewData["status"] = status;
-                ViewData["dueDate"] = sqlDate;
-                ViewData["cost"] = cost;
+                report.status = status;
+                report.dueDate = sqlDate;
+                report.budget = cost;
 
                 conn.Close();
 
-                return View("ProgressReportList", list);
+                return View("ProgressReportList", report);
             }
             else
             {
@@ -864,46 +1229,34 @@ namespace CompanyProject.Controllers
 
         }
     
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CostReport(CostReport obj)
+        public IActionResult CostReport(ReportForm obj)
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from project where projID = " + obj.projectID + ";", conn);
-            var reader = cmd.ExecuteReader();
-            reader.Read();
-            string depID = HttpContext.Session.GetString("depID");
-            int department = Convert.ToInt32(depID);
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("projectID", "projectID doesn't exist");               
-            }
-            else if(getIntValue(reader["depID"]) != department)
-            {
-                ModelState.AddModelError("projectID", "projectID not in this department");
-            }
-            reader.Close();
+            MySqlCommand cmd = new MySqlCommand();
+            
             if(ModelState.IsValid)
             {
-                IEnumerable<CostReport> list = GetCostReport(obj.projectID);
-                string query = "select projName, cost from project where projID = " + obj.projectID + ";";
+                CostReport report = GetCostReport(obj.projID);
+                string query = "select projName, cost from project where projID = " + obj.projID + ";";
                 cmd.CommandText = query;
-                reader = cmd.ExecuteReader();
+                cmd.Connection = conn;
+                var reader = cmd.ExecuteReader();
                 reader.Read();               
                 string msg = "Project Details for " + getStringValue(reader["projName"]);
-                list.FirstOrDefault().projectBudget = getIntValue(reader["cost"]);
+                report.projectBudget = getIntValue(reader["cost"]);
 
                 conn.Close();
 
                 ViewData["ProjectInfo"] = msg;
 
-                ViewData["project"] = obj.projectID;
-                decimal total = list.FirstOrDefault().projectBudget - list.FirstOrDefault().taskCost;
-                ViewData["remaining"] = total.ToString();
-
-                return View("CostReportList", list);
+                ViewData["project"] = obj.projID;
+                decimal total = report.projectBudget - report.taskCost;
+                report.remaining = total;
+                report.totalRemaining = total - report.employeeSalary;
+                return View("CostReportList", report);
             }
             else
             {
@@ -917,102 +1270,78 @@ namespace CompanyProject.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddEmployee(Employee obj)
         {
-
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select employee.ssn from employee where employee.ssn = " + obj.Ssn + "; ", conn);
-            string empID = HttpContext.Session.GetString("id");
-            obj.ID = Convert.ToInt32(empID);
-            var reader = cmd.ExecuteReader();
-
-            if (reader.Read())
-            {
-                ModelState.AddModelError("Ssn", "No Duplicate SSN");
-            }
-            reader.Close();
-            string query = "select roleId from roles where roleId = " + obj.RoleID + ";";
-            cmd.CommandText = query;
-            cmd.Connection = conn;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows && obj.RoleID != 0)
-            {
-                ModelState.AddModelError("RoleId", "Role number doesn't exist");
-            }
-            reader.Close();
-            query = "select employeeID from employee where employeeID = " + obj.SuperID + ";";
-            cmd.CommandText = query;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows && obj.SuperID != 0)
-            {
-                ModelState.AddModelError("superID", "superviser Id number doesn't exist");
-            }
-            if (reader.HasRows && obj.SuperID != 0)
-            {
-                reader.Read();
-                int id = getIntValue(reader["employeeID"]);
-                if (id == obj.ID)
-                {
-                    ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
-                }
-
-            }
-            reader.Close();
-            if (obj.Sex != "M" && obj.Sex != "F")
-            {
-                ModelState.AddModelError("Sex", "Gender Must be either M or F");
-            }
+            
             if (ModelState.IsValid)
             {
-                string depID = HttpContext.Session.GetString("depID");
-                int department = Convert.ToInt32(depID);
-                MySqlCommand insert = new MySqlCommand();
-                query = "insert into employee(Fname, Mname, Lname, salary, ssn, address, birthDate, sex, roleID, superID, depID) " +
-                    "Values( @Fname, @Mname, @Lname, @salary , @ssn , @address, @birthdate, @sex " +
-                    ", @roleId, @superID, @depId);";
-                insert.CommandText = query;
-                insert.Parameters.AddWithValue("@Fname", obj.Fname);
-                insert.Parameters.AddWithValue("@Mname", obj.Mname);
-                insert.Parameters.AddWithValue("@Lname", obj.Lname);
-                insert.Parameters.AddWithValue("@sex", obj.Sex);
-                insert.Parameters.AddWithValue("@birthdate", obj.BirthDate);
-                insert.Parameters.AddWithValue("@salary", obj.Salary);
-                insert.Parameters.AddWithValue("@ssn", obj.Ssn);
-                insert.Parameters.AddWithValue("@address", obj.Address);
-                insert.Parameters.AddWithValue("@depId", department);
-                if (obj.RoleID == 0)
+                try
                 {
-                    insert.Parameters.AddWithValue("@roleId", DBNull.Value);
-                }
-                else
-                {
-                    insert.Parameters.AddWithValue("@roleId", obj.RoleID);
-                }
+                    string depID = HttpContext.Session.GetString("depID");
+                    int department = Convert.ToInt32(depID);
+                    MySqlCommand insert = new MySqlCommand();
+                    string query = "insert into employee(Fname, Mname, Lname, salary, address, birthDate, sex, roleID, superID, depID) " +
+                        "Values( @Fname, @Mname, @Lname, @salary , @address, @birthdate, @sex " +
+                        ", @roleId, @superID, @depId);";
+                    insert.CommandText = query;
+                    insert.Parameters.AddWithValue("@Fname", obj.Fname);
+                    if (string.IsNullOrEmpty(obj.Mname))
+                    {
+                        insert.Parameters.AddWithValue("@Mname", DBNull.Value);
+                    }
+                    else
+                    {
+                        insert.Parameters.AddWithValue("@Mname", obj.Mname);
+                    }
+                    insert.Parameters.AddWithValue("@Lname", obj.Lname);
+                    insert.Parameters.AddWithValue("@sex", obj.Sex);
+                    insert.Parameters.AddWithValue("@birthdate", obj.BirthDate);
+                    insert.Parameters.AddWithValue("@salary", obj.Salary);
+                    insert.Parameters.AddWithValue("@address", obj.Address);
+                    insert.Parameters.AddWithValue("@depId", department);
+                    if (obj.RoleID == 0)
+                    {
+                        insert.Parameters.AddWithValue("@roleId", DBNull.Value);
+                    }
+                    else
+                    {
+                        insert.Parameters.AddWithValue("@roleId", obj.RoleID);
+                    }
 
-                if (obj.SuperID == 0)
-                {
-                    insert.Parameters.AddWithValue("@superID", DBNull.Value);
+                    if (obj.SuperID == 0)
+                    {
+                        insert.Parameters.AddWithValue("@superID", DBNull.Value);
+                    }
+                    else
+                    {
+                        insert.Parameters.AddWithValue("@superID", obj.SuperID);
+                    }
+                    insert.Connection = conn;
+                    insert.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Employee added successfully";
+                    return RedirectToAction("Index");
                 }
-                else
+                catch(MySqlException e)
                 {
-                    insert.Parameters.AddWithValue("@superID", obj.SuperID);
+                    conn.Close();
+                    string depID = "Adding Employee into Department number " + HttpContext.Session.GetString("depID");
+                    ViewData["AddInfo"] = depID;
+                    ModelState.AddModelError("superID", e.Message);
+                    obj.Roles = getRoles();                    
+                    obj.supervisors = getSupervisors(Convert.ToInt32(depID), -1);
+                    return View(obj);
                 }
-                insert.Connection = conn;
-                insert.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Employee added successfully";
-                return RedirectToAction("Index");
-
-
             }
             else
             {
                 conn.Close();
                 string depID = "Adding Employee into Department number " + HttpContext.Session.GetString("depID");
                 ViewData["AddInfo"] = depID;
+                obj.Roles = getRoles();               
+                obj.supervisors = getSupervisors(Convert.ToInt32(depID), -1);
                 return View(obj);
             }
-
-
         }
 
         [HttpPost]
@@ -1022,81 +1351,145 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-
-            MySqlCommand cmd2 = new MySqlCommand("select depID from department where depID = " + employee.DepID + ";", conn);
-            var reader = cmd2.ExecuteReader();
-            if (!reader.Read() && employee.DepID != 0)
-            {
-                ModelState.AddModelError("DepId", "Department number doesn't exist");
-            }
-            reader.Close();
-
-            cmd2 = new MySqlCommand("select roleId from roles where roleId = " + employee.RoleID + ";", conn);
-            reader = cmd2.ExecuteReader();
-            if (!reader.Read() && employee.RoleID != 0)
-            {
-                ModelState.AddModelError("RoleId", "Role number doesn't exist");
-            }
-            reader.Close();
-
-            cmd2 = new MySqlCommand("select employeeID from employee where employeeID = " + employee.SuperID + ";", conn);
-            reader = cmd2.ExecuteReader();
-            if (!reader.HasRows && employee.SuperID != 0)
-            {
-                ModelState.AddModelError("superID", "superviser Id number doesn't exist");
-            }
-            if (reader.Read() && employee.SuperID != 0)
-            {
-                int id = getIntValue(reader["employeeID"]);
-                if (id == employee.ID)
-                {
-                    ModelState.AddModelError("superID", "supervisor can't be same as employeeID");
-                }
-
-            }
-            reader.Close();
-
-            if (employee.Sex != "M" && employee.Sex != "F")
-            {
-                ModelState.AddModelError("Sex", "Gender Must be either M or F");
-            }
-
+            
             if (ModelState.IsValid)
             {
-
-                string query = "UPDATE employee SET salary=@salary," +
+                try
+                {
+                    string query = "UPDATE employee SET salary=@salary," +
                     " roleId=@roleId, superID=@superID where employeeID = " + employee.ID + ";";
 
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.CommandText = query;
-                cmd.Parameters.AddWithValue("@salary", employee.Salary);
-                if (employee.RoleID == 0)
-                {
-                    cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
+                    MySqlCommand cmd = new MySqlCommand();
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@salary", employee.Salary);
+                    if (employee.RoleID == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", employee.RoleID);
+                    }
+
+                    if (employee.SuperID == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@superID", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@superID", employee.SuperID);
+                    }
+
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    TempData["success"] = "Employee edited successfully";
+                    conn.Close();
+                    return RedirectToAction("Index");
                 }
-                else
+                catch(MySqlException e)
                 {
-                    cmd.Parameters.AddWithValue("@roleId", employee.RoleID);
+                    ModelState.AddModelError("SuperID", e.Message);
+                    conn.Close();
+                    employee.Roles = getRoles();                    
+                    employee.supervisors = getSupervisors(employee.DepID, employee.ID);
+                    return View(employee);
                 }
 
-                if (employee.SuperID == 0)
-                {
-                    cmd.Parameters.AddWithValue("@superID", DBNull.Value);
-                }
-                else
-                {
-                    cmd.Parameters.AddWithValue("@superID", employee.SuperID);
-                }
-
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
-                TempData["success"] = "Employee edited successfully";
+            }
+            else
+            {
                 conn.Close();
-                return RedirectToAction("Index");
+                employee.Roles = getRoles();                
+                employee.supervisors = getSupervisors(employee.DepID, employee.ID);
+                return View(employee);
+            }            
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult selfEdit(Employee employee)
+        {
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd2 = new MySqlCommand("select employee.ssn from employee where employee.employeeID != " + employee.ID + " and employee.ssn = " + employee.Ssn + "; ", conn);
+            var reader = cmd2.ExecuteReader();
+
+            if (reader.Read())
+            {
+                ModelState.AddModelError("Ssn", "Invalidss SSN");
+            }
+            if (employee.Ssn != 0)
+            {
+                Regex regex = new Regex("[0-9]{9}$");
+                Match match = regex.Match(employee.Ssn.ToString());
+                if (!match.Success)
+                {
+                    ModelState.AddModelError("Ssn", "Invalid SSN");
+                }
+            }
+            reader.Close();            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    string query = "UPDATE employee SET Fname=@Fname, Mname=@Mname, Lname=@Lname, sex=@sex , birthdate=@birthdate , salary=@salary, ssn=@ssn, address=@address " +
+                    ", roleId=@roleId, superID=@superID where employeeID = " + employee.ID + ";";
+
+                    MySqlCommand cmd = new MySqlCommand();
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@Fname", employee.Fname);
+                    cmd.Parameters.AddWithValue("@Mname", employee.Mname);
+                    cmd.Parameters.AddWithValue("@Lname", employee.Lname);
+                    cmd.Parameters.AddWithValue("@sex", employee.Sex);
+                    if (employee.Ssn == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@ssn", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@ssn", employee.Ssn);
+                    }
+                    cmd.Parameters.AddWithValue("@birthdate", employee.BirthDate);
+                    cmd.Parameters.AddWithValue("@salary", employee.Salary);
+                    cmd.Parameters.AddWithValue("@address", employee.Address);                  
+                    if (employee.RoleID == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@roleId", employee.RoleID);
+                    }
+
+                    if (employee.SuperID == 0)
+                    {
+                        cmd.Parameters.AddWithValue("@superID", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@superID", employee.SuperID);
+                    }
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    TempData["success"] = "Employee edited successfully";
+                    conn.Close();
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    ModelState.AddModelError("SuperID", e.Message);
+                    conn.Close();
+                    employee.Roles = getRoles();
+                    employee.supervisors = getSupervisors(employee.DepID, employee.ID);
+                    return View(employee);
+                }
 
             }
 
             conn.Close();
+            employee.Roles = getRoles();
+            employee.supervisors = getSupervisors(employee.DepID, employee.ID);
             return View(employee);
         }
 
@@ -1107,7 +1500,7 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
             MySqlCommand cmd = new MySqlCommand();
-         
+            int department = Convert.ToInt32(HttpContext.Session.GetString("depID"));
             string query = "select projName from project where projName = @name;";
             cmd.Parameters.AddWithValue("@name", obj.projName);
             cmd.CommandText = query;
@@ -1120,8 +1513,7 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string depID = HttpContext.Session.GetString("depID");
-                int department = Convert.ToInt32(depID);
+                string depID = HttpContext.Session.GetString("depID");                
                 query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) VALUES (@date, @projName , @location " +
                        ", @cost, @field, @projStatus, @department);";
                 
@@ -1129,7 +1521,14 @@ namespace CompanyProject.Controllers
                 cmd.Parameters.AddWithValue("@date", obj.dueDate);
                 cmd.Parameters.AddWithValue("@projName", obj.projName);
                 cmd.Parameters.AddWithValue("@cost", obj.cost);
-                cmd.Parameters.AddWithValue("@location", obj.location);
+                if (obj.location == "0")
+                {
+                    cmd.Parameters.AddWithValue("@location", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@location", obj.location);
+                }
                 cmd.Parameters.AddWithValue("@field", obj.field);
                 cmd.Parameters.AddWithValue("@projStatus", obj.projStatus);
                 cmd.Parameters.AddWithValue("@department", department);
@@ -1144,6 +1543,7 @@ namespace CompanyProject.Controllers
                 conn.Close();
                 string depID = "Adding Project into Department number " + HttpContext.Session.GetString("depID");
                 ViewData["AddInfo"] = depID;
+                obj.locations = getLocations(department);
                 return View(obj);
             }
 
@@ -1156,7 +1556,8 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
             MySqlCommand cmd = new MySqlCommand();
-         
+            string depID = HttpContext.Session.GetString("depID");
+            int department = Convert.ToInt32(depID);
             string query = "select projName from project where projName = @name and projID != " + proj.projID + ";";
             cmd.CommandText = query;
             cmd.Parameters.AddWithValue("@name", proj.projName);
@@ -1172,16 +1573,19 @@ namespace CompanyProject.Controllers
                 query = "UPDATE project SET dueDate=@dueDate, projName=@projName, location=@location, cost=@cost, field=@field, " +
                     "projStatus=@projStatus, depID=@depID where projID = " + proj.projID + ";";
 
-                MySqlCommand cmd2 = new MySqlCommand();
-
-                string depID = HttpContext.Session.GetString("depID");
-                int department = Convert.ToInt32(depID);
-
+                MySqlCommand cmd2 = new MySqlCommand();              
                 cmd2.CommandText = query;
                 cmd2.Parameters.AddWithValue("@projName", proj.projName);
                 cmd2.Parameters.AddWithValue("@dueDate", proj.dueDate);
                 cmd2.Parameters.AddWithValue("@depID", department);
-                cmd2.Parameters.AddWithValue("@location", proj.location);
+                if (proj.location == "0")
+                {
+                    cmd2.Parameters.AddWithValue("@location", DBNull.Value);
+                }
+                else
+                {
+                    cmd2.Parameters.AddWithValue("@location", proj.location);
+                }
                 cmd2.Parameters.AddWithValue("@cost", proj.cost);
                 cmd2.Parameters.AddWithValue("@field", proj.field);
                 cmd2.Parameters.AddWithValue("@projStatus", proj.projStatus);
@@ -1193,8 +1597,9 @@ namespace CompanyProject.Controllers
                 return RedirectToAction("Index");
             }
             else
-            {
+            {                
                 conn.Close();
+                proj.locations = getLocations(department);
                 return View(proj);
             }
         }
@@ -1206,62 +1611,82 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select project.deleted_flag from project where project.projID = " + proj.projID + ";", conn);
-            var reader = cmd.ExecuteReader();
-            reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
-            reader.Close();
-
-            string query = "UPDATE project SET deleted_flag=@deleted_flag where projID = " + proj.projID + ";";
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select projID from task where projID = @id;";
             cmd.CommandText = query;
-            if (flag == 1)
+            cmd.Parameters.AddWithValue("@id", proj.projID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                ModelState.AddModelError("projID", "project still involed with tasks");
+            }
+            reader.Close();
+            if(ModelState.IsValid)
+            {
+                try
+                {
+                    cmd = new MySqlCommand("select project.deleted_flag from project where project.projID = " + proj.projID + ";", conn);
+                    reader = cmd.ExecuteReader();
+                    reader.Read();
+                    int flag = getIntValue(reader["deleted_flag"]);
+                    reader.Close();
+
+                    query = "UPDATE project SET deleted_flag=@deleted_flag where projID = " + proj.projID + ";";
+                    cmd.CommandText = query;
+                    if (flag == 1)
+                    {
+                        cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                    }
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("projID", e.Message);
+                    conn.Close();
+                    return View(proj);
+                }
             }
             else
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                conn.Close();
+                return View(proj);
             }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
-            conn.Close();
-            return RedirectToAction("Index");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddTask(Tasks obj)
         {
+            int department = Convert.ToInt32(HttpContext.Session.GetString("depID"));
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select projID from project where projID = " + obj.projID + "; ", conn);
-            string depID = HttpContext.Session.GetString("depID");
-            int department = Convert.ToInt32(depID);
+            MySqlCommand cmd = new MySqlCommand("select projID from project where projID = @projName or projName = @projName", conn);
+            cmd.Parameters.AddWithValue("@projName", obj.projName);
             var reader = cmd.ExecuteReader();
 
-            if (!reader.HasRows)
+            if (!reader.HasRows && !string.IsNullOrEmpty(obj.projName))
             {
-                ModelState.AddModelError("projID", "Project ID doesn't exist");
+                ModelState.AddModelError("projName", "Project doesn't exist");
             }
-            reader.Close();
-            string query = "select depID from project where projID = " + obj.projID + ";";
-            cmd.CommandText = query;
-            cmd.Connection = conn;
-            reader = cmd.ExecuteReader();
-            if (reader.HasRows)
+            else if (reader.HasRows)
             {
                 reader.Read();
-                if(getIntValue(reader["depID"]) != department)
-                {
-                    ModelState.AddModelError("projID", "Project not in this department");
-                }
+                obj.projID = getIntValue(reader["projID"]);
             }
             reader.Close();
             if (ModelState.IsValid)
             {
                 try
                 {
-                    query = "insert into task (taskName, cost, taskDueDate, projID) " +
+                    string query = "insert into task (taskName, cost, taskDueDate, projID) " +
                         "VALUES (@taskName, @cost, @date, @projID);";
 
                     MySqlCommand cmd2 = new MySqlCommand();
@@ -1290,6 +1715,7 @@ namespace CompanyProject.Controllers
                     string info = "Adding Task for Department number " + department;
                     ViewData["AddInfo"] = info;
                     conn.Close();
+                    obj.projects = getProjects();
                     return View(obj);
                 }
                
@@ -1299,6 +1725,7 @@ namespace CompanyProject.Controllers
                 conn.Close();
                 string info = "Adding Task for Department number " + department;
                 ViewData["AddInfo"] = info;
+                obj.projects = getProjects();
                 return View(obj);
             }
         }
@@ -1312,32 +1739,12 @@ namespace CompanyProject.Controllers
             MySqlCommand cmd = new MySqlCommand("select projID from project where projID = " + task.projID + "; ", conn);
             string depID = HttpContext.Session.GetString("depID");
             int department = Convert.ToInt32(depID);
-
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("projID", "Project ID doesn't exist");
-            }
-            reader.Close();
-            string query = "select depID from project where projID = " + task.projID + ";";
-            cmd.CommandText = query;
-            cmd.Connection = conn;
-            reader = cmd.ExecuteReader();
-            if (reader.HasRows)
-            {
-                reader.Read();
-                if (getIntValue(reader["depID"]) != department)
-                {
-                    ModelState.AddModelError("projID", "Project not in this department");
-                }
-            }
-            reader.Close();
+           
             if (ModelState.IsValid)
             {
                 try
                 {
-                    query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
+                    string query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
                     MySqlCommand cmd2 = new MySqlCommand();
 
                     cmd2.CommandText = query;
@@ -1356,12 +1763,14 @@ namespace CompanyProject.Controllers
                 {
                     conn.Close();
                     ModelState.AddModelError("projID", e.Message);
+                    task.projects = getProjects();
                     return View(task);
                 }                
             }
             else
             {
                 conn.Close();
+                task.projects = getProjects();
                 return View(task);
             }
         }
@@ -1372,27 +1781,54 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-
-            MySqlCommand cmd = new MySqlCommand("select task.deleted_flag from task where task.taskID = " + task.taskID + ";", conn);
-            var reader = cmd.ExecuteReader();
-            reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
-            reader.Close();
-
-            string query = "UPDATE task SET deleted_flag=@deleted_flag where taskID = " + task.taskID + ";";
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select taskID from works_on where taskID = @id;";
             cmd.CommandText = query;
-            if (flag == 1)
+            cmd.Parameters.AddWithValue("@id", task.taskID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                ModelState.AddModelError("taskID", "project still involed with works_on");
+            }
+            reader.Close();
+            if(ModelState.IsValid)
+            {
+                try
+                {
+                    cmd = new MySqlCommand("select task.deleted_flag from task where task.taskID = " + task.taskID + ";", conn);
+                    reader = cmd.ExecuteReader();
+                    reader.Read();
+                    int flag = getIntValue(reader["deleted_flag"]);
+                    reader.Close();
+                    query = "UPDATE task SET deleted_flag=@deleted_flag where taskID = " + task.taskID + ";";
+                    cmd.CommandText = query;
+                    if (flag == 1)
+                    {
+                        cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                    }
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("taskID", e.Message);
+                    conn.Close();
+                    return View(task);
+                }
             }
             else
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                conn.Close();
+                return View(task);
             }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
-            conn.Close();
-            return RedirectToAction("Index");
+            
         }
 
         [HttpPost]
@@ -1400,14 +1836,16 @@ namespace CompanyProject.Controllers
         public IActionResult AddSupplier(Supplier obj)
         {
             MySqlConnection conn = GetConnection();
+            MySqlCommand cmd = new MySqlCommand();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select roleID from roles where roleID = " + obj.roleID + "; ", conn);
-
+            string test = "select name from suppliers where name = @supName";
+            cmd.CommandText = test;
+            cmd.Parameters.AddWithValue("@supName", obj.name);
+            cmd.Connection = conn;
             var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows && obj.roleID != 0)
+            if (reader.HasRows)
             {
-                ModelState.AddModelError("roleID", "RoleID doesn't exist");
+                ModelState.AddModelError("name", "supplier name already exists");
             }
             reader.Close();
 
@@ -1416,7 +1854,6 @@ namespace CompanyProject.Controllers
 
                 string query;
                 query = "insert into suppliers(product, name, roleID) Values(@product, @name, @roleID);";
-
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("@product", obj.product);
                 cmd.Parameters.AddWithValue("@name", obj.name);
@@ -1427,8 +1864,7 @@ namespace CompanyProject.Controllers
                 else
                 {
                     cmd.Parameters.AddWithValue("@roleID", obj.roleID);
-                }
-                cmd.CommandText = query;
+                }                
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1437,9 +1873,10 @@ namespace CompanyProject.Controllers
             }
             else
             {
+                conn.Close();
+                obj.Roles = getRoles();
                 return View(obj);
             }
-
         }
 
         [HttpPost]
@@ -1448,13 +1885,15 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select roleID from roles where roleID = " + sup.roleID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.Connection = conn;
+            string test = "select name from suppliers where name = @supName and supID != " + sup.supID + ";";
+            cmd.CommandText = test;
+            cmd.Parameters.AddWithValue("@supName", sup.name);
             var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows && sup.roleID != 0)
+            if (reader.HasRows)
             {
-                ModelState.AddModelError("roleID", "RoleID doesn't exist");
+                ModelState.AddModelError("name", "supplier name already exists");
             }
             reader.Close();
 
@@ -1484,6 +1923,7 @@ namespace CompanyProject.Controllers
             else
             {
                 conn.Close();
+                sup.Roles = getRoles();
                 return View(sup);
             }
         }
@@ -1494,27 +1934,45 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-
-            MySqlCommand cmd = new MySqlCommand("select suppliers.deleted_flag from suppliers where suppliers.supID = " + sup.supID + ";", conn);
-            var reader = cmd.ExecuteReader();
-            reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
-            reader.Close();
-
-            string query = "UPDATE suppliers SET deleted_flag=@deleted_flag where supID = " + sup.supID + ";";
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select supID from assets where supID = @id union select supID from used_by where supID = @id" +
+                " union select supID from distributed_to where supID = @id;";
             cmd.CommandText = query;
-            if (flag == 1)
+            cmd.Parameters.AddWithValue("@id", sup.supID);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                ModelState.AddModelError("supID", "supplier still involed with task and/or distribution");
+            }
+            reader.Close();
+            if(ModelState.IsValid)
+            {
+                cmd = new MySqlCommand("select suppliers.deleted_flag from suppliers where suppliers.supID = " + sup.supID + ";", conn);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                int flag = getIntValue(reader["deleted_flag"]);
+                reader.Close();
+                query = "UPDATE suppliers SET deleted_flag=@deleted_flag where supID = " + sup.supID + ";";
+                cmd.CommandText = query;
+                if (flag == 1)
+                {
+                    cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                }
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                return RedirectToAction("Index");
             }
             else
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                conn.Close();
+                return View(sup);
             }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
-            conn.Close();
-            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -1638,25 +2096,15 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select supID from suppliers where supID = " + obj.supID + "; ", conn);
+            MySqlCommand cmd = new MySqlCommand();
 
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows && obj.supID != 0)
-            {
-                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
-            }
-            reader.Close();
             if (ModelState.IsValid)
-            {
-               
+            {               
                 string query = "insert into assets (type, cost, supID) VALUES (@type, @cost, @supID);";
-                cmd.CommandText = query;
+                cmd.CommandText = query;               
                 cmd.Parameters.AddWithValue("@type", obj.type);
                 cmd.Parameters.AddWithValue("@cost", obj.cost);          
                 cmd.Parameters.AddWithValue("@supID", obj.supID);
-                
-                cmd.CommandText = query;
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1666,7 +2114,7 @@ namespace CompanyProject.Controllers
             else
             {
                 conn.Close();
-                ViewData["asset"] = obj.supID;
+                ViewData["asset"] = obj.supID;               
                 return View(obj);
             }
         }
@@ -1677,15 +2125,7 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select supID from suppliers where supID = " + asset.supID + "; ", conn);
-
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
-            }
-            reader.Close();
+           
             if (ModelState.IsValid)
             {
                 string query = "UPDATE assets SET type=@type, cost=@cost, supID=@supID where assetID = " + asset.assetID + ";";
@@ -1704,7 +2144,7 @@ namespace CompanyProject.Controllers
             }
             else
             {
-                conn.Close();
+                conn.Close();                
                 return View(asset);
             }
         }
@@ -1746,12 +2186,13 @@ namespace CompanyProject.Controllers
             if (ModelState.IsValid)
             {
                 conn.Open();
-                string query = "UPDATE distributed_to SET field=@field WHERE depID = '" + distribution.tempDepID + "' " +
+                string query = "UPDATE distributed_to SET field=@field, amount=@amount WHERE depID = '" + distribution.tempDepID + "' " +
                     "and supID = " + distribution.tempSupID + " and assetID = " + distribution.tempAssetID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
                 cmd2.CommandText = query;             
                 cmd2.Parameters.AddWithValue("@field", distribution.field);
+                cmd2.Parameters.AddWithValue("@amount", distribution.amount);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
 
@@ -1793,34 +2234,11 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + obj.depID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand();
+            string test = "select * from distributed_to where depID = " + obj.depID + " and supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            cmd.Connection = conn;
             var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("depID", "Department ID doesn't exist");
-            }
-            reader.Close();
-            string test = "select supID from suppliers where supID = " + obj.supID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
-            }
-            reader.Close();
-            test = "select assetID from assets where assetID = " + obj.assetID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
-            }
-            reader.Close();
-            test = "select * from distributed_to where depID = " + obj.depID + " and supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
                 ModelState.AddModelError("field", "Asset ID, Department ID, and Supplier ID already exist");
@@ -1829,17 +2247,18 @@ namespace CompanyProject.Controllers
             test = "select assetID from assets where supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
             cmd.CommandText = test;
             reader = cmd.ExecuteReader();
-            if(!reader.HasRows)
+            if (!reader.HasRows)
             {
                 ModelState.AddModelError("assetID", "assetID not associated with supplier");
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into distributed_to (depID, supID, assetID, field) VALUES ('" + obj.depID +
-                    "', '" + obj.supID + "', '" + obj.assetID + "', @field);"; ;
+                string query = "insert into distributed_to (depID, supID, assetID, field, amount) VALUES ('" + obj.depID +
+                    "', '" + obj.supID + "', '" + obj.assetID + "', @field, @amount);"; ;
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("@field", obj.field);
+                cmd.Parameters.AddWithValue("@amount", obj.field);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1850,6 +2269,7 @@ namespace CompanyProject.Controllers
             {
                 conn.Close();
                 ViewData["asset"] = obj.supID;
+                obj.assets = getSpecificAssets(obj.supID);               
                 return View(obj);
             }
         }
@@ -1860,34 +2280,11 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.employeeID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand();
+            string test = "select * from used_by where employeeID = " + obj.employeeID + " and supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
+            cmd.CommandText = test;
+            cmd.Connection = conn;
             var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
-            }
-            reader.Close();
-            string test = "select supID from suppliers where supID = " + obj.supID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
-            }
-            reader.Close();
-            test = "select assetID from assets where assetID = " + obj.assetID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
-            }
-            reader.Close();
-            test = "select * from used_by where employeeID = " + obj.employeeID + " and supID = " + obj.supID + " and assetID = " + obj.assetID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
                 ModelState.AddModelError("field", "Asset ID, Employee ID, and Supplier ID already exist");
@@ -1898,15 +2295,16 @@ namespace CompanyProject.Controllers
             reader = cmd.ExecuteReader();
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("assetID", "assetID not associated with supplier");
+                ModelState.AddModelError("assetID", "Asset not associated with supplier");
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "insert into used_by (employeeID, supID, assetID, field) VALUES ('" + obj.employeeID +
-                    "', '" + obj.supID + "', '" + obj.assetID + "', @field);"; ;
+                string query = "insert into used_by (employeeID, supID, assetID, field, amount) VALUES ('" + obj.employeeID +
+                    "', '" + obj.supID + "', '" + obj.assetID + "', @field, @amount);"; ;
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("@field", obj.field);
+                cmd.Parameters.AddWithValue("@amount", obj.amount);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -1917,6 +2315,8 @@ namespace CompanyProject.Controllers
             {
                 conn.Close();
                 ViewData["use"] = obj.employeeID;
+                obj.suppliers = getSuppliers();
+                obj.assets = getAssets();
                 return View(obj);
             }
         }
@@ -1927,40 +2327,15 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + use.employeeID + "; ", conn);
-
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
-            }
-            reader.Close();
-            string test = "select supID from suppliers where supID = " + use.supID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("supID", "Supplier ID doesn't exist");
-            }
-            reader.Close();
-            test = "select assetID from assets where assetID = " + use.assetID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("assetID", "Asset ID doesn't exist");
-            }
-            reader.Close();
-            test = "select employeeID, supID, assetID from used_by where employeeID = '" + use.employeeID + "' " +
+            MySqlCommand cmd = new MySqlCommand();
+            string test = "select employeeID, supID, assetID from used_by where employeeID = '" + use.employeeID + "' " +
                     "and supID = " + use.supID + " and assetID = " + use.assetID + ";";
             cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
             if (reader.HasRows && (use.assetID != use.tempassetID || use.employeeID != use.tempemployeeID || use.supID != use.tempsupID))
             {
-
                 ModelState.AddModelError("field", "Employee ID, Supplier ID, and Asset ID already exist");
-
             }
             reader.Close();
             test = "select assetID from assets where supID = " + use.supID + " and assetID = " + use.assetID + ";";
@@ -1968,12 +2343,12 @@ namespace CompanyProject.Controllers
             reader = cmd.ExecuteReader();
             if (!reader.HasRows)
             {
-                ModelState.AddModelError("assetID", "assetID not associated with supplier");
+                ModelState.AddModelError("assetID", "Asset not associated with supplier");
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE used_by SET employeeID=@emp, supID=@sup, assetID=@asset, field=@field WHERE employeeID = '" + use.tempemployeeID + "' " +
+                string query = "UPDATE used_by SET employeeID=@emp, supID=@sup, assetID=@asset, field=@field, amount=@amount WHERE employeeID = '" + use.tempemployeeID + "' " +
                     "and supID = " + use.tempsupID + " and assetID = " + use.tempassetID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
@@ -1982,6 +2357,7 @@ namespace CompanyProject.Controllers
                 cmd2.Parameters.AddWithValue("@sup", use.supID);
                 cmd2.Parameters.AddWithValue("@asset", use.assetID);
                 cmd2.Parameters.AddWithValue("@field", use.field);
+                cmd2.Parameters.AddWithValue("@amount", use.amount);
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
 
@@ -1993,6 +2369,8 @@ namespace CompanyProject.Controllers
             {
                 conn.Close();
                 ViewData["use"] = use.employeeID;
+                use.suppliers = getSuppliers();
+                use.assets = getAssets();
                 return View(use);
             }
         }
@@ -2064,28 +2442,26 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select depID from department where depID = " + location.depID + "; ", conn);
-
-            var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("depID", "Department ID doesn't exist");
-            }
-            reader.Close();
+            MySqlCommand cmd = new MySqlCommand();
             string test = "select depID, loc_name from dep_locations where loc_name = @lname " +
                     "and depID = " + location.depID + ";";
             cmd.CommandText = test;
             cmd.Parameters.AddWithValue("@lname", location.loc_name);
-            reader = cmd.ExecuteReader();
-            if (reader.HasRows && (location.loc_name != location.pastLoc_name && location.depID != location.pastDepID))
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
             {
-                ModelState.AddModelError("loc_name", "Department ID and Location name already exist");
+                reader.Read();
+                string name = getStringValue(reader["loc_name"]);
+                int id = getIntValue(reader["depID"]);
+                if (name != location.pastLoc_name || id != location.pastDepID)
+                {
+                    ModelState.AddModelError("loc_name", "Department and Location name already exist");
+                }
             }
             reader.Close();
             if (ModelState.IsValid)
             {
-
                 string query = "UPDATE dep_locations SET loc_name = @name, depID = @depID  WHERE loc_name = @pastName " +
                     "and depID = " + location.pastDepID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
@@ -2116,25 +2492,42 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
             MySqlCommand cmd = new MySqlCommand();
-
+            string query = "select location from department where location = @location " +
+                "Union select location from project where location = @location";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@location", location.loc_name);
+            cmd.Connection = conn;
+            var reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("depName", "Department or Project still assigned this location");
+            }
+            reader.Close();
 
             if (ModelState.IsValid)
             {
-                string query = "delete from dep_locations where depID = " + location.depID + " and loc_name = @name;";
+                try
+                {
+                    query = "delete from dep_locations where depID = " + location.depID + " and loc_name = @name;";
 
-                MySqlCommand cmd2 = new MySqlCommand();                           
-                cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@name", location.loc_name);
-                cmd2.Connection = conn;
-                cmd2.ExecuteNonQuery();
+                    MySqlCommand cmd2 = new MySqlCommand();
+                    cmd2.Parameters.AddWithValue("@name", location.loc_name);
+                    cmd2.CommandText = query;
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
 
-                conn.Close();
-                TempData["success"] = "Location successfully deleted";
-                return RedirectToAction("Index");
+                    conn.Close();
+                    TempData["success"] = "Location successfully deleted";
+                    return RedirectToAction("Index");
+                }
+                catch (MySqlException e)
+                {
+                    ModelState.AddModelError("depName", e.Message);
+                    return View(location);
+                }
             }
             else
             {
-                conn.Close();
                 return View(location);
             }
         }
@@ -2146,26 +2539,56 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select employee.deleted_flag from employee where employee.employeeID = " + employee.ID + ";", conn);
+            MySqlCommand cmd = new MySqlCommand();
+            string query = "select superID from employee where superID = @id union select mgrID from department where mgrID = @id " +
+                "union select employeeID from works_on where employeeID = @id union select employeeID from used_by where employeeID = @id;";
+            cmd.CommandText = query;
+            cmd.Parameters.AddWithValue("@id", employee.ID);
+            cmd.Connection = conn;
             var reader = cmd.ExecuteReader();
-            reader.Read();
-            int flag = getIntValue(reader["deleted_flag"]);
+            if (reader.HasRows)
+            {
+                ModelState.AddModelError("ID", "Employee still involed with supervisor, manager, works_on, and/or used_by");
+            }
             reader.Close();
 
-            string query = "UPDATE employee SET deleted_flag=@deleted_flag where employeeID = " + employee.ID + ";";
-            cmd.CommandText = query;
-            if (flag == 1)
+            if(ModelState.IsValid)
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                try
+                {
+                    cmd = new MySqlCommand("select employee.deleted_flag from employee where employee.employeeID = " + employee.ID + ";", conn);
+                    reader = cmd.ExecuteReader();
+                    reader.Read();
+                    int flag = getIntValue(reader["deleted_flag"]);
+                    reader.Close();
+
+                    query = "UPDATE employee SET deleted_flag=@deleted_flag where employeeID = " + employee.ID + ";";
+                    cmd.CommandText = query;
+                    if (flag == 1)
+                    {
+                        cmd.Parameters.AddWithValue("@deleted_flag", 0);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                    }
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    ModelState.AddModelError("employeeID", e.Message);
+                    conn.Close();
+                    return View(employee);
+                }
             }
             else
             {
-                cmd.Parameters.AddWithValue("@deleted_flag", 1);
+                conn.Close();
+                return View(employee);
             }
-            cmd.Connection = conn;
-            cmd.ExecuteNonQuery();
-            conn.Close();
-            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -2193,26 +2616,11 @@ namespace CompanyProject.Controllers
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select employeeID from employee where employeeID = " + obj.employeeID + "; ", conn);
-
+            MySqlCommand cmd = new MySqlCommand();
+            string test = "select * from works_on where employeeID = " + obj.employeeID + " and taskID = " + obj.TaskID + ";";
+            cmd.CommandText = test;
+            cmd.Connection = conn;
             var reader = cmd.ExecuteReader();
-
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("employeeID", "Employee ID doesn't exist");
-            }
-            reader.Close();
-            string test = "select taskID from task where taskID = " + obj.TaskID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
-            if (!reader.HasRows)
-            {
-                ModelState.AddModelError("TaskID", "Task ID doesn't exist");
-            }
-            reader.Close();
-            test = "select * from works_on where employeeID = " + obj.employeeID + " and taskID = " + obj.TaskID + ";";
-            cmd.CommandText = test;
-            reader = cmd.ExecuteReader();
             if (reader.HasRows)
             {
                 ModelState.AddModelError("hours", "Task ID and Employee ID already exist");
@@ -2236,6 +2644,7 @@ namespace CompanyProject.Controllers
                     conn.Close();
                     ModelState.AddModelError("taskID", e.Message);
                     ViewData["employee"] = obj.employeeID;
+                    obj.tasks = getTasks();
                     return View(obj);
                 }
             }
@@ -2243,6 +2652,7 @@ namespace CompanyProject.Controllers
             {
                 conn.Close();
                 ViewData["employee"] = obj.employeeID;
+                obj.tasks = getTasks();
                 return View(obj);
             }
         }
@@ -2335,9 +2745,8 @@ namespace CompanyProject.Controllers
             return data;
         }
 
-        public IEnumerable<CostReport> GetCostReport(int id)
-        {
-            List<CostReport> data = new List<CostReport>();
+        public CostReport GetCostReport(int id)
+        {           
             CostReport model = new CostReport();
 
             string depID = HttpContext.Session.GetString("depID");
@@ -2352,24 +2761,22 @@ namespace CompanyProject.Controllers
                 total += item.pay;
             }
             model.employeeSalary = total;            
-            model.departmentAssets = GetDepartmentAssets(department);
-            model.departmentCost = model.departmentAssets.Sum(item => item.cost);
-            model.employeeAssets = GetEmployeeAssets(department);
-            model.employeeCost = model.employeeAssets.Sum(item => item.cost);
-            data.Add(model);
-
-            return data;
+                                   
+            return model;
         }
 
-        public IEnumerable<ProgressReport> GetProgressReports(int id)
-        {
-            List<ProgressReport> data = new List<ProgressReport>();
+        public ProgressReport GetProgressReport(int id)
+        {           
             ProgressReport model = new ProgressReport();
             model.progress = GetEmployeeProgs(id);
             model.tasks = getTasks(id);
-            data.Add(model);
-
-            return data;
+            model.EmployeeHours = GetEmployeeHours(id);
+            model.totalHours = 0;
+            foreach (var item in model.EmployeeHours)
+            {
+                model.totalHours += item.hours;
+            }
+            return model;
         }
 
         public List<Employee> getEmployeeData()
@@ -2655,10 +3062,11 @@ namespace CompanyProject.Controllers
             List<TaskDetails> TaskData = new List<TaskDetails>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, t.taskName, t.cost, t.taskDueDate, t.projID " +
-                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, t.taskName, t.cost, t.taskDueDate, p.projName, w.taskID " +
+                "from project as p left outer join task as t on t.projID = p.projID " +
+                "left outer join works_on as w on w.taskID = t.taskID where w.employeeID = " + id + ";", conn);
 
-            using(var reader = cmd.ExecuteReader())
+            using (var reader = cmd.ExecuteReader())
             {
                 while(reader.Read())
                 {
@@ -2680,14 +3088,14 @@ namespace CompanyProject.Controllers
                     TaskData.Add(new TaskDetails()
                     {
                         empID = getIntValue(reader["employeeID"]),
-                        taskID = getIntValue(reader["taskID"]),
-                        projID = getIntValue(reader["projID"]),
+                        projName = getStringValue(reader["projName"]),
                         dueDate = sqlDate,
-                        hours = getIntValue(reader["hours"]),
+                        hours = Convert.ToDecimal(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
-                        budget = getIntValue(reader["cost"])
+                        budget = getIntValue(reader["cost"]),
+                        taskID = getIntValue(reader["taskID"])
                     });
-                    
+
                 }
             }
             conn.Close();
@@ -2700,39 +3108,24 @@ namespace CompanyProject.Controllers
             List<ProjectDetails> ProjectData = new List<ProjectDetails>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select distinct e.Fname, e.Lname, r.roleName, t.taskID, t.taskName, t.taskDueDate, w.hours, t.cost " +
-                "from employee as e, project as p, task as t, works_on as w, roles as r where " +
-                "t.projID = " + id + " and t.taskID = w.taskID and w.employeeID = e.employeeID and r.roleID = e.roleID order by t.taskID;", conn);
+            MySqlCommand cmd = new MySqlCommand("select distinct e.Fname, e.Mname ,e.Lname, r.roleName, t.taskName, w.hours " +
+                "from works_on as w left outer join task as t on t.taskID = w.taskID left outer join employee as e on e.employeeID = w.employeeID " +
+                "left outer join roles as r on r.roleID = e.roleID where t.projID = " + id + ";", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    DateTime date = Convert.ToDateTime(getStringValue(reader["taskDueDate"]));
-                    string dateNoTime = date.ToShortDateString();
-                    string[] dateTemp = dateNoTime.Split('/');
-                    int month = Int32.Parse(dateTemp[0]);
-                    int day = Int32.Parse(dateTemp[1]);
-                    if (month < 10)
-                    {
-                        dateTemp[0] = "0" + dateTemp[0];
-                    }
-                    if (day < 10)
-                    {
-                        dateTemp[1] = "0" + dateTemp[1];
-                    }
-                    string sqlDate = dateTemp[2] + "-" + dateTemp[0] + "-" + dateTemp[1];
-
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
                     ProjectData.Add(new ProjectDetails()
                     {
-                        Fname = getStringValue(reader["Fname"]),
-                        Lname = getStringValue(reader["Lname"]),
+                        name = name,
                         roleName = getStringValue(reader["roleName"]),
-                        taskName = getStringValue(reader["taskName"]),
-                        taskID = getIntValue(reader["taskID"]),
-                        taskDueDate = sqlDate,
-                        hours = Convert.ToDecimal(reader["hours"]),                       
-                        cost = getIntValue(reader["cost"])
+                        taskName = getStringValue(reader["taskName"]),                       
+                        hours = Convert.ToDecimal(reader["hours"])                                             
                     });
 
                 }
@@ -2747,21 +3140,23 @@ namespace CompanyProject.Controllers
             List<TaskInformation> TaskInfo = new List<TaskInformation>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, w.hours, r.roleName " +
-                "from employee as e, works_on as w, roles as r where " +
-                "w.taskID = " + id + " and e.employeeID = w.employeeID and e.roleID = r.roleID;", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Mname, e.Lname, w.hours, r.roleName " +
+                "from works_on as w left outer join employee as e on e.employeeID = w.employeeID " +
+                "left outer join roles as r on r.roleID = e.roleID where w.taskID = " + id + ";", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
-                {                
+                {
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
                     TaskInfo.Add(new TaskInformation()
                     {
-                        Fname = getStringValue(reader["Fname"]),
-                        Lname = getStringValue(reader["Lname"]),
+                        name = name,
                         roleName = getStringValue(reader["roleName"]),                      
-                        hours = Convert.ToDecimal(reader["hours"])
-                       
+                        hours = Convert.ToDecimal(reader["hours"])                       
                     });
 
                 }
@@ -2778,7 +3173,7 @@ namespace CompanyProject.Controllers
             conn.Open();
             string depID = HttpContext.Session.GetString("depID");
             int department = Convert.ToInt32(depID);
-            MySqlCommand cmd = new MySqlCommand("select a.assetID, a.type, a.cost, d.field " +
+            MySqlCommand cmd = new MySqlCommand("select a.assetID, a.type, a.cost, d.field, d.amount " +
                 "from assets as a, distributed_to as d " +
                 "where a.assetID = d.assetID and d.supID = "+id+" and d.depID = "+department+" and a.deleted_flag = 1", conn);
 
@@ -2791,7 +3186,8 @@ namespace CompanyProject.Controllers
                         assetID = getIntValue(reader["assetID"]),
                         type = getStringValue(reader["type"]),
                         cost = getIntValue(reader["cost"]),
-                        field = getStringValue(reader["field"])
+                        field = getStringValue(reader["field"]),
+                        amount = getIntValue(reader["amount"])
 
                     });
 
@@ -2809,8 +3205,9 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.supID, u.assetID, a.type, u.field, a.cost" +
-                " from used_by as u, assets as a where a.assetID = u.assetID and u.employeeID = " + id + ";", conn);
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.supID, u.assetID, u.field, u.amount, s.name, a.type, a.cost " +
+                "from used_by as u left outer join suppliers as s on s.supiD = u.supID left outer join assets as a on a.assetID = u.assetID " +
+                "left outer join employee as e on e.employeeID = u.employeeID where e.employeeID = " + id + ";", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -2824,8 +3221,9 @@ namespace CompanyProject.Controllers
                         assetID = getIntValue(reader["assetID"]),
                         field = getStringValue(reader["field"]),
                         type = getStringValue(reader["type"]),
-                        cost = getIntValue(reader["cost"])
-
+                        cost = getIntValue(reader["cost"]),
+                        supName = getStringValue(reader["name"]),                       
+                        amount = getIntValue(reader["amount"])
                     });
                 }
             }
@@ -2901,7 +3299,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
          
-            MySqlCommand cmd = new MySqlCommand("select s.name, a.type, a.cost " +
+            MySqlCommand cmd = new MySqlCommand("select s.name, a.type, a.cost, d.amount, (a.cost * d.amount) as total " +
                 "from assets as a, distributed_to as d, suppliers as s " +
                 "where d.depID = " + id + " and a.assetID = d.assetID  and s.supID = a.supID and a.deleted_flag = 1;", conn);
 
@@ -2913,7 +3311,9 @@ namespace CompanyProject.Controllers
                     {
                         name = getStringValue(reader["name"]),
                         type = getStringValue(reader["type"]),                       
-                        cost = getIntValue(reader["cost"])                      
+                        cost = getIntValue(reader["cost"]),
+                        amount = getIntValue(reader["amount"]),
+                        total = getIntValue(reader["total"])
 
                     });
                 }
@@ -2930,7 +3330,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, a.type, a.cost " +
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, a.type, a.cost, u.amount, (a.cost * u.amount) as total " +
                 "from assets as a, used_by as u, employee as e " +
                 "where e.depID = " + id + " and a.assetID = u.assetID and u.employeeID = e.employeeID and a.deleted_flag = 1;", conn);
 
@@ -2938,13 +3338,17 @@ namespace CompanyProject.Controllers
             {
                 while (reader.Read())
                 {
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
                     Report.Add(new EmployeeAssetReport()
                     {
-                        Fname = getStringValue(reader["Fname"]),
-                        Lname = getStringValue(reader["Lname"]),
+                        name = name,
                         type = getStringValue(reader["type"]),
-                        cost = getIntValue(reader["cost"])
-
+                        cost = getIntValue(reader["cost"]),
+                        amount = getIntValue(reader["amount"]),
+                        total = getIntValue(reader["total"])
                     });
                 }
             }
@@ -2960,7 +3364,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, r.roleName, w.hours, t.taskName " +
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, r.roleName, w.hours, t.taskName " +
                 "from works_on as w inner join task as t on t.taskID = w.taskID " +
                 "inner join employee as e on e.employeeID = w.employeeID inner join roles as r on r.roleID = e.roleID " +
                 "where t.projID = " + id + " ;", conn);
@@ -2969,14 +3373,49 @@ namespace CompanyProject.Controllers
             {
                 while (reader.Read())
                 {
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
                     Report.Add(new employeeProg()
                     {
-                        Fname = getStringValue(reader["Fname"]),
-                        Lname = getStringValue(reader["Lname"]),
+                        name = name,
                         roleName = getStringValue(reader["roleName"]),
                         hours = Convert.ToDecimal(reader["hours"]),
                         taskName = getStringValue(reader["taskName"])
 
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
+        }
+
+        public List<EmployeeHours> GetEmployeeHours(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<EmployeeHours> Report = new List<EmployeeHours>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, e.Fname, e.Mname, e.Lname, sum(hours) totalHours " +
+                "from works_on as w left outer join task as t on t.taskID = w.taskID " +
+                "left outer join employee as e on e.employeeID = w.employeeID where t.projID = " + id + " " +
+                "group by employeeID order by employeeID desc;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
+                    Report.Add(new EmployeeHours()
+                    {
+                        name = name,                       
+                        hours = Convert.ToDecimal(reader["totalHours"]),                     
                     });
                 }
             }
