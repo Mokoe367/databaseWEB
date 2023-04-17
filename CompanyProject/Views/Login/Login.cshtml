@@ -17,9 +17,12 @@
     </style>
         <h1>LOGIN</h1>
     <body class="background-image"> 
-        <div>
+        <div class="alert alert-danger" id="alert" style="display:none">
             @if (ViewData["LoginFlag"] != null)
             {
+                <script>
+                    document.getElementById("alert").removeAttribute('display');
+                </script>
                 <p class="text-danger">@ViewData["LoginFlag"].ToString()</p>
             }
 

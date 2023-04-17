@@ -22,7 +22,7 @@ namespace CompanyProject.Controllers
         private MySqlConnection GetConnection()
         {
             //var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
-            return new MySqlConnection("server = 127.0.0.1; port=3306;database=company_project;user=root;password=Ram1500trx@mopar");
+            return new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
         }
 
         public static string getStringValue(object value)

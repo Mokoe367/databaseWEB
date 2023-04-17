@@ -16,7 +16,7 @@ namespace CompanyProject.Controllers
     {
         private MySqlConnection GetConnection()
         {
-            return new MySqlConnection("server = 127.0.0.1; port=3306;database=company_project;user=root;password=Ram1500trx@mopar");
+            return new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
         }
 
 
@@ -29,28 +29,36 @@ namespace CompanyProject.Controllers
             return View("Index", employee);*/
 
             string empID = HttpContext.Session.GetString("id");
-            ViewData["id"] = Convert.ToInt32(empID);
-            //List<Employee> list = new List<Employee>();
-            // add this employee to the new list
-            MySqlConnection conn = GetConnection();
-            conn.Open();
-            Employee user = new Employee();
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.depID from employee as e where e.employeeID = '" + empID + "'", conn);
 
-            var reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            if (empID == null)
             {
-                user.Fname = getStringValue(reader["Fname"]);
-                user.Lname = getStringValue(reader["Lname"]);
-                user.DepName = getDepartmentName(getIntValue(reader["depID"]));
+                return RedirectToAction("Login", "Login", new { error = "Session Timed out" });
             }
-            conn.Close();
-            string msg = "Signed in as " + user.Fname + " " + user.Lname + " from Department " + user.DepName;
-            ViewData["userInfo"] = msg;
+            else
+            {
+                ViewData["id"] = Convert.ToInt32(empID);
+                //List<Employee> list = new List<Employee>();
+                // add this employee to the new list
+                MySqlConnection conn = GetConnection();
+                conn.Open();
+                Employee user = new Employee();
+                MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.depID from employee as e where e.employeeID = '" + empID + "'", conn);
+
+                var reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    user.Fname = getStringValue(reader["Fname"]);
+                    user.Lname = getStringValue(reader["Lname"]);
+                    user.DepName = getDepartmentName(getIntValue(reader["depID"]));
+                }
+                conn.Close();
+                string msg = "Signed in as " + user.Fname + " " + user.Lname + " from Department " + user.DepName;
+                ViewData["userInfo"] = msg;
 
 
-            return View("Index", getEmployeeData(empID)); // you can pass models into view
+                return View("Index", getEmployeeData(empID)); // you can pass models into view
+            }           
         }
 
         public string getDepartment(string empID)
@@ -629,7 +637,7 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, t.taskName, t.cost, t.taskDueDate, t.projID " +
-                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
+               "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
             int projNum = 0;
             using (var reader = cmd.ExecuteReader())
             {
@@ -653,13 +661,14 @@ namespace CompanyProject.Controllers
                     TaskData.Add(new TaskDetails()
                     {
                         empID = getIntValue(reader["employeeID"]),
-                        projName = getStringValue(reader["projName"]),
+                        projName = getProjectName(getIntValue(reader["projID"])),
                         dueDate = sqlDate,
                         hours = Convert.ToDecimal(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
                         budget = getIntValue(reader["cost"]),
                         UntilDueDate = getTaskDaysLeft(getIntValue(reader["taskID"])),
-                        projName = getProjectName(getIntValue(reader["projID"]))
+                        taskID = getIntValue(reader["taskID"]),
+                        projID = getIntValue(reader["projID"])
                     });
                     
 
@@ -691,6 +700,7 @@ namespace CompanyProject.Controllers
             }
             return count;
         }
+
         public string getProjectName(int projectID)
         {
             if (projectID == 0) { return ""; }
@@ -705,7 +715,7 @@ namespace CompanyProject.Controllers
             {
                 projName = getStringValue(reader["projName"]);
             }
-            
+            conn.Close();
             return projName;
         }
 
@@ -723,6 +733,7 @@ namespace CompanyProject.Controllers
             {
                 daysLeft = getStringValue(reader["days"]);
             }
+            conn.Close();
             int temp = getIntValue(daysLeft);
             if (temp < 0) { return "Overdue!"; }
             return daysLeft;

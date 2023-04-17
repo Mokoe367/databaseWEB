@@ -16,7 +16,8 @@ namespace CompanyProject.Models
         public int budget { get; set; }
         public string dueDate { get; set; }
         [DisplayName("Time until due date")]
-        public string UntilDueDate { get; set; }
-        public string projName { get; set; }
+        public string UntilDueDate { get; set; }      
+        public int taskID { get; set; }
+        public int projID { get; set; }
     }
 }
