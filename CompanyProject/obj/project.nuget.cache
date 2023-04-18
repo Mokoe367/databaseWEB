@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "VQNzxU4qDoxZXSuQ4MR+TSv0fO4XjpW9b3Ujv+hXKqaPgyHHItKQ84DjiQmHbK0AzKSRT23CCOWc85In56fA1w==",
+  "dgSpecHash": "V5XNCl1+1qttlHn5t+fJd9CSt+y7QcWLHP2WuIFqvIJms0N6nbO19S1fPeDorT8Kf+OQ5tS08FV/5+ihWkDXpw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - Copy - Copy\\CompanyProject\\CompanyProject.csproj",
+  "projectFilePath": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - from git\\CompanyProject\\CompanyProject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\khoin\\.nuget\\packages\\bootstrap\\5.3.0-alpha1\\bootstrap.5.3.0-alpha1.nupkg.sha512",
     "C:\\Users\\khoin\\.nuget\\packages\\google.protobuf\\3.22.1\\google.protobuf.3.22.1.nupkg.sha512",

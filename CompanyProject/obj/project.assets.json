@@ -14401,11 +14401,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - Copy - Copy\\CompanyProject\\CompanyProject.csproj",
+      "projectUniqueName": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - from git\\CompanyProject\\CompanyProject.csproj",
       "projectName": "CompanyProject",
-      "projectPath": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - Copy - Copy\\CompanyProject\\CompanyProject.csproj",
+      "projectPath": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - from git\\CompanyProject\\CompanyProject.csproj",
       "packagesPath": "C:\\Users\\khoin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - Copy - Copy\\CompanyProject\\obj\\",
+      "outputPath": "C:\\Users\\khoin\\Courses\\Spring 2023\\Database system\\412group2database2 - from git\\CompanyProject\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
