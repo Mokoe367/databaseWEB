@@ -3365,8 +3365,8 @@ namespace CompanyProject.Controllers
             conn.Open();
 
             MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, r.roleName, w.hours, t.taskName " +
-                "from works_on as w inner join task as t on t.taskID = w.taskID " +
-                "inner join employee as e on e.employeeID = w.employeeID inner join roles as r on r.roleID = e.roleID " +
+                "from works_on as w left join task as t on t.taskID = w.taskID " +
+                "left join employee as e on e.employeeID = w.employeeID left join roles as r on r.roleID = e.roleID " +
                 "where t.projID = " + id + " ;", conn);
 
             using (var reader = cmd.ExecuteReader())
