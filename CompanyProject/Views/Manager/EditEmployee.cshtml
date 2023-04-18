@@ -64,7 +64,7 @@
                     <option value="0">none</option>
                 </select>
                 <span asp-validation-for="SuperID" class="text-danger"></span>
-            </div>    
+            </div>
             <div class="form-group mb-3" style="display:none;">
                 <label asp-for="DepID" class="control-label">Department</label>
                 <input asp-for="DepID" class="form-control" readonly />
@@ -79,7 +79,8 @@
         <a asp-action="Index">Back to List</a>
     </div>
 </div>
-
+<script src="~/js/date.js">
+</script>
 <script>
 
     $(document).ready(function () {

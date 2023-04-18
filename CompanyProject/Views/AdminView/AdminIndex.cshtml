@@ -87,11 +87,13 @@
     }
 </div>
 
-<div style="margin: 25px" class="alert alert-success">
+<div style="margin: 25px">
     @if (TempData["success"] != null)
     {
-        @TempData["success"];
-
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>@TempData["success"];</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     }
 </div>
 
