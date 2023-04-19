@@ -27,6 +27,11 @@
                 <span asp-validation-for="cost" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
+                <label asp-for="status" class="control-label">Status</label>
+                <input asp-for="status" class="form-control" />
+                <span asp-validation-for="status" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="taskDueDate" class="control-label">Task Due Date</label>
                 <input asp-for="taskDueDate" type="date" class="form-control" />
                 <span asp-validation-for="taskDueDate" class="text-danger"></span>

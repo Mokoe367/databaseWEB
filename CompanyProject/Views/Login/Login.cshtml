@@ -3,61 +3,54 @@
     ViewData["Title"] = "Login";
 }
 
-
-
-
-<form asp-action="Verify" method="post">
-    <style>
-        .background-image {
-            background-image: url('https://i.ibb.co/Tb7qHNj/image.jpg');
-            /*-webkit-filter: blur(4px);
+<style>
+    .background-image {
+        background-image: url('https://i.ibb.co/Tb7qHNj/image.jpg');
+        /*-webkit-filter: blur(4px);
                 filter: blur(4px);*/
-            backdrop-filter: blur(4px);
-        }
-    </style>
-        <h1>LOGIN</h1>
-    <body class="background-image"> 
-        <div class="alert alert-danger" id="alert" style="display:none">
+        backdrop-filter: blur(4px);
+    }
+</style>
+
+<body class="background-image">
+    <h1>LOGIN</h1>   
+        <div style="margin: 25px">
             @if (ViewData["LoginFlag"] != null)
             {
-                <script>
-                    document.getElementById("alert").removeAttribute('display');
-                </script>
-                <p class="text-danger">@ViewData["LoginFlag"].ToString()</p>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>@ViewData["LoginFlag"]</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             }
-
         </div>
+        <form asp-action="Verify" method="post">
+            <div class="form-outline mb-4">
+                <input type="text" name="username" id="form2Example1" class="form-control" required />
+                <label class="form-label" for="form2Example1"><b>Username</b></label>
+            </div>
 
-        <div class="form-outline mb-4">
-            <input type="text" name="username" id="form2Example1" class="form-control" required />
-            <label class="form-label" for="form2Example1"><b>Username</b></label>
-        </div>
-
-        <!-- Password input -->
-        <div class="form-outline mb-4">
-            <input type="password" name="password" id="form2Example2" class="form-control" required />
-            <label class="form-label" for="form2Example2"><b>Password</b></label>
-        </div>
+            <!-- Password input -->
+            <div class="form-outline mb-4">
+                <input type="password" name="password" id="form2Example2" class="form-control" required />
+                <label class="form-label" for="form2Example2"><b>Password</b></label>
+            </div>
 
 
-        <!-- Submit button -->
-        <input type="submit" class="btn btn-primary btn-block mb-4">
-    </body>
-        
-    
+            <!-- Submit button -->
+            <input type="submit" class="btn btn-primary btn-block mb-4">
 
-</form>
+        </form>
+</body>
+    @*<header>
+            <style>
+                img.background {
+                    /*background-image: url('https://getnave.com/blog/wp-content/uploads/2018/01/what-is-project-management-process-1200x675.png');*/
+                    -webkit-filter: blur(5px);
+                    filter: blur(5px);
+                }
+            </style>
 
-@*<header>
-    <style>
-        img.background {
-            /*background-image: url('https://getnave.com/blog/wp-content/uploads/2018/01/what-is-project-management-process-1200x675.png');*/
-            -webkit-filter: blur(5px);
-            filter: blur(5px);
-        }
-    </style>
-
-</header>
-<body>
-    <img class="background" src="https://getnave.com/blog/wp-content/uploads/2018/01/what-is-project-management-process-1200x675.png" alt="">
-</body>*@
+        </header>
+        <body>
+            <img class="background" src="https://getnave.com/blog/wp-content/uploads/2018/01/what-is-project-management-process-1200x675.png" alt="">
+        </body>*@

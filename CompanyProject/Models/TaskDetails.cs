@@ -19,5 +19,8 @@ namespace CompanyProject.Models
         public string UntilDueDate { get; set; }      
         public int taskID { get; set; }
         public int projID { get; set; }
+        public decimal taskStatus { get; set; }
+        public decimal employeeStatus { get; set; }
+        public decimal projStatus { get; set; }
     }
 }

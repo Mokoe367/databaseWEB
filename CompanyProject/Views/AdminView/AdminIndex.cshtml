@@ -485,6 +485,9 @@
                     Task Project
                 </th>
                 <th>
+                    Task Status
+                </th>
+                <th>
                     Deleted Flag
                 </th>
                 <th></th>
@@ -511,6 +514,9 @@
                         {
                             @Html.DisplayFor(modelItem => item.projName)
                         }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.status)%
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.deleted_flag)
@@ -739,6 +745,9 @@
                 <th>
                     Hours
                 </th>
+                <th>
+                    Status
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -754,6 +763,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.hours)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.status)%
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditWork", new { empid = item.employeeID, taskid = item.TaskID }) |

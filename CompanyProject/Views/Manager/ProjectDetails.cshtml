@@ -17,6 +17,7 @@
 }
 <div id="table-div">
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Employee Progress</caption>
         <thead>
             <tr>
                 <th>
@@ -31,25 +32,31 @@
                 <th>
                     Hours
                 </th>
+                <th>
+                    Employee Status
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.details)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.roleName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.hours)
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.roleName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.hours)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)%
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -72,25 +79,31 @@
                 <th>
                     Task Due Date
                 </th>
+                <th>
+                    Task Status
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.tasks)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskName)
-                    </td>
-                    <td>
-                        $@Html.DisplayFor(modelItem => item.cost)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskDueDate)
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskName)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskDueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)%
+                </td>
+            </tr>
             }
         </tbody>
     </table>

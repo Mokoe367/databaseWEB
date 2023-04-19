@@ -44,25 +44,31 @@
                 <th>
                     Task Due Date
                 </th>
+                <th>
+                    Status
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.tasks)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskName)
-                    </td>
-                    <td>
-                        $@Html.DisplayFor(modelItem => item.cost)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskDueDate)
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskName)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.cost)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.taskDueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)%
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -85,6 +91,9 @@
                 <th>
                     Task Name
                 </th>
+                <th>
+                    Employee Status
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -103,6 +112,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.taskName)
                     </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.status)%
+                    </td>
                 </tr>
             }
         </tbody>
@@ -111,7 +123,7 @@
 
 <div id="table-div">
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top" id="table">
-        <caption>Employee Hours</caption>
+        <caption>Employee Total Hours</caption>
         <thead>
             <tr>
                 <th>

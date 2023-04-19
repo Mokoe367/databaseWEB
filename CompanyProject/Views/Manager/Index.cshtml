@@ -96,7 +96,7 @@
     @if (TempData["success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>@TempData["success"];</strong>
+            <strong>@TempData["success"]</strong>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
@@ -325,6 +325,9 @@
                     Task Project Name
                 </th>
                 <th>
+                    Status
+                </th>
+                <th>
                 </th>
             </tr>
         </thead>
@@ -349,6 +352,9 @@
                         {
                             @Html.DisplayFor(modelItem => item.projName)
                         }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.status)%
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditTask", new { id = item.taskID }) |

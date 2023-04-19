@@ -14,5 +14,6 @@ namespace CompanyProject.Models
         public string deleted_at { get; set; }
         public string fullName { get; set; }
         public string taskName { get; set; }
+        public decimal status { get; set; }
     }
 }

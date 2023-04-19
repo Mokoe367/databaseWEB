@@ -395,16 +395,18 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select taskName, taskID from task where deleted_flag = 1;", conn);
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, p.projName " +
+                "from task as t, project as p where t.projID = p.projID and t.deleted_flag = 1;", conn);           
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-
+                    string projName = getStringValue(reader["projName"]);
+                    string taskName = getStringValue(reader["taskName"]);
                     tasks.Add(new SelectListItem()
                     {
                         Value = getStringValue(reader["taskID"]),
-                        Text = getStringValue(reader["taskName"])
+                        Text = projName + " - " + taskName
                     });
                 }
             }
@@ -1255,7 +1257,7 @@ namespace CompanyProject.Controllers
                 try
                 {
                     string query;
-                    query = "insert into task (taskName, cost, taskDueDate, projID) VALUES (@taskName, @cost, @date, @projID);";
+                    query = "insert into task (taskName, cost, taskDueDate, projID, status) VALUES (@taskName, @cost, @date, @projID, @status);";
                     MySqlCommand cmd2 = new MySqlCommand();
                     cmd2.CommandText = query;
                     cmd2.Parameters.AddWithValue("@taskName", obj.taskName);
@@ -1291,7 +1293,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag " +
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag, t.status " +
                 "from task as t left outer join project as p on p.projID = t.projID where taskID = " + id + "; ", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
@@ -1316,6 +1318,7 @@ namespace CompanyProject.Controllers
             task.projID = getIntValue(reader["projID"]);
             task.deleted_flag = getIntValue(reader["deleted_flag"]);
             task.projName = getStringValue(reader["projName"]);
+            task.status = Convert.ToDecimal(reader["status"]);
             task.projects = getProjects();
             conn.Close();
             return View(task);
@@ -1332,19 +1335,20 @@ namespace CompanyProject.Controllers
             {
                 try
                 {
-                    string query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID where taskID = " + task.taskID + ";";
+                    string query = "UPDATE task SET taskName=@taskName, cost=@cost, taskDueDate=@date, projID=@projID, status=@status where taskID = " + task.taskID + ";";
                     MySqlCommand cmd2 = new MySqlCommand();
 
                     cmd2.CommandText = query;
                     cmd2.Parameters.AddWithValue("@taskName", task.taskName);
                     cmd2.Parameters.AddWithValue("@cost", task.cost);
                     cmd2.Parameters.AddWithValue("@date", task.taskDueDate);                   
-                    cmd2.Parameters.AddWithValue("@projID", task.projID);                   
+                    cmd2.Parameters.AddWithValue("@projID", task.projID);
+                    cmd2.Parameters.AddWithValue("@status", task.status);
                     cmd2.Connection = conn;
                     cmd2.ExecuteNonQuery();
 
                     conn.Close();
-                    TempData["success"] = "Task edited added";
+                    TempData["success"] = "Task edited";
                     return RedirectToAction("Index");
                 }
                 catch (MySqlException e)
@@ -1886,9 +1890,12 @@ namespace CompanyProject.Controllers
             {
                 try
                 {
-                    string query = "insert into works_on (employeeID, taskID, hours) VALUES ('" + obj.employeeID +
-                    "', '" + obj.TaskID + "', '" + obj.hours + "');";
+                    string query = "insert into works_on (employeeID, taskID, hours, taskStatus) VALUES (@id, @taskID, @hours, @status); ";
                     cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@id", obj.employeeID);
+                    cmd.Parameters.AddWithValue("@taskID", obj.TaskID);
+                    cmd.Parameters.AddWithValue("@hours", obj.hours);
+                    cmd.Parameters.AddWithValue("@status", obj.status);
                     cmd.Connection = conn;
                     cmd.ExecuteNonQuery();
                     conn.Close();
@@ -1918,7 +1925,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.taskID, e.Fname, e.Mname, e.Lname, t.taskName, w.hours " +
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.taskID, e.Fname, e.Mname, e.Lname, t.taskName, w.hours, w.taskStatus " +
                 "from works_on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID where w.employeeID = " + empid + " and " +
                 "w.taskID = " + taskid + ";", conn);
             var reader = cmd.ExecuteReader();
@@ -1932,6 +1939,7 @@ namespace CompanyProject.Controllers
             work.Mname = getStringValue(reader["Mname"]);
             work.Lname = getStringValue(reader["Lname"]);
             work.taskName = getStringValue(reader["taskName"]);
+            work.status = Convert.ToDecimal(reader["taskStatus"]);
             work.employees = getEmployees();
             work.tasks = getTasks();
             conn.Close();
@@ -1965,7 +1973,7 @@ namespace CompanyProject.Controllers
             {
                 try
                 {
-                    string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours WHERE employeeID = '" + work.tempemployeeID + "' " +
+                    string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours, taskStatus=@status WHERE employeeID = '" + work.tempemployeeID + "' " +
                     "and taskID = " + work.tempTaskID + ";";
                     MySqlCommand cmd2 = new MySqlCommand();
 
@@ -1973,7 +1981,7 @@ namespace CompanyProject.Controllers
                     cmd2.Parameters.AddWithValue("@emp", work.employeeID);
                     cmd2.Parameters.AddWithValue("@task", work.TaskID);
                     cmd2.Parameters.AddWithValue("@hours", work.hours);
-
+                    cmd2.Parameters.AddWithValue("@status", work.status);
                     cmd2.Connection = conn;
                     cmd2.ExecuteNonQuery();
 
@@ -2620,7 +2628,7 @@ namespace CompanyProject.Controllers
 
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag " +
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag, t.status " +
                 "from task as t left outer join project as p on p.projID = t.projID where taskID = " + id + "; ", conn);
             var reader = cmd.ExecuteReader();
             reader.Read();
@@ -2643,7 +2651,8 @@ namespace CompanyProject.Controllers
             task.cost = getIntValue(reader["cost"]);
             task.taskDueDate = sqlDate;            
             task.deleted_flag = getIntValue(reader["deleted_flag"]);
-            task.projName = getStringValue(reader["projName"]);            
+            task.projName = getStringValue(reader["projName"]);
+            task.status = Convert.ToDecimal(reader["status"]);
             conn.Close();
             return View(task);
         }
@@ -2917,6 +2926,7 @@ namespace CompanyProject.Controllers
             string Lname = getStringValue(reader["Lname"]);
             work.fullName = Fname + " " + Mname + " " + Lname;
             work.taskName = getStringValue(reader["taskName"]);
+            work.status = Convert.ToDecimal(reader["status"]);
             conn.Close();
             return View(work);
         }
@@ -3287,7 +3297,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag " +
+            MySqlCommand cmd = new MySqlCommand("select t.taskID, t.taskName, t.taskDueDate, t.cost, t.projID, p.projName, t.deleted_flag, t.status " +
                 "from task as t left outer join project as p on p.projID = t.projID;", conn);
 
             using (var reader = cmd.ExecuteReader())
@@ -3316,8 +3326,8 @@ namespace CompanyProject.Controllers
                         taskDueDate = sqlDate,
                         projID = getIntValue(reader["projID"]),                       
                         deleted_flag = getIntValue(reader["deleted_flag"]),
-                        projName = getStringValue(reader["projName"])
-
+                        projName = getStringValue(reader["projName"]),
+                        status = Convert.ToDecimal(reader["status"])
                     });
                 }
             }
@@ -3466,7 +3476,7 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.taskID, e.Fname, e.Mname, e.Lname, t.taskName, w.hours " +
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.taskID, e.Fname, e.Mname, e.Lname, t.taskName, w.hours, w.taskStatus " +
                 "from works_on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID;", conn);
 
             using (var reader = cmd.ExecuteReader())
@@ -3486,7 +3496,8 @@ namespace CompanyProject.Controllers
                         taskName = getStringValue(reader["taskName"]),
                         employeeID = getIntValue(reader["employeeID"]),
                         TaskID = getIntValue(reader["taskID"]),
-                        hours = Convert.ToDecimal(reader["hours"])                      
+                        hours = Convert.ToDecimal(reader["hours"]),
+                        status = Convert.ToDecimal(reader["taskStatus"])
                     });
                 }
             }
@@ -3591,7 +3602,8 @@ namespace CompanyProject.Controllers
                         hours = Convert.ToDecimal(reader["hours"]),
                         deleted_at = getStringValue(reader["deleted_at"]),
                         fullName = fullName,
-                        taskName = getStringValue(reader["taskName"])
+                        taskName = getStringValue(reader["taskName"]),
+                        status = Convert.ToDecimal(reader["status"])
                     });
                 }
             }
