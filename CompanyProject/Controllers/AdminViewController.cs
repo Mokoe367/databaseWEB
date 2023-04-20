@@ -37,7 +37,7 @@ namespace CompanyProject.Controllers
                 user.Fname = getStringValue(reader["Fname"]);
                 user.Lname = getStringValue(reader["Lname"]);
                 user.DepID = getIntValue(reader["depID"]);
-            }
+            }        
             conn.Close();
             string msg = "Signed in as " + user.Fname + " " + user.Lname;
             ViewData["userInfo"] = msg;

@@ -124,12 +124,30 @@ namespace CompanyProject.Controllers
                     user.DepID = getIntValue(reader["depID"]);
                     user.DepName = getDepartmentName(getIntValue(reader["depID"]));
                 }
-                conn.Close();
+                reader.Close();                                
                 HttpContext.Session.SetString("depID", user.DepID.ToString());
                 userDepID = user.DepID;
                 userEmpID = Convert.ToInt32(empID);
                 string msg = "Signed in as " + user.Fname + " " + user.Lname + " showing Department " + user.DepName + " (Department ID: " + user.DepID + ")";
-                ViewData["userInfo"] = msg;              
+                ViewData["userInfo"] = msg;
+
+                string query = "select e.Fname, e.Lname, e.Mname from department as d left outer join employee as e on d.mgrID = e.employeeID where d.depID = @dep;";
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("@dep", user.DepID);
+                reader = cmd.ExecuteReader();
+                string mgrName = "";
+                if(reader.Read())
+                {
+                    mgrName = getStringValue(reader["Fname"]) + " " + getStringValue(reader["Mname"]) + " " + getStringValue(reader["Lname"]);
+                }
+                else
+                {
+                    mgrName = "none";
+                }
+                reader.Close();
+                msg = "Department manager: " + mgrName;
+                ViewData["mgrInfo"] = msg;
+                conn.Close();
                 return View(getViewData());
             }
 
@@ -2264,7 +2282,7 @@ namespace CompanyProject.Controllers
                     "', '" + obj.supID + "', '" + obj.assetID + "', @field, @amount);"; ;
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("@field", obj.field);
-                cmd.Parameters.AddWithValue("@amount", obj.field);
+                cmd.Parameters.AddWithValue("@amount", obj.amount);
                 cmd.Connection = conn;
                 cmd.ExecuteNonQuery();
                 conn.Close();
