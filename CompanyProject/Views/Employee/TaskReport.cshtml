@@ -31,6 +31,15 @@
 </style>
 
 <h2 style="margin: 25px">Task Report</h2>
+<div>
+    @if (TempData["success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>@TempData["success"]</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+</div>
 
 <div id="table-div">
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
