@@ -26,6 +26,11 @@
                 <input asp-for="hours" class="form-control" />
                 <span asp-validation-for="hours" class="text-danger"></span>
             </div>
+            <div class="form-group mb-3">
+                <label asp-for="status" class="control-label">Task status</label>
+                <input asp-for="status" class="form-control" />
+                <span asp-validation-for="status" class="text-danger"></span>
+            </div>
             <div class="form-group mb-3" style="display:none">
                 <label asp-for="tempemployeeID" class="control-label"></label>
                 <input asp-for="tempemployeeID" class="form-control" readonly />

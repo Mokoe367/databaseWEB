@@ -4,14 +4,14 @@
     ViewData["Title"] = "TaskReport";
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
     int projNum = (int)ViewData["projNum"];
-    List<string> projs = new List<string>(); 
+    List<string> projs = new List<string>();
     foreach (var item in Model.FirstOrDefault().taskDetails)
     {
-        if(!projs.Contains(item.projName))
+        if (!projs.Contains(item.projName))
         {
             projs.Add(item.projName);
         }
-        
+
     }
     string[] projArr = projs.ToArray();
 }
@@ -19,12 +19,20 @@
 <style>
     #table-div {
         margin: 25px;
+        scroll-margin-bottom: 25px;
+    }
+</style>
+
+<style>
+    #margin-set {
+        margin-top: 20px;
+        margin-bottom: 20px;
     }
 </style>
 
 <h2 style="margin: 25px">Task Report</h2>
 
-<div id="table-div">    
+<div id="table-div">
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Projects within the Department @ViewData["DepName"]</caption>
         <thead>
@@ -49,7 +57,7 @@
                 </th>
                 <th>
                     Field
-                </th>              
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -76,99 +84,117 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.field)
-                    </td>                  
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
 
+
 <div id="table-div">
     @for (int i = 0; i < projNum; i++)
     {
-        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
-        <caption> Showing tasks for Project @projArr[i]</caption>
-        
-        <thead>
-            <tr>
-                @*<th>
+        <br />
+        <p>
+
+            <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+                <caption> Showing tasks for Project @projArr[i]</caption>
+
+                <thead>
+                    <tr>
+                        @*<th>
                     Employee ID
-                </th>*@
-                @*<th>
+                    </th>*@
+                        @*<th>
                     Project Name
-                </th>*@
-                <th>
-                    Task ID
-                </th>
-                <th>
-                    Task Name
-                </th>
-                <th>
-                    Hours
-                </th>
-                <th>
-                    Task Budget
-                </th>
-                <th>
-                    Task Due Date
-                </th>  
-                <th>
-                    Days Until Due Date
-                </th>
-                <th>
+                    </th>*@
+                        <th>
+                            Task ID
+                        </th>
+                        <th>
+                            Task Name
+                        </th>
+                        <th>
+                            Hours
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Task Budget
+                        </th>
+                        <th>
+                            Task Due Date
+                        </th>
+                        <th>
+                            Days Until Due Date
+                        </th>
+                        <th>
 
-                </th>
-            </tr>
-        </thead>
-        
-        <tbody>
-            @foreach (var item in Model.FirstOrDefault().taskDetails)
-            {
-                
-             @*start the change here*@   
-                    @if(item.projName == projArr[i])
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.FirstOrDefault().taskDetails)
                     {
-                        <tr>
-                        @*<td>
-                            @Html.DisplayFor(modelItem => item.empID)
-                        </td>*@
-                        @*<td>
-                            @Html.DisplayFor(modelItem => item.projName)
-                        </td>*@
-                        @*<td>
-                            @Html.DropDownListFor(modelItem => item.projID,new SelectList(Enum.GetValues(typeof(TaskDetails))),"Select Project ID")
-                        </td>*@
-                        <td>
-                            @Html.DisplayFor(modelItem => item.taskID)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.taskName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.hours)
-                        </td>
-                        <td>
-                            $@Html.DisplayFor(modelItem => item.budget)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.dueDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UntilDueDate)
-                        </td>
-                        <td>
-                            @Html.ActionLink("Edit", "EditWork", new { empid = item.empID, taskid = item.taskID })
-                        </td>
 
-                        </tr>
+                        @*start the change here*@
+                        @if (item.projName == projArr[i])
+                        {
+                            <tr>
+                                @*<td>
+                    @Html.DisplayFor(modelItem => item.empID)
+                    </td>*@
+                                @*<td>
+                    @Html.DisplayFor(modelItem => item.projName)
+                    </td>*@
+                                @*<td>
+                    @Html.DropDownListFor(modelItem => item.projID,new SelectList(Enum.GetValues(typeof(TaskDetails))),"Select Project ID")
+                    </td>*@
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.taskID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.taskName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.hours)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.taskStatus)%
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.budget)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.dueDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UntilDueDate)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Edit", "EditWork", new { empid = item.empID, taskid = item.taskID })
+                                </td>
+
+                            </tr>
+                        }
+
                     }
-                    
-            }
-            @*@{
+                    @*@{
                 projArr = projArr.Skip(1).ToArray();
-            }*@
-        </tbody>
-    </table>
+                }*@
+                </tbody>
+            </table>
+        </p>
+
     }
-    
+
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('table').DataTable();
+    });
+</script>

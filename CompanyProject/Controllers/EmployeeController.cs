@@ -476,6 +476,7 @@ namespace CompanyProject.Controllers
             work.tempemployeeID = getIntValue(reader["employeeID"]);
             work.tempTaskID = getIntValue(reader["taskID"]);
             work.hours = getIntValue(reader["hours"]);
+            work.status = Convert.ToDecimal(reader["taskStatus"]);
             conn.Close();
             return View(work);
         }
@@ -515,7 +516,7 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours WHERE employeeID = '" + work.tempemployeeID + "' " +
+                string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours, taskStatus=@taskStatus WHERE employeeID = '" + work.tempemployeeID + "' " +
                     "and taskID = " + work.tempTaskID + ";";
                 MySqlCommand cmd2 = new MySqlCommand();
 
@@ -523,6 +524,7 @@ namespace CompanyProject.Controllers
                 cmd2.Parameters.AddWithValue("@emp", work.employeeID);
                 cmd2.Parameters.AddWithValue("@task", work.TaskID);
                 cmd2.Parameters.AddWithValue("@hours", work.hours);
+                cmd2.Parameters.AddWithValue("@taskStatus", work.status);
 
                 cmd2.Connection = conn;
                 cmd2.ExecuteNonQuery();
@@ -636,7 +638,7 @@ namespace CompanyProject.Controllers
             List<TaskDetails> TaskData = new List<TaskDetails>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, t.taskName, t.cost, t.taskDueDate, t.projID " +
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, w.taskStatus, t.taskName, t.cost, t.taskDueDate, t.projID " +
                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
             int projNum = 0;
             using (var reader = cmd.ExecuteReader())
@@ -668,7 +670,8 @@ namespace CompanyProject.Controllers
                         budget = getIntValue(reader["cost"]),
                         UntilDueDate = getTaskDaysLeft(getIntValue(reader["taskID"])),
                         taskID = getIntValue(reader["taskID"]),
-                        projID = getIntValue(reader["projID"])
+                        projID = getIntValue(reader["projID"]),
+                        taskStatus = Convert.ToDecimal(reader["taskStatus"])
                     });
                     
 
