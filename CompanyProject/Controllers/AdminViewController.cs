@@ -195,17 +195,14 @@ namespace CompanyProject.Controllers
 
         public List<SelectListItem> getSupervisors(int depID, int empID)
         {
-            if(depID == 0)
-            {
-                List<SelectListItem> empty = new List<SelectListItem>();
-                return empty;
-            }
+            
             MySqlConnection conn = GetConnection();
             List<SelectListItem> supervisors = new List<SelectListItem>();
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select Fname, Lname, Mname, employeeID from employee where depID = " + depID + " and deleted_flag = 1;", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, e.employeeID, d.depName from employee as e " +
+                "left outer join department as d on e.depID = d.depID where e.deleted_flag = 1;", conn);
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -216,13 +213,53 @@ namespace CompanyProject.Controllers
                         string Fname = getStringValue(reader["Fname"]);
                         string Mname = getStringValue(reader["Mname"]);
                         string Lname = getStringValue(reader["Lname"]);
-                        string Name = id + " " + Fname + " " + Mname + " " + Lname;
+                        string depName = getStringValue(reader["depName"]);
+                        string Name = depName + " - " + id + " " + Fname + " " + Mname + " " + Lname;
                         supervisors.Add(new SelectListItem()
                         {
                             Value = id,
                             Text = Name
                         });
                     }                   
+                }
+            }
+            conn.Close();
+
+            return supervisors;
+        }
+
+        public List<SelectListItem> getSpecificSupervisors(int depID, int empID)
+        {
+            if(depID == 0)
+            {
+                List<SelectListItem> empty = new List<SelectListItem>();
+                return empty;
+            }
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> supervisors = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, e.employeeID, d.depName from employee as e " +
+                "left outer join department as d on e.depID = d.depID where e.deleted_flag = 1 and e.depID = " + depID + " ;", conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string id = getStringValue(reader["employeeID"]);
+                    if (id != empID.ToString())
+                    {
+                        string Fname = getStringValue(reader["Fname"]);
+                        string Mname = getStringValue(reader["Mname"]);
+                        string Lname = getStringValue(reader["Lname"]);
+                        string depName = getStringValue(reader["depName"]);
+                        string Name = depName + " - " + id + " " + Fname + " " + Mname + " " + Lname;
+                        supervisors.Add(new SelectListItem()
+                        {
+                            Value = id,
+                            Text = Name
+                        });
+                    }
                 }
             }
             conn.Close();
@@ -421,7 +458,26 @@ namespace CompanyProject.Controllers
         {            
             MySqlConnection conn = GetConnection();
             conn.Open();
-          
+            MySqlCommand cmd2 = new MySqlCommand();
+            string test = "select depID from employee where employeeID = @id";
+            cmd2.CommandText = test;
+            cmd2.Parameters.AddWithValue("@id", employee.SuperID);
+            cmd2.Connection = conn;
+            var reader = cmd2.ExecuteReader();
+            if(reader.HasRows && employee.DepID != 0)
+            {
+                reader.Read();
+                int superDepID = getIntValue(reader["depID"]);
+                if(employee.DepID != superDepID)
+                {
+                    ModelState.AddModelError("DepID", "Supervisor not apart of department");
+                }
+            }
+            if(employee.DepID == 0 && employee.SuperID != 0)
+            {
+                ModelState.AddModelError("SuperID", "Department not selected for supervisor");
+            }
+            reader.Close();
             if (ModelState.IsValid)
             {
                 try
@@ -775,7 +831,7 @@ namespace CompanyProject.Controllers
             dep.mgrFname = Fname;
             dep.mgrMname = Mname;
             dep.mgrLname = Lname;
-            dep.managers = getSupervisors(dep.depID, 0);
+            dep.managers = getSpecificSupervisors(dep.depID, 0);
             dep.locations = getLocations(dep.depID);
             conn.Close();
             return View(dep);
@@ -821,7 +877,7 @@ namespace CompanyProject.Controllers
             else
             {
                 conn.Close();
-                dep.managers = getSupervisors(dep.depID, 0);
+                dep.managers = getSpecificSupervisors(dep.depID, 0);
                 return View(dep);
             }           
         }
@@ -838,6 +894,7 @@ namespace CompanyProject.Controllers
         public IActionResult AddSupplier(Supplier obj)
         {
             MySqlConnection conn = GetConnection();
+            conn.Open();
             MySqlCommand cmd = new MySqlCommand();
             cmd.Connection = conn;
             string test = "select name from suppliers where name = @supName";
