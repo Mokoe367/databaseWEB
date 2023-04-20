@@ -12,17 +12,17 @@
         <form asp-action="AddSupplier">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
-                <label asp-for="name" class="control-label">Supplier Name</label>
+                <label asp-for="name" class="control-label">Supplier Name (Required)</label>
                 <input asp-for="name" class="form-control" />
                 <span asp-validation-for="name" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="product" class="control-label">Product</label>
+                <label asp-for="product" class="control-label">Product (Required)</label>
                 <input asp-for="product" class="form-control" />
                 <span asp-validation-for="product" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="roleID">Roles</label>
+                <label asp-for="roleID">Roles (Optional)</label>
                 <select asp-for="roleID" asp-items="@Model.Roles">
                     <option value="0">none</option>
                 </select>

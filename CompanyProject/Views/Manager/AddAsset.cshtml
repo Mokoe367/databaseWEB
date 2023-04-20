@@ -12,17 +12,17 @@
         <form asp-action="AddAsset">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
-                <label asp-for="supID" class="control-label">Supplier ID</label>
+                <label asp-for="supID" class="control-label">Supplier ID (Required)</label>
                 <input asp-for="supID" class="form-control" readonly />
                 <span asp-validation-for="supID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="type" class="control-label">Type</label>
+                <label asp-for="type" class="control-label">Type (Required)</label>
                 <input asp-for="type" class="form-control" />
                 <span asp-validation-for="type" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="cost" class="control-label">Cost</label>
+                <label asp-for="cost" class="control-label">Cost (Required)</label>
                 <input asp-for="cost" class="form-control" />
                 <span asp-validation-for="cost" class="text-danger"></span>
             </div>

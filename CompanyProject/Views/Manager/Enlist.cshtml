@@ -17,12 +17,12 @@
                 <span asp-validation-for="employeeID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="TaskID">Task</label>
+                <label asp-for="TaskID">Task (Required)</label>
                 <select asp-for="TaskID" asp-items="@Model.tasks"></select>
                 <span asp-validation-for="TaskID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="hours" class="control-label">Hours</label>
+                <label asp-for="hours" class="control-label">Hours (Required)</label>
                 <input asp-for="hours" class="form-control" />
                 <span asp-validation-for="hours" class="text-danger"></span>
             </div>

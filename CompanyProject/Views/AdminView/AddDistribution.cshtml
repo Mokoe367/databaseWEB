@@ -12,17 +12,17 @@
         <form asp-action="AddDistribution">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
-                <label asp-for="depID" class="control-label">Department</label>
+                <label asp-for="depID" class="control-label">Department (Required)</label>
                 <select asp-for="depID" asp-items="@Model.departments"></select>
                 <span asp-validation-for="depID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="supID">Supplier</label>
+                <label asp-for="supID">Supplier (Required)</label>
                 <select asp-for="supID" asp-items="@Model.suppliers"></select>
                 <span asp-validation-for="supID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="assetID">Asset</label>
+                <label asp-for="assetID">Asset (Required)</label>
                 <select asp-for="assetID" asp-items="@Model.assets"></select>
                 <span asp-validation-for="assetID" class="text-danger"></span>
             </div>

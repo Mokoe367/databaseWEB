@@ -17,12 +17,12 @@
                 <span asp-validation-for="projID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="projName" class="control-label">Project Name</label>
+                <label asp-for="projName" class="control-label">Project Name (Required)</label>
                 <input asp-for="projName" class="form-control" />
                 <span asp-validation-for="projName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="dueDate" class="control-label">Due Date</label>
+                <label asp-for="dueDate" class="control-label">Due Date (Required)</label>
                 <input asp-for="dueDate" type="date" class="form-control" />
                 <span asp-validation-for="dueDate" class="text-danger"></span>
             </div>
@@ -32,24 +32,24 @@
                 <span asp-validation-for="depID" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="location" class="control-label">Location</label>
+                <label asp-for="location" class="control-label">Location (Optional)</label>
                 <select asp-for="location" asp-items="@Model.locations">
                     <option value="0">none</option>
                 </select>
                 <span asp-validation-for="location" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="cost" class="control-label">Budget</label>
+                <label asp-for="cost" class="control-label">Budget (Required)</label>
                 <input asp-for="cost" class="form-control" />
                 <span asp-validation-for="cost" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="projStatus" class="control-label">Project Status</label>
+                <label asp-for="projStatus" class="control-label">Project Status (Required)</label>
                 <input asp-for="projStatus" class="form-control" />
                 <span asp-validation-for="projStatus" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="field" class="control-label">Field</label>
+                <label asp-for="field" class="control-label">Field (Optional)</label>
                 <input asp-for="field" class="form-control" />
                 <span asp-validation-for="field" class="text-danger"></span>
             </div>

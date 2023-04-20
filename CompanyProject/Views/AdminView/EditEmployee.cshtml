@@ -92,15 +92,11 @@
     var list = document.getElementById("SuperID");
     department = document.getElementById("DepID");
     choice = department.options[department.selectedIndex].text;
-    let options = [];
-    let values = [];
-
+ 
     for (let i = 0; i < list.options.length; i++) {
         let split = String(list.options[i].text).split("-");
         let place = split[0].trim();
-        if (place == String(choice) || list.options[i].value == 0) {
-            options.push(list.options[i].text);
-            values.push(list.options[i].value);
+        if (place == String(choice) || list.options[i].value == 0) {           
             list.options[i].removeAttribute("hidden");
         }
         else {
@@ -109,23 +105,19 @@
     }   
     function filterList() {       
         department = document.getElementById("DepID");
-        choice = department.options[department.selectedIndex].text;
-        const options = [];
-        const values = [];   
-        
+        choice = department.options[department.selectedIndex].text;  
+        list.value = 0;
         for (let i = 0; i < list.options.length; i++) {
             let split = String(list.options[i].text).split("-");
             let place = split[0].trim();                      
-            if (place == String(choice) || list.options[i].value == 0) {
-                options.push(list.options[i].text);
-                values.push(list.options[i].value);
+            if (place == String(choice) || list.options[i].value == 0) {                
                 list.options[i].removeAttribute("hidden");
             }
             else {
                 list.options[i].setAttribute("hidden", true);
             }
         }
-             
+               
     }   
     
 </script>

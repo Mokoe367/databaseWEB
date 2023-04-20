@@ -22,7 +22,7 @@
                 <span asp-validation-for="dueDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="depID" class="control-label">Department</label>
+                <label asp-for="depID" class="control-label">Department (Required)</label>
                 <select asp-for="depID" asp-items="@Model.departments"></select>
                 <span asp-validation-for="depID" class="text-danger"></span>
             </div>
