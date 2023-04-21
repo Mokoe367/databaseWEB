@@ -28,7 +28,7 @@ namespace CompanyProject.Controllers
             /*List<Employee> employee = new List<Employee>();
             return View("Index", employee);*/
 
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("employeeId");
 
             if (empID == null)
             {
@@ -456,7 +456,7 @@ namespace CompanyProject.Controllers
 
         public IActionResult TaskReport()
         {
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("employeeId");
             int id = Convert.ToInt32(empID);
             return View(GetEmployeeTaskReportViews(id));
         }
@@ -543,7 +543,7 @@ namespace CompanyProject.Controllers
         public IActionResult LoginDetails()
         {
             var login = new Login();
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("employeeId");
             int id = Convert.ToInt32(empID);
             MySqlConnection conn = GetConnection();
             conn.Open();
@@ -562,7 +562,7 @@ namespace CompanyProject.Controllers
 
         public IEnumerable<EmployeeTaskReportView> GetEmployeeTaskReportViews(int id)
         {
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("employeeId");
             MySqlConnection conn = GetConnection();
             conn.Open();
             int depID;

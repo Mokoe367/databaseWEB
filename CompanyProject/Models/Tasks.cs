@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace CompanyProject.Models
 {
     public class Tasks
     {
+        [DisplayName("Task ID")]
         public int taskID { get; set; }
         [Required (ErrorMessage = "Task Name Required")]
         public string taskName { get; set; }

@@ -72,7 +72,7 @@ namespace CompanyProject.Controllers
                     else if (privilege == "Employee" && flag == 1)
                     {
                         conn.Close();
-                        HttpContext.Session.SetString("id", empID.ToString());
+                        HttpContext.Session.SetString("employeeId", empID.ToString());
                         //TempData["id"] = empID;
                         return RedirectToAction("Index", "Employee");
                     }

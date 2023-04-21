@@ -23,7 +23,7 @@ namespace CompanyProject.Controllers
 
         public IActionResult Index()
         {
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("employeeId");
 
             MySqlConnection conn = GetConnection();
             conn.Open();
@@ -156,7 +156,7 @@ namespace CompanyProject.Controllers
             emp.Roles = getRoles();
             emp.supervisors = getSupervisors(emp.DepID, emp.ID);
             emp.departments = getDepartments();
-            string empID = HttpContext.Session.GetString("id");     
+            string empID = HttpContext.Session.GetString("employeeId");     
             if (emp.ID.ToString() == empID)
             {
                 return View("selfEdit", emp);
