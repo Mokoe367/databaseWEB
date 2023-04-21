@@ -66,7 +66,7 @@ namespace CompanyProject.Controllers
                     if (privilege == "Admin" && flag == 1)
                     {
                         conn.Close();
-                        HttpContext.Session.SetString("id", empID.ToString());
+                        HttpContext.Session.SetString("AdminID", empID.ToString());
                         return RedirectToAction("Index", "AdminView");
                     }
                     else if (privilege == "Employee" && flag == 1)
@@ -79,7 +79,7 @@ namespace CompanyProject.Controllers
                     else if (privilege == "Manager" && flag == 1)
                     {
                         conn.Close();
-                        HttpContext.Session.SetString("id", empID.ToString());
+                        HttpContext.Session.SetString("ManagerID", empID.ToString());
                         return RedirectToAction("Index", "Manager");
                     }
                     else if (flag == 0)

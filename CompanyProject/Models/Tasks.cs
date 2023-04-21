@@ -24,6 +24,7 @@ namespace CompanyProject.Models
         public string projName { get; set; }
         public int deleted_flag { get; set; }
         [Range(0, 100.0, ErrorMessage = "Range should be above 0 or more and less than 100")]
+        [Required(ErrorMessage = "Status Required")]
         public decimal status { get; set; }
         public List<SelectListItem> projects { get; set; }
     }

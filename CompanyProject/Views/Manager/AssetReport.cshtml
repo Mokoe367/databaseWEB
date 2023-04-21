@@ -19,7 +19,7 @@
 </div>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top" id="department">
         <caption>Department Assets</caption>
         <thead>
             <tr>
@@ -43,32 +43,34 @@
         <tbody>
             @foreach (var item in Model.departmentAssets)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.type)
-                </td>
-                <td>
-                    $@Html.DisplayFor(modelItem => item.cost)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.amount)
-                </td>
-                <td>
-                    $@Html.DisplayFor(modelItem => item.total)
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.type)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.amount)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.total)
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
 
+<div id="piechart" style="width: 900px; height: 500px;"></div>
+
 <p style="margin: 25px"><strong>Department Total = $@Model.departmentTotal.ToString()</strong></p>
 
 <div id="table-div">
-    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top" id="employee">
         <caption>Employee Assets</caption>
         <thead>
             <tr>
@@ -92,27 +94,29 @@
         <tbody>
             @foreach (var item in Model.employeeAssets)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.name)
-                </td>               
-                <td>
-                    @Html.DisplayFor(modelItem => item.type)
-                </td>
-                <td>
-                    $@Html.DisplayFor(modelItem => item.cost)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.amount)
-                </td>
-                <td>
-                    $@Html.DisplayFor(modelItem => item.total)
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.type)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.amount)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.total)
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
+
+<div id="piechart2" style="width: 900px; height: 500px;"></div>
 
 <p style="margin: 25px"><strong>Employee Total = $@Model.employeeTotal.ToString()</strong></p>
 
@@ -122,4 +126,88 @@
     $(document).ready(function () {
         $('table').DataTable();
     });
+</script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        type = new Array();
+        cost = new Array();
+        var table = document.getElementById("department");
+        for (let row of table.rows) {
+            let i = 0;
+            for (let cell of row.cells) {
+                if (i == 1) {
+                    type.push(cell.innerText);
+                    i++;
+                }
+                else if (i == 4) {
+                    cost.push(cell.innerText);
+                    i++;
+                }
+                else {
+                    i++;
+                }
+            }
+        }
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'type');
+        data.addColumn('number', 'cost');
+
+        for (let i = 1; i < type.length; i++) {
+            data.addRow([type[i], parseFloat(cost[i].replace('$', ''))]);
+        }
+        var options = {
+            title: 'Department Distributions'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+    }
+</script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        employee = new Array();
+        cost = new Array();
+        var table = document.getElementById("employee");
+        for (let row of table.rows) {
+            let i = 0;
+            for (let cell of row.cells) {
+                if (i == 0) {
+                    employee.push(cell.innerText);
+                    i++;
+                }
+                else if (i == 4) {
+                    cost.push(cell.innerText);
+                    i++;
+                }
+                else {
+                    i++;
+                }
+            }
+        }
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'employee');
+        data.addColumn('number', 'cost');
+
+        for (let i = 1; i < employee.length; i++) {
+            data.addRow([employee[i], parseFloat(cost[i].replace('$', ''))]);
+        }
+        var options = {
+            title: 'Employee Used Assets'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart2'));
+
+        chart.draw(data, options);
+    }
 </script>

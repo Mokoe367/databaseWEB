@@ -102,7 +102,7 @@ namespace CompanyProject.Controllers
 
         public IActionResult Index()
         {
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("ManagerID");
 
             if (empID == null)
             {
@@ -524,7 +524,7 @@ namespace CompanyProject.Controllers
             conn.Close();
             emp.Roles = getRoles();
             emp.supervisors = getSupervisors(emp.DepID, emp.ID);
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("ManagerID");
             if (emp.ID.ToString() == empID)
             {
                 return View("selfEdit", emp);
@@ -1174,7 +1174,7 @@ namespace CompanyProject.Controllers
         public IActionResult LoginDetails()
         {
             var login = new Login();
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("ManagerID");
             int id = Convert.ToInt32(empID);
             MySqlConnection conn = GetConnection();
             conn.Open();
