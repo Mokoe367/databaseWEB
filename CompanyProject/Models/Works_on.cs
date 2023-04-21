@@ -22,6 +22,7 @@ namespace CompanyProject.Models
         public int tempemployeeID { get; set; }
         public int tempTaskID { get; set; }
         [Range(0.0, 100.0, ErrorMessage = "Can't be less than 0 and more than 100")]
+        [Required(ErrorMessage = "Status Required")]
         public decimal status { get; set; }
         public List<SelectListItem> employees { get; set; }
         public List<SelectListItem> tasks { get; set; }

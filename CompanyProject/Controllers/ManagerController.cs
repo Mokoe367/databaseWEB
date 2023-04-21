@@ -875,10 +875,10 @@ namespace CompanyProject.Controllers
             user.Lname = getStringValue(reader["Lname"]);
 
             conn.Close();
-
+            string empID = HttpContext.Session.GetString("ManagerID");
             string msg = "Employee Data for " + user.Fname + " " + user.Lname;
             ViewData["TaskInfo"] = msg;
-
+            ViewData["mgrID"] = empID;
             ViewData["employee"] = id;
            
             return View(getEmployeeDetails(id));
@@ -1196,6 +1196,75 @@ namespace CompanyProject.Controllers
             ReportForm reportForm = new ReportForm();
             reportForm.projects = getProjects();
             return View(reportForm);
+        }
+
+
+        public IActionResult EditWork(int empid, int taskid)
+        {
+            Works_on work = new Works_on();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.taskID, e.Fname, e.Mname, e.Lname, t.taskName, w.hours, w.taskStatus " +
+                "from works_on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID where w.employeeID = " + empid + " and " +
+                "w.taskID = " + taskid + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            work.employeeID = getIntValue(reader["employeeID"]);
+            work.TaskID = getIntValue(reader["taskID"]);          
+            work.hours = Convert.ToDecimal(reader["hours"]);
+            work.Fname = getStringValue(reader["Fname"]);
+            work.Mname = getStringValue(reader["Mname"]);
+            work.Lname = getStringValue(reader["Lname"]);
+            work.taskName = getStringValue(reader["taskName"]);
+            work.status = Convert.ToDecimal(reader["taskStatus"]);
+            work.fullName = work.Fname + " " + work.Mname + " " + work.Lname;
+            ViewData["employee"] = empid;
+            conn.Close();
+            return View(work);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditWork(Works_on work)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();          
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    string query = "UPDATE works_on SET hours=@hours, taskStatus=@status WHERE employeeID = '" + work.employeeID + "' " +
+                    "and taskID = " + work.TaskID + ";";
+                    MySqlCommand cmd2 = new MySqlCommand();
+
+                    cmd2.CommandText = query;                   
+                    cmd2.Parameters.AddWithValue("@hours", work.hours);
+                    cmd2.Parameters.AddWithValue("@status", work.status);
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
+
+                    conn.Close();
+                    TempData["success"] = "Works on successfully edited";
+                    return RedirectToAction("EmployeeDetails", new { id = work.employeeID });
+                }
+                catch (MySqlException e)
+                {
+                    ModelState.AddModelError("taskName", e.Message);
+                    work.employees = getEmployees();
+                    work.tasks = getTasks();
+                    return View(work);
+                }
+            }
+            else
+            {
+                conn.Close();
+                work.employees = getEmployees();
+                work.tasks = getTasks();
+                return View(work);
+            }
         }
 
         [HttpPost]
