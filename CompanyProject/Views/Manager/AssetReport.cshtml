@@ -8,6 +8,41 @@
     #table-div {
         margin: 25px;
     }
+
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
 </style>
 <div style="margin: 25px">
 
@@ -67,6 +102,37 @@
 
 <div id="piechart" style="width: 900px; height: 500px;"></div>
 
+<div id="table-div">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top" id="departmentTotal">
+        <caption>Department Assets</caption>
+        <thead>
+            <tr>
+                <th>
+                    Supplier Name
+                </th>
+                <th>
+                    Total Cost
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.SupplierTotals)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.supName)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.totalAmount)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="piechart3" style="width: 900px; height: 500px;"></div>
+
 <p style="margin: 25px"><strong>Department Total = $@Model.departmentTotal.ToString()</strong></p>
 
 <div id="table-div">
@@ -76,6 +142,9 @@
             <tr>
                 <th>
                     Employee Name
+                </th>
+                <th>
+                    Supplier Name
                 </th>
                 <th>
                     Type
@@ -99,6 +168,9 @@
                         @Html.DisplayFor(modelItem => item.name)
                     </td>
                     <td>
+                        @Html.DisplayFor(modelItem => item.supName)
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.type)
                     </td>
                     <td>
@@ -114,6 +186,7 @@
             }
         </tbody>
     </table>
+
 </div>
 
 <div id="piechart2" style="width: 900px; height: 500px;"></div>
@@ -122,92 +195,105 @@
 
 <p style="margin: 25px"><strong>Overall Total = $@Model.total.ToString()</strong></p>
 
-<script>
-    $(document).ready(function () {
-        $('table').DataTable();
-    });
-</script>
+<div class="tab" style="margin:25px">
+    <button class="tablinks" onclick="openDiv(event, 'ByEmployee')" id="defaultOpen">Group By Employee</button>
+    <button class="tablinks" onclick="openDiv(event, 'ByType')">Group By Type</button>
+    <button class="tablinks" onclick="openDiv(event, 'BySupplier')">Group By Supplier</button>
+</div>
+
+<div id="ByEmployee" class="tabcontent">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top" id="ByEmployeeTable">
+        <caption>Employee Assets by Employee</caption>
+        <thead>
+            <tr>
+                <th>
+                    Employee Name
+                </th>
+                <th>
+                    Total
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.employeeByName)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.total)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div id="piechart4"></div>
+
+</div>
+
+<div id="ByType" class="tabcontent">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top" id="ByTypeTable">
+        <caption>Employee Assets by Type</caption>
+        <thead>
+            <tr>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Total
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.employeeByType)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.type)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.total)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <div id="piechart6"></div>
+</div>
+
+<div id="BySupplier" class="tabcontent">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top" id="BySupplierTable">
+        <caption>Employee Assets by Supplier</caption>
+        <thead>
+            <tr>
+                <th>
+                    Supplier
+                </th>
+                <th>
+                    Total
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.employeeTotals)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.supName)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.totalAmount)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div id="piechart5" style="align-content: center"></div>
+</div>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        type = new Array();
-        cost = new Array();
-        var table = document.getElementById("department");
-        for (let row of table.rows) {
-            let i = 0;
-            for (let cell of row.cells) {
-                if (i == 1) {
-                    type.push(cell.innerText);
-                    i++;
-                }
-                else if (i == 4) {
-                    cost.push(cell.innerText);
-                    i++;
-                }
-                else {
-                    i++;
-                }
-            }
-        }
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'type');
-        data.addColumn('number', 'cost');
-
-        for (let i = 1; i < type.length; i++) {
-            data.addRow([type[i], parseFloat(cost[i].replace('$', ''))]);
-        }
-        var options = {
-            title: 'Department Distributions'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-        chart.draw(data, options);
-    }
-</script>
-
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        employee = new Array();
-        cost = new Array();
-        var table = document.getElementById("employee");
-        for (let row of table.rows) {
-            let i = 0;
-            for (let cell of row.cells) {
-                if (i == 0) {
-                    employee.push(cell.innerText);
-                    i++;
-                }
-                else if (i == 4) {
-                    cost.push(cell.innerText);
-                    i++;
-                }
-                else {
-                    i++;
-                }
-            }
-        }
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'employee');
-        data.addColumn('number', 'cost');
-
-        for (let i = 1; i < employee.length; i++) {
-            data.addRow([employee[i], parseFloat(cost[i].replace('$', ''))]);
-        }
-        var options = {
-            title: 'Employee Used Assets'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('piechart2'));
-
-        chart.draw(data, options);
-    }
-</script>
+<script type="text/javascript" src="~/js/AssetPieChart.js"></script>

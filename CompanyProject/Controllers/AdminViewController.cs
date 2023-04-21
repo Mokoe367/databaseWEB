@@ -1035,25 +1035,35 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                             
-               query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) " +
+                try
+                {
+                    query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) " +
                         "VALUES (@dueDate, @projName, @location, @cost, @field, @projStatus, @depID);";
 
-                MySqlCommand cmd2 = new MySqlCommand();
-                cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@projName", obj.projName);
-                cmd2.Parameters.AddWithValue("@dueDate", obj.dueDate);                
-                cmd2.Parameters.AddWithValue("@depID", obj.depID);                
-                cmd2.Parameters.AddWithValue("@location", DBNull.Value);
-                cmd2.Parameters.AddWithValue("@cost", obj.cost);
-                cmd2.Parameters.AddWithValue("@field", obj.field);
-                cmd2.Parameters.AddWithValue("@projStatus", obj.projStatus);
+                    MySqlCommand cmd2 = new MySqlCommand();
+                    cmd2.CommandText = query;
+                    cmd2.Parameters.AddWithValue("@projName", obj.projName);
+                    cmd2.Parameters.AddWithValue("@dueDate", obj.dueDate);
+                    cmd2.Parameters.AddWithValue("@depID", obj.depID);
+                    cmd2.Parameters.AddWithValue("@location", DBNull.Value);
+                    cmd2.Parameters.AddWithValue("@cost", obj.cost);
+                    cmd2.Parameters.AddWithValue("@field", obj.field);
+                    cmd2.Parameters.AddWithValue("@projStatus", obj.projStatus);
 
-                cmd2.Connection = conn;
-                cmd2.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Project succesfully added";
-                return RedirectToAction("Index");
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Project succesfully added";
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("dueDate", e.Message);
+                    obj.departments = getDepartments();
+                    return View(obj);
+                }    
+              
             }
             else
             {
