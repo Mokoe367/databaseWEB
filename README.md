@@ -18,7 +18,7 @@ Our group's product is an application that provides a project management system 
 <img src="https://github.com/Mokoe367/databaseWEB/blob/main/CompanyProject/wwwroot/images/step_2.png?raw=true" length="275" width="275">
 
 3. Locate the downloaded folder and choose where to extract it <br />
-<img src="https://github.com/Mokoe367/databaseWEB/blob/main/CompanyProject/wwwroot/images/step_3.png?raw=true" length="275" width="275">
+<img src="https://github.com/Mokoe367/databaseWEB/blob/main/CompanyProject/wwwroot/images/step_3.png?raw=true" length="325" width="325">
 
 4. Open the solution in Microsoft Visual Studio <br />
 5. Finished
