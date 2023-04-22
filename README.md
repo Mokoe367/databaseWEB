@@ -2,9 +2,9 @@
 [comment]: <> (group 2 project management readMe)
 
 ## Contents
-- [Description](#-Description)
-- [Steps to install](#-Steps-(if-any)-to-install-our-project)
-- [Technologies](#-Technologies-used)
+- [Description](#Description)
+- [Steps to install](#Steps-(if-any)-to-install-our-project)
+- [Technologies](#Technologies-used)
 
 ## Description
 Our group's product is an application that provides a project management system to companies. It provides different views for employees, managers, and admins, as well as multiple methods to add, edit, and delete certain information
