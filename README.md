@@ -3,7 +3,7 @@
 
 ## Contents
 - [Description](#Description)
-- [Steps to install](#Steps-(if-any)-to-install-our-project)
+- [Steps to install](#Steps-if-any-to-install-our-project)
 - [Technologies](#Technologies-used)
 
 ## Description
