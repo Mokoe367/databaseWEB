@@ -27,6 +27,13 @@
 
 </div>
 
+<div style="margin: 25px" class="progress">
+    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow=@Model.status.ToString()
+         aria-valuemin="0" aria-valuemax="100" style="width:@Model.status%">
+        <span class="sr-only">@Model.status% Complete</span>
+    </div>
+</div>
+
 <div id="table-div">
     <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
         <caption>Tasks</caption>

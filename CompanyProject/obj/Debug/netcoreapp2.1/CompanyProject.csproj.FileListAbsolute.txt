@@ -1037,3 +1037,4 @@ C:\Users\imher\source\repos\databaseWEB\CompanyProject2\CompanyProject\obj\Debug
 C:\Users\imher\source\repos\databaseWEB\CompanyProject2\CompanyProject\obj\Debug\netcoreapp2.1\CompanyProject.csproj.CopyComplete
 C:\Users\imher\source\repos\databaseWEB\CompanyProject2\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Employee\TeamsReport.cshtml.g.cs
 C:\Users\imher\source\repos\databaseWEB\CompanyProject2\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Employee\TeamsReportList.cshtml.g.cs
+C:\Users\imher\source\repos\databaseWEB\CompanyProject2\CompanyProject\obj\Debug\netcoreapp2.1\Razor\Views\Manager\EditWork.cshtml.g.cs

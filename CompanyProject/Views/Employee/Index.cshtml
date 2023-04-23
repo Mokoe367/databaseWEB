@@ -1,18 +1,95 @@
-﻿@model IEnumerable<CompanyProject.Models.Employee>
+﻿@model CompanyProject.Models.EmployeeMainPage
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
 }
 
-<h2>Company Members</h2>
+<style>
+    .emp-nav {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 25px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .emp-nav a {
+        margin-right: 15px;
+        color: black;
+        font-weight: 500;
+        display: block;
+        position: relative;
+        padding: 0.2em 0;
+    }
+
+    .emp-nav a:hover {
+        cursor: pointer;
+        color: #0d6efd;
+    }
+
+    .content-body {
+        margin: 25px;
+        display: none;
+    }
+
+    .show-active {
+        display: block;
+        animation: fade 0.75s;
+    }
+
+    .tab {
+        text-decoration: none;
+    }
+
+    .tab-active {
+        font-size: 2.5rem;
+        text-decoration: underline;
+        text-underline-offset: 0.5em;
+    }
+
+    @@keyframes fade {
+        from {
+            opacity: 0
+        }
+
+        to {
+            opacity: 1
+        }
+    }
+
+    /* Fade in underline */
+    .emp-nav a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0.1em;
+        background-color: #0d6efd;
+        opacity: 0;
+        transition: opacity 250ms, transform 350ms;
+    }
+
+    .emp-nav a:hover::after {
+        opacity: 1;
+        transform: translate3d(0, 0.2em, 0);
+    }
+
+    .emp-nav a:focus::after {
+        opacity: 1;
+        transform: translate3d(0, 0.2em, 0);
+    }
+</style>
+
 
 @*<p>
-    <a asp-action="Create">Create New</a>
-</p>*@
+        <a asp-action="Create">Create New</a>
+    </p>*@
 
 <div style="margin: 25px">
-    @*<h2>Admin View</h2>*@
+    <h2>Employee View</h2>
     @if (ViewData["userInfo"] != null)
     {
         @ViewData["userInfo"];
@@ -20,7 +97,7 @@
     }
 </div>
 
-<div>
+<div style="margin: 25px">
     @if (TempData["success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -30,91 +107,297 @@
     }
 </div>
 
+<div class="emp-nav">
+    <a class="tab">My Tasks</a>
+    <a class="tab">Assets</a>
+    <a class="tab">Projects</a>
+    <a class="tab tab-active">Company Members</a>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Employee ID
-            </th>
-            <th>
-                First Name
-            </th>
-            <th>
-                Last Name
-            </th>
-            <th>
-                Middle Name
-            </th>
-            
-            <th>
-                Gender
-            </th>
-            <th>
-                Birthday
-            </th>
-            
-            <th>
-                Role Name
-            </th>
-            
-            <th>
-                Superviser Name
-            </th>
-            <th>
-
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div id="Company-Members" class="content-body show-active">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Fname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Lname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Mname)
-                </td>
-                
-                <td>
-                    @Html.DisplayFor(modelItem => item.Sex)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BirthDate)
-                </td>
-                
-                <td>
-                    @Html.DisplayFor(modelItem => item.RoleName)
-                </td>
-                @*<td>
-                    @Html.DisplayFor(modelItem => item.DepName)
-                </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.SupervisorName)
-                </td>
-                <td>
-                    @if (item.ID == ViewBag.ID) {
-                    <p>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                        @Html.ActionLink("Details", "Detail", new { id = item.ID }) 
-                    </p>
-                    }
+                <th>
+                    Employee ID
+                </th>
+                <th>
+                    First Name
+                </th>
+                <th>
+                    Last Name
+                </th>
+                <th>
+                    Middle Name
+                </th>
 
-                </td>
+                <th>
+                    Gender
+                </th>
+                <th>
+                    Birthday
+                </th>
+
+                <th>
+                    Role Name
+                </th>
+
+                <th>
+                    Superviser Name
+                </th>
+                <th>
+
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.employees)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Mname)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Sex)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BirthDate)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoleName)
+                    </td>
+                    @*<td>
+                            @Html.DisplayFor(modelItem => item.DepName)
+                        </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SupervisorName)
+                    </td>
+                    <td>
+                        @if (item.ID == ViewBag.ID)
+                        {
+                            <p>
+                                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                                @Html.ActionLink("Details", "Detail", new { id = item.ID })
+                            </p>
+                        }
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="My-Tasks" class="content-body">
+    <div id="table-div">
+        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+            <caption>Employee's Status</caption>
+            <thead>
+                <tr>
+                    <th>
+                        Project
+                    </th>
+                    <th>
+                        Task Name
+                    </th>
+                    <th>
+                        Task Due Date
+                    </th>
+                    <th>
+                        Task Budget
+                    </th>
+                    <th>
+                        Task Status
+                    </th>
+                    <th>
+                        My Hours
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.taskDetails)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.taskName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.dueDate)
+                        </td>
+                        <td>
+                            $@Html.DisplayFor(modelItem => item.budget)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.taskStatus)%
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.hours)
+                        </td>
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div id="Projects" class="content-body">
+    <div id="table-div">
+        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+            <caption>Projects within the Department @ViewData["DepName"]</caption>
+            <thead>
+                <tr>
+                    <th>
+                        Project ID
+                    </th>
+                    <th>
+                        Project Name
+                    </th>
+                    <th>
+                        Department Location
+                    </th>
+                    <th>
+                        Budget
+                    </th>
+                    <th>
+                        Project Status
+                    </th>
+                    <th>
+                        Project Due Date
+                    </th>
+                    <th>
+                        Field
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.projects)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.location)
+                        </td>
+                        <td>
+                            $@Html.DisplayFor(modelItem => item.cost)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projStatus)%
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.dueDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.field)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="Assets" class="content-body">
+    <div id="table-div">
+        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+            <caption>Assets Under Your Use</caption>
+            <thead>
+                <tr>
+                    <th>
+                        Supplier
+                    </th>
+                    <th>
+                        Asset
+                    </th>
+                    <th>
+                        Field
+                    </th>
+                    <th>
+                        Amount
+                    </th>
+                    <th>
+                        Cost per 1
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.assets)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.supName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.type)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.field)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.amount)
+                        </td>
+                        <td>
+                            $@Html.DisplayFor(modelItem => item.cost)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function () {
         $('table').DataTable();
     });
+
+    //function to remove .show-active class and add to clicked
+    function setNewActive(el) {
+        // select all .content-body
+        var contentBodies = document.getElementsByClassName('content-body');
+        // remove .show-active
+        for (var contentBody of contentBodies) {
+            contentBody.classList.remove('show-active');
+        }
+        //add .show-active back
+        document.getElementById(el.textContent.replace(/\s+/g, '-')).classList.add('show-active');
+
+        var tabs = document.getElementsByClassName('tab');
+        for (var tab of tabs) {
+            tab.classList.remove('tab-active');
+        }
+        el.classList.add('tab-active');
+    }
+
+    //select tab class and loop through
+    var tabs = document.getElementsByClassName('tab');
+    for (var tab of tabs) {
+        //add click listener
+        tab.addEventListener('click', function (e) {
+            setNewActive(e.currentTarget);
+        })
+
+    }
+
 </script>

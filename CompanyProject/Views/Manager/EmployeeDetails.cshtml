@@ -47,16 +47,16 @@
                     Task Name
                 </th>
                 <th>
-                    Hours
+                    Task Due Date
                 </th>
                 <th>
                     Task Budget
                 </th>
                 <th>
-                    Task Due Date
+                    Task Status
                 </th>
                 <th>
-                    Task Status
+                    Employee Hours
                 </th>
                 <th>
                     Employee Status
@@ -81,22 +81,29 @@
                     @Html.DisplayFor(modelItem => item.taskName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.hours)
+                    @Html.DisplayFor(modelItem => item.dueDate)
                 </td>
                 <td>
                     $@Html.DisplayFor(modelItem => item.budget)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.dueDate)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.taskStatus)%
+                </td>
+                <td>                    
+                    @Html.DisplayFor(modelItem => item.hours)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.employeeStatus)%
                 </td>
                 <td>
-                    @Html.ActionLink("Unlist", "Unlist", new { empid = item.empID, taskid = item.taskID })
+                    @Html.ActionLink("Unlist", "Unlist", new { empid = item.empID, taskid = item.taskID }) |
+                    @if (ViewData["mgrID"] != null)
+                    {                       
+                        
+                        if (item.empID == Convert.ToInt32(ViewData["mgrID"])) {
+                             @Html.ActionLink("Edit Work", "EditWork", new { empid = item.empID, taskid = item.taskID })
+                        }
+                    }
                 </td>
             </tr>
             }
