@@ -19,6 +19,29 @@ namespace CompanyProject.Controllers
             return new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
         }
 
+        public EmployeeMainPage getViewData()
+        {
+            EmployeeMainPage model = new EmployeeMainPage();
+
+            string empID = HttpContext.Session.GetString("employeeId");
+            int id = Convert.ToInt32(empID);
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            int depID;
+            MySqlCommand cmd = new MySqlCommand("select e.depID from employee as e where e.employeeID = " + id + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            depID = getIntValue(reader["depID"]);
+
+            model.projects = getProjectData(depID);
+            model.taskDetails = getTaskDetails(id);
+            model.assets = getUsedByData(id);
+            model.employees = getEmployeeData(empID);
+
+            return model;
+
+        }
 
         public IActionResult Index()
         {
@@ -57,7 +80,7 @@ namespace CompanyProject.Controllers
                 ViewData["userInfo"] = msg;
 
 
-                return View("Index", getEmployeeData(empID)); // you can pass models into view
+                return View("Index", getViewData()); // you can pass models into view
             }           
         }
 
@@ -93,6 +116,40 @@ namespace CompanyProject.Controllers
             }
             conn.Close();
             return roleName;
+        }
+
+        public List<EmployeeUse> getUsedByData(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<EmployeeUse> UsedByData = new List<EmployeeUse>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.supID, u.assetID, u.field, u.amount, s.name, a.type, a.cost " +
+                "from used_by as u left outer join suppliers as s on s.supiD = u.supID left outer join assets as a on a.assetID = u.assetID " +
+                "left outer join employee as e on e.employeeID = u.employeeID where e.employeeID = " + id + " and a.deleted_flag = 1 and s.deleted_flag = 1;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    UsedByData.Add(new EmployeeUse()
+                    {
+                        employeeID = getIntValue(reader["employeeID"]),
+                        supID = getIntValue(reader["supID"]),
+                        assetID = getIntValue(reader["assetID"]),
+                        field = getStringValue(reader["field"]),
+                        type = getStringValue(reader["type"]),
+                        cost = getIntValue(reader["cost"]),
+                        supName = getStringValue(reader["name"]),
+                        amount = getIntValue(reader["amount"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return UsedByData;
         }
 
         public string getDepartmentName(int depID)

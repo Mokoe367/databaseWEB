@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CompanyProject.Models.Employee>
+﻿@model CompanyProject.Models.EmployeeMainPage
 
 @{
     ViewData["Title"] = "Index";
@@ -15,19 +15,19 @@
         align-items: center;
     }
 
-        .emp-nav a {
-            margin-right: 15px;
-            color: black;
-            font-weight: 500;
-            display: block;
-            position: relative;
-            padding: 0.2em 0;
-        }
+    .emp-nav a {
+        margin-right: 15px;
+        color: black;
+        font-weight: 500;
+        display: block;
+        position: relative;
+        padding: 0.2em 0;
+    }
 
-            .emp-nav a:hover {
-                cursor: pointer;
-                color: #0d6efd;
-            }
+    .emp-nav a:hover {
+        cursor: pointer;
+        color: #0d6efd;
+    }
 
     .content-body {
         margin: 25px;
@@ -108,7 +108,7 @@
 </div>
 
 <div class="emp-nav">
-    <a class="tab">Tasks</a>
+    <a class="tab">My Tasks</a>
     <a class="tab">Projects</a>
     <a class="tab">Assets</a>
     <a class="tab tab-active">Company Members</a>
@@ -151,7 +151,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.employees)
             {
                 <tr>
                     <td>
@@ -199,16 +199,171 @@
     </table>
 </div>
 
-<div id="Tasks" class="content-body">
+<div id="My-Tasks" class="content-body">
+    <div id="table-div">
+        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+            <caption>Employees' Status</caption>
+            <thead>
+                <tr>
+                    <th>
+                        Project
+                    </th>
+                    <th>
+                        Task Name
+                    </th>
+                    <th>
+                        Task Due Date
+                    </th>
+                    <th>
+                        Task Budget
+                    </th>
+                    <th>
+                        Task Status
+                    </th>
+                    <th>
+                        My Hours
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.taskDetails)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.taskName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.dueDate)
+                        </td>
+                        <td>
+                            $@Html.DisplayFor(modelItem => item.budget)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.taskStatus)%
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.hours)
+                        </td>
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
 </div>
 
 <div id="Projects" class="content-body">
-
+    <div id="table-div">
+        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+            <caption>Projects within the Department @ViewData["DepName"]</caption>
+            <thead>
+                <tr>
+                    <th>
+                        Project ID
+                    </th>
+                    <th>
+                        Project Name
+                    </th>
+                    <th>
+                        Department Location
+                    </th>
+                    <th>
+                        Budget
+                    </th>
+                    <th>
+                        Project Status
+                    </th>
+                    <th>
+                        Project Due Date
+                    </th>
+                    <th>
+                        Field
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.projects)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.location)
+                        </td>
+                        <td>
+                            $@Html.DisplayFor(modelItem => item.cost)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projStatus)%
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.dueDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.field)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div id="Assets" class="content-body">
-
+    <div id="table-div">
+        <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+            <caption>Assets Under Your Use</caption>
+            <thead>
+                <tr>
+                    <th>
+                        Supplier
+                    </th>
+                    <th>
+                        Asset
+                    </th>
+                    <th>
+                        Field
+                    </th>
+                    <th>
+                        Amount
+                    </th>
+                    <th>
+                        Cost per 1
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.assets)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.supName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.type)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.field)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.amount)
+                        </td>
+                        <td>
+                            $@Html.DisplayFor(modelItem => item.cost)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
