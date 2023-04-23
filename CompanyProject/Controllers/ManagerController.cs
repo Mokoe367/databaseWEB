@@ -1677,31 +1677,41 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                query = "UPDATE project SET dueDate=@dueDate, projName=@projName, location=@location, cost=@cost, field=@field, " +
+                try
+                {
+                    query = "UPDATE project SET dueDate=@dueDate, projName=@projName, location=@location, cost=@cost, field=@field, " +
                     "projStatus=@projStatus, depID=@depID where projID = " + proj.projID + ";";
 
-                MySqlCommand cmd2 = new MySqlCommand();              
-                cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@projName", proj.projName);
-                cmd2.Parameters.AddWithValue("@dueDate", proj.dueDate);
-                cmd2.Parameters.AddWithValue("@depID", department);
-                if (proj.location == "0")
-                {
-                    cmd2.Parameters.AddWithValue("@location", DBNull.Value);
-                }
-                else
-                {
-                    cmd2.Parameters.AddWithValue("@location", proj.location);
-                }
-                cmd2.Parameters.AddWithValue("@cost", proj.cost);
-                cmd2.Parameters.AddWithValue("@field", proj.field);
-                cmd2.Parameters.AddWithValue("@projStatus", proj.projStatus);
+                    MySqlCommand cmd2 = new MySqlCommand();
+                    cmd2.CommandText = query;
+                    cmd2.Parameters.AddWithValue("@projName", proj.projName);
+                    cmd2.Parameters.AddWithValue("@dueDate", proj.dueDate);
+                    cmd2.Parameters.AddWithValue("@depID", department);
+                    if (proj.location == "0")
+                    {
+                        cmd2.Parameters.AddWithValue("@location", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd2.Parameters.AddWithValue("@location", proj.location);
+                    }
+                    cmd2.Parameters.AddWithValue("@cost", proj.cost);
+                    cmd2.Parameters.AddWithValue("@field", proj.field);
+                    cmd2.Parameters.AddWithValue("@projStatus", proj.projStatus);
 
-                cmd2.Connection = conn;
-                cmd2.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Project edited successfully";
-                return RedirectToAction("Index");
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Project edited successfully";
+                    return RedirectToAction("Index");
+                }
+                catch(MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("dueDate", e.Message);
+                    proj.locations = getLocations(department);
+                    return View(proj);
+                }
             }
             else
             {                
