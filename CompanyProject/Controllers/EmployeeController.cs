@@ -769,7 +769,7 @@ namespace CompanyProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public IActionResult TeamsReport(TReportForm obj)
+        public IActionResult MyTeamsReport(TReportForm obj)
         {
             MySqlConnection conn = GetConnection();
             conn.Open();
