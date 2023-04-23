@@ -102,7 +102,7 @@ namespace CompanyProject.Controllers
 
         public IActionResult Index()
         {
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("ManagerID");
 
             if (empID == null)
             {
@@ -524,7 +524,7 @@ namespace CompanyProject.Controllers
             conn.Close();
             emp.Roles = getRoles();
             emp.supervisors = getSupervisors(emp.DepID, emp.ID);
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("ManagerID");
             if (emp.ID.ToString() == empID)
             {
                 return View("selfEdit", emp);
@@ -875,10 +875,10 @@ namespace CompanyProject.Controllers
             user.Lname = getStringValue(reader["Lname"]);
 
             conn.Close();
-
+            string empID = HttpContext.Session.GetString("ManagerID");
             string msg = "Employee Data for " + user.Fname + " " + user.Lname;
             ViewData["TaskInfo"] = msg;
-
+            ViewData["mgrID"] = empID;
             ViewData["employee"] = id;
            
             return View(getEmployeeDetails(id));
@@ -1155,6 +1155,10 @@ namespace CompanyProject.Controllers
             AssetReport model = new AssetReport();
             model.employeeAssets = GetEmployeeAssets(department);
             model.departmentAssets = GetDepartmentAssets(department);
+            model.SupplierTotals = GetSupplierTotals(department);
+            model.employeeByName = GetEmployeeAssetsByName(department);
+            model.employeeByType = GetEmployeeAssetsByType(department);
+            model.employeeTotals = GetEmployeeTotals(department);
             model.employeeTotal = 0;
             model.departmentTotal = 0;
             foreach (var item in model.employeeAssets)
@@ -1174,7 +1178,7 @@ namespace CompanyProject.Controllers
         public IActionResult LoginDetails()
         {
             var login = new Login();
-            string empID = HttpContext.Session.GetString("id");
+            string empID = HttpContext.Session.GetString("ManagerID");
             int id = Convert.ToInt32(empID);
             MySqlConnection conn = GetConnection();
             conn.Open();
@@ -1196,6 +1200,75 @@ namespace CompanyProject.Controllers
             ReportForm reportForm = new ReportForm();
             reportForm.projects = getProjects();
             return View(reportForm);
+        }
+
+
+        public IActionResult EditWork(int empid, int taskid)
+        {
+            Works_on work = new Works_on();
+
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.taskID, e.Fname, e.Mname, e.Lname, t.taskName, w.hours, w.taskStatus " +
+                "from works_on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID where w.employeeID = " + empid + " and " +
+                "w.taskID = " + taskid + ";", conn);
+            var reader = cmd.ExecuteReader();
+            reader.Read();
+            work.employeeID = getIntValue(reader["employeeID"]);
+            work.TaskID = getIntValue(reader["taskID"]);          
+            work.hours = Convert.ToDecimal(reader["hours"]);
+            work.Fname = getStringValue(reader["Fname"]);
+            work.Mname = getStringValue(reader["Mname"]);
+            work.Lname = getStringValue(reader["Lname"]);
+            work.taskName = getStringValue(reader["taskName"]);
+            work.status = Convert.ToDecimal(reader["taskStatus"]);
+            work.fullName = work.Fname + " " + work.Mname + " " + work.Lname;
+            ViewData["employee"] = empid;
+            conn.Close();
+            return View(work);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditWork(Works_on work)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();          
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    string query = "UPDATE works_on SET hours=@hours, taskStatus=@status WHERE employeeID = '" + work.employeeID + "' " +
+                    "and taskID = " + work.TaskID + ";";
+                    MySqlCommand cmd2 = new MySqlCommand();
+
+                    cmd2.CommandText = query;                   
+                    cmd2.Parameters.AddWithValue("@hours", work.hours);
+                    cmd2.Parameters.AddWithValue("@status", work.status);
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
+
+                    conn.Close();
+                    TempData["success"] = "Works on successfully edited";
+                    return RedirectToAction("EmployeeDetails", new { id = work.employeeID });
+                }
+                catch (MySqlException e)
+                {
+                    ModelState.AddModelError("taskName", e.Message);
+                    work.employees = getEmployees();
+                    work.tasks = getTasks();
+                    return View(work);
+                }
+            }
+            else
+            {
+                conn.Close();
+                work.employees = getEmployees();
+                work.tasks = getTasks();
+                return View(work);
+            }
         }
 
         [HttpPost]
@@ -1535,30 +1608,42 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string depID = HttpContext.Session.GetString("depID");                
-                query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) VALUES (@date, @projName , @location " +
-                       ", @cost, @field, @projStatus, @department);";
-                
-                cmd.CommandText = query;
-                cmd.Parameters.AddWithValue("@date", obj.dueDate);
-                cmd.Parameters.AddWithValue("@projName", obj.projName);
-                cmd.Parameters.AddWithValue("@cost", obj.cost);
-                if (obj.location == "0")
+                try
                 {
-                    cmd.Parameters.AddWithValue("@location", DBNull.Value);
+                    string depID = HttpContext.Session.GetString("depID");
+                    query = "insert into project (dueDate, projName, location, cost, field, projStatus, depID) VALUES (@date, @projName , @location " +
+                           ", @cost, @field, @projStatus, @department);";
+
+                    cmd.CommandText = query;
+                    cmd.Parameters.AddWithValue("@date", obj.dueDate);
+                    cmd.Parameters.AddWithValue("@projName", obj.projName);
+                    cmd.Parameters.AddWithValue("@cost", obj.cost);
+                    if (obj.location == "0")
+                    {
+                        cmd.Parameters.AddWithValue("@location", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@location", obj.location);
+                    }
+                    cmd.Parameters.AddWithValue("@field", obj.field);
+                    cmd.Parameters.AddWithValue("@projStatus", obj.projStatus);
+                    cmd.Parameters.AddWithValue("@department", department);
+                    cmd.Connection = conn;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    TempData["success"] = "Project succesfully added";
+                    return RedirectToAction("Index");
                 }
-                else
+                catch(MySqlException e)
                 {
-                    cmd.Parameters.AddWithValue("@location", obj.location);
+                    conn.Close();
+                    ModelState.AddModelError("dueDate", e.Message);
+                    string depID = "Adding Project into Department number " + HttpContext.Session.GetString("depID");
+                    ViewData["AddInfo"] = depID;
+                    obj.locations = getLocations(department);
+                    return View(obj);
                 }
-                cmd.Parameters.AddWithValue("@field", obj.field);
-                cmd.Parameters.AddWithValue("@projStatus", obj.projStatus);
-                cmd.Parameters.AddWithValue("@department", department);
-                cmd.Connection = conn;
-                cmd.ExecuteNonQuery();
-                conn.Close();
-                TempData["success"] = "Project succesfully added";
-                return RedirectToAction("Index");
             }
             else
             {
@@ -3089,7 +3174,7 @@ namespace CompanyProject.Controllers
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, t.taskName, t.cost, t.taskDueDate, p.projName, w.taskID, w.taskStatus, t.status, p.projStatus " +
                 "from project as p left outer join task as t on t.projID = p.projID " +
-                "left outer join works_on as w on w.taskID = t.taskID where w.employeeID = " + id + ";", conn);
+                "left outer join works_on as w on w.taskID = t.taskID where w.employeeID = " + id + " and t.deleted_flag = 1;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -3138,7 +3223,7 @@ namespace CompanyProject.Controllers
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select distinct e.Fname, e.Mname ,e.Lname, r.roleName, t.taskName, w.hours, w.taskStatus " +
                 "from works_on as w left outer join task as t on t.taskID = w.taskID left outer join employee as e on e.employeeID = w.employeeID " +
-                "left outer join roles as r on r.roleID = e.roleID where t.projID = " + id + ";", conn);
+                "left outer join roles as r on r.roleID = e.roleID where t.projID = " + id + " and t.deleted_flag = 1;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -3237,7 +3322,7 @@ namespace CompanyProject.Controllers
 
             MySqlCommand cmd = new MySqlCommand("select u.employeeID, u.supID, u.assetID, u.field, u.amount, s.name, a.type, a.cost " +
                 "from used_by as u left outer join suppliers as s on s.supiD = u.supID left outer join assets as a on a.assetID = u.assetID " +
-                "left outer join employee as e on e.employeeID = u.employeeID where e.employeeID = " + id + ";", conn);
+                "left outer join employee as e on e.employeeID = u.employeeID where e.employeeID = " + id + " and a.deleted_flag = 1 and s.deleted_flag = 1;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -3331,7 +3416,7 @@ namespace CompanyProject.Controllers
          
             MySqlCommand cmd = new MySqlCommand("select s.name, a.type, a.cost, d.amount, (a.cost * d.amount) as total " +
                 "from assets as a, distributed_to as d, suppliers as s " +
-                "where d.depID = " + id + " and a.assetID = d.assetID  and s.supID = a.supID and a.deleted_flag = 1;", conn);
+                "where d.depID = " + id + " and a.assetID = d.assetID and s.supID = a.supID and a.deleted_flag = 1 and s.deleted_flag = 1;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -3360,9 +3445,10 @@ namespace CompanyProject.Controllers
 
             conn.Open();
 
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, a.type, a.cost, u.amount, (a.cost * u.amount) as total " +
-                "from assets as a, used_by as u, employee as e " +
-                "where e.depID = " + id + " and a.assetID = u.assetID and u.employeeID = e.employeeID and a.deleted_flag = 1;", conn);
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, s.name, a.type, a.cost, u.amount, (a.cost * u.amount) as total " +
+                "from assets as a, used_by as u, employee as e, suppliers as s " +
+                "where e.depID = " + id + " and a.assetID = u.assetID and u.employeeID = e.employeeID and s.supID = a.supID " +
+                "and a.deleted_flag = 1 and s.deleted_flag = 1;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -3378,7 +3464,8 @@ namespace CompanyProject.Controllers
                         type = getStringValue(reader["type"]),
                         cost = getIntValue(reader["cost"]),
                         amount = getIntValue(reader["amount"]),
-                        total = getIntValue(reader["total"])
+                        total = getIntValue(reader["total"]),
+                        supName = getStringValue(reader["name"])
                     });
                 }
             }
@@ -3397,7 +3484,7 @@ namespace CompanyProject.Controllers
             MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, r.roleName, w.hours, t.taskName, w.taskStatus " +
                 "from works_on as w left outer join task as t on t.taskID = w.taskID " +
                 "left outer join employee as e on e.employeeID = w.employeeID left outer join roles as r on r.roleID = e.roleID " +
-                "where t.projID = " + id + " ;", conn);
+                "where t.projID = " + id + " and t.deleted_flag = 1;", conn);
 
             using (var reader = cmd.ExecuteReader())
             {
@@ -3431,7 +3518,7 @@ namespace CompanyProject.Controllers
 
             MySqlCommand cmd = new MySqlCommand("select w.employeeID, e.Fname, e.Mname, e.Lname, sum(hours) totalHours " +
                 "from works_on as w left outer join task as t on t.taskID = w.taskID " +
-                "left outer join employee as e on e.employeeID = w.employeeID where t.projID = " + id + " " +
+                "left outer join employee as e on e.employeeID = w.employeeID where t.projID = " + id + " and t.deleted_flag = 1 " +
                 "group by employeeID order by employeeID desc;", conn);
 
             using (var reader = cmd.ExecuteReader())
@@ -3496,6 +3583,126 @@ namespace CompanyProject.Controllers
             conn.Close();
 
             return TaskData;
+        }
+
+        public List<SupplierTotals> GetSupplierTotals(int id)
+        {
+
+            MySqlConnection conn = GetConnection();
+            List<SupplierTotals> Report = new List<SupplierTotals>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select sum(d.amount * a.cost) as total, s.name " +
+                "from distributed_to as d inner join suppliers as s on s.supID = d.supID " +
+                "inner join assets as a on a.assetID = d.assetID where d.depID = " + id + " and s.deleted_flag = 1 and a.deleted_flag = 1 " +
+                "group by s.supID;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    
+                    Report.Add(new SupplierTotals()
+                    {
+                        totalAmount = getIntValue(reader["total"]),
+                        supName = getStringValue(reader["name"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
+        }
+
+        public List<SupplierTotals> GetEmployeeTotals(int id)
+        {
+
+            MySqlConnection conn = GetConnection();
+            List<SupplierTotals> Report = new List<SupplierTotals>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select s.name, sum(a.cost * u.amount) as total " +
+                "from assets as a, used_by as u, employee as e, suppliers as s " +
+                "where e.depID = " + id + " and a.assetID = u.assetID and u.employeeID = e.employeeID and s.supID = a.supID " +
+                "and a.deleted_flag = 1 and s.deleted_flag = 1 group by s.supID;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    Report.Add(new SupplierTotals()
+                    {
+                        totalAmount = getIntValue(reader["total"]),
+                        supName = getStringValue(reader["name"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
+        }
+
+        public List<EmployeeAssetReport> GetEmployeeAssetsByName(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<EmployeeAssetReport> Report = new List<EmployeeAssetReport>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.Mname, sum(a.cost * u.amount) as total " +
+                "from assets as a, used_by as u, employee as e, suppliers as s " +
+                "where e.depID = " + id + " and a.assetID = u.assetID and u.employeeID = e.employeeID and s.supID = a.supID " +
+                "and a.deleted_flag = 1 and s.deleted_flag = 1 group by e.employeeID;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string Fname = getStringValue(reader["Fname"]);
+                    string Lname = getStringValue(reader["Lname"]);
+                    string Mname = getStringValue(reader["Mname"]);
+                    string name = Fname + " " + Mname + " " + Lname;
+                    Report.Add(new EmployeeAssetReport()
+                    {
+                        name = name,                       
+                        total = getIntValue(reader["total"]),                      
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
+        }
+
+        public List<EmployeeAssetReport> GetEmployeeAssetsByType(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            List<EmployeeAssetReport> Report = new List<EmployeeAssetReport>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select a.type, sum(a.cost * u.amount) as total  " +
+                "from assets as a, used_by as u, employee as e, suppliers as s " +
+                "where e.depID = " + id + " and a.assetID = u.assetID and u.employeeID = e.employeeID and s.supID = a.supID " +
+                "and a.deleted_flag = 1 and s.deleted_flag = 1 group by a.type;;", conn);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {                   
+                    Report.Add(new EmployeeAssetReport()
+                    {                       
+                        type = getStringValue(reader["type"]),                        
+                        total = getIntValue(reader["total"])                       
+                    });
+                }
+            }
+            conn.Close();
+
+            return Report;
         }
 
         public string HashPassword(string password)

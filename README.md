@@ -24,7 +24,7 @@ Our group's product is an application that provides a project management system 
 5. Finished
 
 ## Technologies used
-1. ASP.NET CORE 
+1. .NET 
 2. MySQL 
 
 

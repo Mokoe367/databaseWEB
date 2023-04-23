@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace CompanyProject.Models
 {
     public class Tasks
     {
+        [DisplayName("Task ID")]
         public int taskID { get; set; }
         [Required (ErrorMessage = "Task Name Required")]
         public string taskName { get; set; }
@@ -22,6 +24,7 @@ namespace CompanyProject.Models
         public string projName { get; set; }
         public int deleted_flag { get; set; }
         [Range(0, 100.0, ErrorMessage = "Range should be above 0 or more and less than 100")]
+        [Required(ErrorMessage = "Status Required")]
         public decimal status { get; set; }
         public List<SelectListItem> projects { get; set; }
     }
