@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using CompanyProject.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MySql.Data.MySqlClient;
+using Remotion.Linq.Clauses;
 
 namespace CompanyProject.Controllers
 {
@@ -596,6 +598,8 @@ namespace CompanyProject.Controllers
                 return View(work);
             }
         }
+       
+       
 
         public IActionResult LoginDetails()
         {
@@ -616,7 +620,7 @@ namespace CompanyProject.Controllers
             return View(login);
            
         }
-
+        
         public IEnumerable<EmployeeTaskReportView> GetEmployeeTaskReportViews(int id)
         {
             string empID = HttpContext.Session.GetString("employeeId");
@@ -689,6 +693,116 @@ namespace CompanyProject.Controllers
                 return View(login);
             }
         }
+
+         public List<SelectListItem> getProjects()
+        {
+            MySqlConnection conn = GetConnection();
+            List<SelectListItem> departments = new List<SelectListItem>();
+
+            conn.Open();
+
+            MySqlCommand cmd = new MySqlCommand("select projName, projID from project where deleted_flag = 1 and depID = @department;", conn);
+            cmd.Parameters.AddWithValue("@department", HttpContext.Session.GetString("depID"));
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+
+                    departments.Add(new SelectListItem()
+                    {
+                        Value = getStringValue(reader["projID"]),
+                        Text = getStringValue(reader["projName"])
+                    });
+                }
+            }
+            conn.Close();
+
+            return departments;
+        }
+        public MyTeamsReport GetMyTeamsReport(int id)
+        {
+            MyTeamsReport model = new MyTeamsReport();
+
+            string depID = HttpContext.Session.GetString("depID");
+            int department = Convert.ToInt32(depID);
+            model.projID = id;
+            model.tasks = getTeamTasks(id);
+            return model;
+        }
+        public List<TeamTasks> getTeamTasks(int id)
+        {
+            List<TeamTasks> teamtasks = new List<TeamTasks>();
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand(" select e.Fname, e.Lname, w.taskID, t.taskName, p.projName, " +
+                "from works on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID " +
+                " left outer join project as p on p.projID = t.projID left outer join department as d on d.depID = p.depID" + " where d.depID = p.depID and p.projID = " + id + ";", conn);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    teamtasks.Add(new TeamTasks()
+                    {
+                        Fname = getStringValue(reader["Fname"]),
+                        Lname = getStringValue(reader["Lname"]),
+                        taskID = getIntValue(reader["taskID"]),
+                        taskName = getStringValue(reader["taskName"]),
+                        projName = getProjectName(getIntValue(reader["projID"])),
+                        
+                    });
+
+
+                }
+            }
+            conn.Close();
+            return teamtasks;
+        }
+       
+       
+        public IActionResult MyTeamsReport()
+        {
+            TReportForm reportForm = new TReportForm();
+            reportForm.projects = getProjects();
+            return View(reportForm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public IActionResult MyTeamsReport(TReportForm obj)
+        {
+            MySqlConnection conn = GetConnection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand();
+
+            if (ModelState.IsValid)
+            {
+                MyTeamsReport report = GetMyTeamsReport(obj.projID);
+                string query = "select projName from project where projID = " + obj.projID + ";";
+                cmd.CommandText = query;
+                cmd.Connection = conn;
+                var reader = cmd.ExecuteReader();
+                reader.Read();
+                string msg = "Project Details for " + getStringValue(reader["projName"]);
+                
+
+                conn.Close();
+
+                ViewData["ProjectInfo"] = msg;
+
+                ViewData["project"] = obj.projID;
+                return View("TeamsReportList", report);
+            }
+            else
+            {
+                conn.Close();
+                return View(obj);
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
 
         public List<TaskDetails> getTaskDetails(int id)
         {

@@ -1,0 +1,67 @@
+﻿@model CompanyProject.Models.MyTeamsReport
+
+@{
+    ViewData["Title"] = "MyTeamsReportList";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<style>
+    #table-div {
+        margin: 25px;
+    }
+</style>
+
+<div style="margin: 25px">
+
+    @if (ViewData["ProjectInfo"] != null)
+    {
+        <h2>My Teams For @ViewData["ProjectInfo"]</h2>
+
+    }
+</div>
+
+
+
+<div id="table-div">
+    <table class="table table-hover col-md-3 table-striped table-bordered caption-top">
+        <caption>Team Members</caption>
+        <thead>
+            <tr>
+                <th>
+                    First Name
+                </th>
+                <th>
+                    Last Name
+                </th>
+                <th>
+                    Task ID
+                </th>
+                <th>
+                    Task Name
+                </th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.tasks)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lname)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.taskID)
+                    </td>
+                    <td>
+                        $@Html.DisplayFor(modelItem => item.taskName)
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
