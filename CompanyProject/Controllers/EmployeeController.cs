@@ -810,7 +810,7 @@ namespace CompanyProject.Controllers
             MySqlConnection conn = GetConnection();
             conn.Open();
             MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, w.taskStatus, t.taskName, t.cost, t.taskDueDate, t.projID " +
-               "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + ";", conn);
+               "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + " and t.deleted_flag = 1;", conn);
             int projNum = 0;
             using (var reader = cmd.ExecuteReader())
             {
