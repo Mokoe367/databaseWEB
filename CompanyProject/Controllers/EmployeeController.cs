@@ -75,12 +75,13 @@ namespace CompanyProject.Controllers
                 {
                     user.Fname = getStringValue(reader["Fname"]);
                     user.Lname = getStringValue(reader["Lname"]);
-                    user.DepName = getDepartmentName(getIntValue(reader["depID"]));
+                    user.DepID = getIntValue(reader["depID"]);
+                    user.DepName = getDepartmentName(user.DepID);                    
                 }
                 conn.Close();
                 string msg = "Signed in as " + user.Fname + " " + user.Lname + " from Department " + user.DepName;
+                HttpContext.Session.SetString("EmpDepID", user.DepID.ToString());
                 ViewData["userInfo"] = msg;
-
 
                 return View("Index", getViewData()); // you can pass models into view
             }           
@@ -575,22 +576,31 @@ namespace CompanyProject.Controllers
             reader.Close();
             if (ModelState.IsValid)
             {
-                string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours, taskStatus=@taskStatus WHERE employeeID = '" + work.tempemployeeID + "' " +
+                try
+                {
+                    string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours, taskStatus=@taskStatus WHERE employeeID = '" + work.tempemployeeID + "' " +
                     "and taskID = " + work.tempTaskID + ";";
-                MySqlCommand cmd2 = new MySqlCommand();
+                    MySqlCommand cmd2 = new MySqlCommand();
 
-                cmd2.CommandText = query;
-                cmd2.Parameters.AddWithValue("@emp", work.employeeID);
-                cmd2.Parameters.AddWithValue("@task", work.TaskID);
-                cmd2.Parameters.AddWithValue("@hours", work.hours);
-                cmd2.Parameters.AddWithValue("@taskStatus", work.status);
+                    cmd2.CommandText = query;
+                    cmd2.Parameters.AddWithValue("@emp", work.employeeID);
+                    cmd2.Parameters.AddWithValue("@task", work.TaskID);
+                    cmd2.Parameters.AddWithValue("@hours", work.hours);
+                    cmd2.Parameters.AddWithValue("@taskStatus", work.status);
 
-                cmd2.Connection = conn;
-                cmd2.ExecuteNonQuery();
+                    cmd2.Connection = conn;
+                    cmd2.ExecuteNonQuery();
 
-                conn.Close();
-                TempData["success"] = "Works on successfully edited";
-                return RedirectToAction("TaskReport");
+                    conn.Close();
+                    TempData["success"] = "Works on successfully edited";
+                    return RedirectToAction("TaskReport");
+                }
+                catch(MySqlException e)
+                {
+                    conn.Close();
+                    ModelState.AddModelError("TaskID", e.Message);
+                    return View(work);
+                }
             }
             else
             {
@@ -702,7 +712,7 @@ namespace CompanyProject.Controllers
             conn.Open();
 
             MySqlCommand cmd = new MySqlCommand("select projName, projID from project where deleted_flag = 1 and depID = @department;", conn);
-            cmd.Parameters.AddWithValue("@department", HttpContext.Session.GetString("depID"));
+            cmd.Parameters.AddWithValue("@department", HttpContext.Session.GetString("EmpDepID"));
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -723,7 +733,7 @@ namespace CompanyProject.Controllers
         {
             MyTeamsReport model = new MyTeamsReport();
 
-            string depID = HttpContext.Session.GetString("depID");
+            string depID = HttpContext.Session.GetString("EmpDepID");
             int department = Convert.ToInt32(depID);
             model.projID = id;
             model.tasks = getTeamTasks(id);
@@ -734,8 +744,8 @@ namespace CompanyProject.Controllers
             List<TeamTasks> teamtasks = new List<TeamTasks>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand(" select e.Fname, e.Lname, w.taskID, t.taskName, p.projName, " +
-                "from works on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID " +
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, w.taskID, t.taskName, p.projName, w.documentation " +
+                "from works_on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID " +
                 " left outer join project as p on p.projID = t.projID left outer join department as d on d.depID = p.depID" + " where d.depID = p.depID and p.projID = " + id + ";", conn);
             using (var reader = cmd.ExecuteReader())
             {
@@ -747,8 +757,8 @@ namespace CompanyProject.Controllers
                         Lname = getStringValue(reader["Lname"]),
                         taskID = getIntValue(reader["taskID"]),
                         taskName = getStringValue(reader["taskName"]),
-                        projName = getProjectName(getIntValue(reader["projID"])),
-                        
+                        projName = getStringValue(reader["projName"]),
+                        documentation = getStringValue(reader["documentation"])
                     });
 
 
@@ -791,7 +801,7 @@ namespace CompanyProject.Controllers
                 ViewData["ProjectInfo"] = msg;
 
                 ViewData["project"] = obj.projID;
-                return View("TeamsReportList", report);
+                return View("MyTeamsReportList", report);
             }
             else
             {
