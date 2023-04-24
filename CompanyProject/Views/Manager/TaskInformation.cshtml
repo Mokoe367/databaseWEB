@@ -31,25 +31,31 @@
                     <th>
                         Employee Status
                     </th>
+                    <th>
+                        Documentation
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.name)
-                        </td>                        
-                        <td>
-                            @Html.DisplayFor(modelItem => item.hours)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.roleName)
-                        </td>  
-                        <td>
-                            @Html.DisplayFor(modelItem => item.status)%
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.hours)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.roleName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.status)%
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.documentation)
+                    </td>
+                </tr>
                 }
             </tbody>
         </table>

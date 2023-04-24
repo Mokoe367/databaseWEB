@@ -42,6 +42,11 @@
                 <span asp-validation-for="status" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
+                <label asp-for="documentation" class="control-label">Documentation</label>
+                <input asp-for="documentation" class="form-control" readonly/>
+                <span asp-validation-for="documentation" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
                 <input type="submit" value="Delete" class="btn btn-danger" />
             </div>
         </form>
