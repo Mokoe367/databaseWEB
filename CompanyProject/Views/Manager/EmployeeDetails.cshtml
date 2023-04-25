@@ -61,6 +61,9 @@
                 <th>
                     Employee Status
                 </th>
+                <th>
+                    Documentation
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -89,19 +92,23 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.taskStatus)%
                 </td>
-                <td>                    
+                <td>
                     @Html.DisplayFor(modelItem => item.hours)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.employeeStatus)%
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.documentation)
+                </td>
+                <td>
                     @Html.ActionLink("Unlist", "Unlist", new { empid = item.empID, taskid = item.taskID }) |
                     @if (ViewData["mgrID"] != null)
-                    {                       
-                        
-                        if (item.empID == Convert.ToInt32(ViewData["mgrID"])) {
-                             @Html.ActionLink("Edit Work", "EditWork", new { empid = item.empID, taskid = item.taskID })
+                    {
+
+                        if (item.empID == Convert.ToInt32(ViewData["mgrID"]))
+                        {
+                            @Html.ActionLink("Edit Work", "EditWork", new { empid = item.empID, taskid = item.taskID })
                         }
                     }
                 </td>

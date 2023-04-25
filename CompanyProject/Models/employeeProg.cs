@@ -11,6 +11,6 @@ namespace CompanyProject.Models
         public string roleName { get; set; }
         public decimal hours { get; set; }
         public string taskName { get; set; }
-        public decimal status { get; set; }
+        public decimal status { get; set; }       
     }
 }

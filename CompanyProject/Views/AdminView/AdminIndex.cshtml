@@ -748,6 +748,9 @@
                 <th>
                     Status
                 </th>
+                <th>
+                    Documentation
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -766,6 +769,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.status)%
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.documentation)
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditWork", new { empid = item.employeeID, taskid = item.TaskID }) |
