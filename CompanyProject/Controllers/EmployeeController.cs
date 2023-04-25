@@ -535,6 +535,7 @@ namespace CompanyProject.Controllers
             work.TaskID = getIntValue(reader["taskID"]);
             work.tempemployeeID = getIntValue(reader["employeeID"]);
             work.tempTaskID = getIntValue(reader["taskID"]);
+            work.documentation = getStringValue(reader["documentation"]);
             work.hours = getIntValue(reader["hours"]);
             work.status = Convert.ToDecimal(reader["taskStatus"]);
             conn.Close();
@@ -578,7 +579,7 @@ namespace CompanyProject.Controllers
             {
                 try
                 {
-                    string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours, taskStatus=@taskStatus WHERE employeeID = '" + work.tempemployeeID + "' " +
+                    string query = "UPDATE works_on SET employeeID=@emp, taskID=@task, hours=@hours, taskStatus=@taskStatus, documentation=@documentation WHERE employeeID = '" + work.tempemployeeID + "' " +
                     "and taskID = " + work.tempTaskID + ";";
                     MySqlCommand cmd2 = new MySqlCommand();
 
@@ -586,6 +587,7 @@ namespace CompanyProject.Controllers
                     cmd2.Parameters.AddWithValue("@emp", work.employeeID);
                     cmd2.Parameters.AddWithValue("@task", work.TaskID);
                     cmd2.Parameters.AddWithValue("@hours", work.hours);
+                    cmd2.Parameters.AddWithValue("@documentation", work.documentation);
                     cmd2.Parameters.AddWithValue("@taskStatus", work.status);
 
                     cmd2.Connection = conn;
@@ -744,7 +746,7 @@ namespace CompanyProject.Controllers
             List<TeamTasks> teamtasks = new List<TeamTasks>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, w.taskID, t.taskName, p.projName, w.documentation " +
+            MySqlCommand cmd = new MySqlCommand("select e.Fname, e.Lname, e.employeeID, w.taskID, t.taskName, p.projName, w.documentation " +
                 "from works_on as w left outer join employee as e on e.employeeID = w.employeeID left outer join task as t on t.taskID = w.taskID " +
                 " left outer join project as p on p.projID = t.projID left outer join department as d on d.depID = p.depID" + " where d.depID = p.depID and p.projID = " + id + ";", conn);
             using (var reader = cmd.ExecuteReader())
@@ -758,7 +760,8 @@ namespace CompanyProject.Controllers
                         taskID = getIntValue(reader["taskID"]),
                         taskName = getStringValue(reader["taskName"]),
                         projName = getStringValue(reader["projName"]),
-                        documentation = getStringValue(reader["documentation"])
+                        documentation = getStringValue(reader["documentation"]),
+                        employeeID = getIntValue(reader["employeeID"])
                     });
 
 
@@ -799,6 +802,7 @@ namespace CompanyProject.Controllers
                 conn.Close();
 
                 ViewData["ProjectInfo"] = msg;
+                ViewData["EmployeeSelf"]= HttpContext.Session.GetString("employeeId");
 
                 ViewData["project"] = obj.projID;
                 return View("MyTeamsReportList", report);
@@ -819,7 +823,7 @@ namespace CompanyProject.Controllers
             List<TaskDetails> TaskData = new List<TaskDetails>();
             MySqlConnection conn = GetConnection();
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, w.taskStatus, t.taskName, t.cost, t.taskDueDate, t.projID " +
+            MySqlCommand cmd = new MySqlCommand("select w.employeeID, w.hours, w.taskID, w.taskStatus, t.taskName, t.cost, t.taskDueDate, t.projID, w.documentation " +
                "from works_on as w right outer join task as t on t.taskID = w.taskID where w.employeeID = " + id + " and t.deleted_flag = 1;", conn);
             int projNum = 0;
             using (var reader = cmd.ExecuteReader())
@@ -852,7 +856,8 @@ namespace CompanyProject.Controllers
                         UntilDueDate = getTaskDaysLeft(getIntValue(reader["taskID"])),
                         taskID = getIntValue(reader["taskID"]),
                         projID = getIntValue(reader["projID"]),
-                        taskStatus = Convert.ToDecimal(reader["taskStatus"])
+                        taskStatus = Convert.ToDecimal(reader["taskStatus"]),
+                        documentation = getStringValue(reader["documentation"])
                     });
                     
 

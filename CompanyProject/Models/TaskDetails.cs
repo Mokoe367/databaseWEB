@@ -10,8 +10,9 @@ namespace CompanyProject.Models
     public class TaskDetails
     {
         public int empID { get; set; }
-        public string projName { get; set; }          
+        public string projName { get; set; }
         public decimal hours { get; set; }
+        public string documentation { get; set; }
         public string taskName { get; set; }       
         public int budget { get; set; }
         public string dueDate { get; set; }

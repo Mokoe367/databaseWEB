@@ -48,21 +48,24 @@
             @foreach (var item in Model.tasks)
             {
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Fname)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Lname)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskID)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.taskName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.documentation)
-                    </td>
+                        @if (item.employeeID.ToString() != ViewData["EmployeeSelf"].ToString())
+                        {
+                            <td>
+                            @Html.DisplayFor(modelItem => item.Fname)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Lname)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.taskID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.taskName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.documentation)
+                            </td>
+                        }
                 </tr>
             }
         </tbody>

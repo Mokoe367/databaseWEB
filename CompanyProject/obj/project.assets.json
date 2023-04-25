@@ -14400,11 +14400,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\imher\\source\\repos\\databaseWEB\\CompanyProject2\\CompanyProject\\CompanyProject.csproj",
+      "projectUniqueName": "C:\\Users\\imher\\OneDrive\\Desktop\\CompanyProject4\\databaseWEB\\CompanyProject\\CompanyProject.csproj",
       "projectName": "CompanyProject",
-      "projectPath": "C:\\Users\\imher\\source\\repos\\databaseWEB\\CompanyProject2\\CompanyProject\\CompanyProject.csproj",
+      "projectPath": "C:\\Users\\imher\\OneDrive\\Desktop\\CompanyProject4\\databaseWEB\\CompanyProject\\CompanyProject.csproj",
       "packagesPath": "C:\\Users\\imher\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\imher\\source\\repos\\databaseWEB\\CompanyProject2\\CompanyProject\\obj\\",
+      "outputPath": "C:\\Users\\imher\\OneDrive\\Desktop\\CompanyProject4\\databaseWEB\\CompanyProject\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\imher\\AppData\\Roaming\\NuGet\\NuGet.Config",
