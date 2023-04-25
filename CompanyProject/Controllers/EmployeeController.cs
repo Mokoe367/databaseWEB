@@ -21,6 +21,12 @@ namespace CompanyProject.Controllers
             return new MySqlConnection("server = databaseproject.czelvhdtgas7.us-east-2.rds.amazonaws.com; port=3306;database=target;user=root;password=group2database");
         }
 
+        public decimal getDecimalValue(object value)
+        {
+            if (value == DBNull.Value) return 0;
+            return Convert.ToDecimal(value);
+        }
+
         public EmployeeMainPage getViewData()
         {
             EmployeeMainPage model = new EmployeeMainPage();
@@ -537,7 +543,7 @@ namespace CompanyProject.Controllers
             work.tempTaskID = getIntValue(reader["taskID"]);
             work.documentation = getStringValue(reader["documentation"]);
             work.hours = getIntValue(reader["hours"]);
-            work.status = Convert.ToDecimal(reader["taskStatus"]);
+            work.status = getDecimalValue(reader["taskStatus"]);
             conn.Close();
             return View(work);
         }
@@ -850,13 +856,13 @@ namespace CompanyProject.Controllers
                         empID = getIntValue(reader["employeeID"]),
                         projName = getProjectName(getIntValue(reader["projID"])),
                         dueDate = sqlDate,
-                        hours = Convert.ToDecimal(reader["hours"]),
+                        hours = getDecimalValue(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
                         budget = getIntValue(reader["cost"]),
                         UntilDueDate = getTaskDaysLeft(getIntValue(reader["taskID"])),
                         taskID = getIntValue(reader["taskID"]),
                         projID = getIntValue(reader["projID"]),
-                        taskStatus = Convert.ToDecimal(reader["taskStatus"]),
+                        taskStatus = getDecimalValue(reader["taskStatus"]),
                         documentation = getStringValue(reader["documentation"])
                     });
                     
@@ -964,7 +970,7 @@ namespace CompanyProject.Controllers
                         projName = getStringValue(reader["projName"]),
                         location = getStringValue(reader["location"]),
                         cost = getIntValue(reader["cost"]),
-                        projStatus = Convert.ToDecimal(reader["projStatus"]),
+                        projStatus = getDecimalValue(reader["projStatus"]),
                         field = getStringValue(reader["field"]),
                         deleted_flag = getIntValue(reader["deleted_flag"])
                     });

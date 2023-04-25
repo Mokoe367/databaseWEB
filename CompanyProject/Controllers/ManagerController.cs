@@ -37,6 +37,12 @@ namespace CompanyProject.Controllers
             return Convert.ToInt32(value);
         }
 
+        public decimal getDecimalValue(object value)
+        {
+            if (value == DBNull.Value) return 0;
+            return Convert.ToDecimal(value);
+        }
+
         public string getDepartmentName(int depID)
         {
             string depName = "";
@@ -567,7 +573,7 @@ namespace CompanyProject.Controllers
             proj.projName = getStringValue(reader["projName"]);
             proj.location = getStringValue(reader["location"]);
             proj.cost = getIntValue(reader["cost"]);
-            proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
+            proj.projStatus = getDecimalValue(reader["projStatus"]);
             proj.field = getStringValue(reader["field"]);
             int department = Convert.ToInt32(HttpContext.Session.GetString("depID"));           
             proj.locations = getLocations(department);
@@ -605,7 +611,7 @@ namespace CompanyProject.Controllers
             task.taskDueDate = sqlDate;
             task.projID = getIntValue(reader["projID"]);
             task.projName = getStringValue(reader["projName"]);
-            task.status = Convert.ToDecimal(reader["status"]);
+            task.status = getDecimalValue(reader["status"]);
             task.projects = getProjects();
             conn.Close();
             return View(task);
@@ -856,7 +862,7 @@ namespace CompanyProject.Controllers
             proj.projName = getStringValue(reader["projName"]);
             proj.location = getStringValue(reader["location"]);
             proj.cost = getIntValue(reader["cost"]);
-            proj.projStatus = Convert.ToDecimal(reader["projStatus"]);
+            proj.projStatus = getDecimalValue(reader["projStatus"]);
             proj.field = getStringValue(reader["field"]);
             conn.Close();
             return View(proj);
@@ -955,13 +961,13 @@ namespace CompanyProject.Controllers
             reader.Read();
             work.employeeID = getIntValue(reader["employeeID"]);
             work.TaskID = getIntValue(reader["taskID"]);
-            work.hours = Convert.ToDecimal(reader["hours"]);
+            work.hours = getDecimalValue(reader["hours"]);
             string Fname = getStringValue(reader["Fname"]);
             string Mname = getStringValue(reader["Mname"]);
             string Lname = getStringValue(reader["Lname"]);
             work.Fname = Fname + " " + Mname + " " + Lname;
             work.taskName = getStringValue(reader["taskName"]);
-            work.status = Convert.ToDecimal(reader["taskStatus"]);
+            work.status = getDecimalValue(reader["taskStatus"]);
             work.documentation = getStringValue(reader["documentation"]);
             ViewData["employee"] = empid;
             conn.Close();
@@ -1018,7 +1024,7 @@ namespace CompanyProject.Controllers
             task.cost = getIntValue(reader["cost"]);
             task.taskDueDate = sqlDate;
             task.projID = getIntValue(reader["projID"]);
-            task.status = Convert.ToDecimal(reader["status"]);
+            task.status = getDecimalValue(reader["status"]);
             conn.Close();
             return View(task);
         }
@@ -1217,12 +1223,12 @@ namespace CompanyProject.Controllers
             reader.Read();
             work.employeeID = getIntValue(reader["employeeID"]);
             work.TaskID = getIntValue(reader["taskID"]);          
-            work.hours = Convert.ToDecimal(reader["hours"]);
+            work.hours = getDecimalValue(reader["hours"]);
             work.Fname = getStringValue(reader["Fname"]);
             work.Mname = getStringValue(reader["Mname"]);
             work.Lname = getStringValue(reader["Lname"]);
             work.taskName = getStringValue(reader["taskName"]);
-            work.status = Convert.ToDecimal(reader["taskStatus"]);
+            work.status = getDecimalValue(reader["taskStatus"]);
             work.fullName = work.Fname + " " + work.Mname + " " + work.Lname;
             work.documentation = getStringValue(reader["documentation"]);
             ViewData["employee"] = empid;
@@ -1293,7 +1299,7 @@ namespace CompanyProject.Controllers
                 var reader = cmd.ExecuteReader();
                 reader.Read();
                 string msg = getStringValue(reader["projName"]);
-                decimal status = Convert.ToDecimal(reader["projStatus"]);
+                decimal status = getDecimalValue(reader["projStatus"]);
                 int cost = getIntValue(reader["cost"]);
                 DateTime date = Convert.ToDateTime(getStringValue(reader["dueDate"]));
                 string dateNoTime = date.ToShortDateString();
@@ -2988,7 +2994,7 @@ namespace CompanyProject.Controllers
                         projName = getStringValue(reader["projName"]),
                         location = getStringValue(reader["location"]),
                         cost = getIntValue(reader["cost"]),
-                        projStatus = Convert.ToDecimal(reader["projStatus"]),
+                        projStatus = getDecimalValue(reader["projStatus"]),
                         field = getStringValue(reader["field"]),
                         deleted_flag = getIntValue(reader["deleted_flag"])
                     });
@@ -3035,7 +3041,7 @@ namespace CompanyProject.Controllers
                         taskDueDate = sqlDate,
                         projID = getIntValue(reader["projID"]),
                         projName = getTaskProjName(getIntValue(reader["projID"])),
-                        status = Convert.ToDecimal(reader["status"])
+                        status = getDecimalValue(reader["status"])
 
                     });
                 }
@@ -3213,13 +3219,13 @@ namespace CompanyProject.Controllers
                         empID = getIntValue(reader["employeeID"]),
                         projName = getStringValue(reader["projName"]),
                         dueDate = sqlDate,
-                        hours = Convert.ToDecimal(reader["hours"]),
+                        hours = getDecimalValue(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
                         budget = getIntValue(reader["cost"]),
                         taskID = getIntValue(reader["taskID"]),
-                        employeeStatus = Convert.ToDecimal(reader["taskStatus"]),
-                        taskStatus = Convert.ToDecimal(reader["status"]),
-                        projStatus = Convert.ToDecimal(reader["projStatus"]),
+                        employeeStatus = getDecimalValue(reader["taskStatus"]),
+                        taskStatus = getDecimalValue(reader["status"]),
+                        projStatus = getDecimalValue(reader["projStatus"]),
                         documentation = getStringValue(reader["documentation"])
                     });
 
@@ -3252,8 +3258,8 @@ namespace CompanyProject.Controllers
                         name = name,
                         roleName = getStringValue(reader["roleName"]),
                         taskName = getStringValue(reader["taskName"]),                       
-                        hours = Convert.ToDecimal(reader["hours"]),
-                        status = Convert.ToDecimal(reader["taskStatus"]),
+                        hours = getDecimalValue(reader["hours"]),
+                        status = getDecimalValue(reader["taskStatus"]),
                         documentation = getStringValue(reader["documentation"])
                     });
 
@@ -3285,8 +3291,8 @@ namespace CompanyProject.Controllers
                     {
                         name = name,
                         roleName = getStringValue(reader["roleName"]),                      
-                        hours = Convert.ToDecimal(reader["hours"]),
-                        status = Convert.ToDecimal(reader["taskStatus"]),
+                        hours = getDecimalValue(reader["hours"]),
+                        status = getDecimalValue(reader["taskStatus"]),
                         documentation = getStringValue(reader["documentation"])
                     });
 
@@ -3382,7 +3388,7 @@ namespace CompanyProject.Controllers
                         taskID = getIntValue(reader["taskID"]),
                         taskName = getStringValue(reader["taskName"]),
                         cost = getIntValue(reader["cost"]),                      
-                        status = Convert.ToDecimal(reader["status"])
+                        status = getDecimalValue(reader["status"])
                     });
                 }
             }
@@ -3412,8 +3418,8 @@ namespace CompanyProject.Controllers
                         Lname = getStringValue(reader["Lname"]),
                         taskName = getStringValue(reader["taskName"]),
                         salary = getIntValue(reader["salary"]),
-                        hours = Convert.ToDecimal(reader["hours"]),
-                        pay = Convert.ToDecimal(reader["pay"])
+                        hours = getDecimalValue(reader["hours"]),
+                        pay = getDecimalValue(reader["pay"])
                        
                     });
                 }
@@ -3514,9 +3520,9 @@ namespace CompanyProject.Controllers
                     {
                         name = name,
                         roleName = getStringValue(reader["roleName"]),
-                        hours = Convert.ToDecimal(reader["hours"]),
+                        hours = getDecimalValue(reader["hours"]),
                         taskName = getStringValue(reader["taskName"]),
-                        status = Convert.ToDecimal(reader["taskStatus"])                     
+                        status = getDecimalValue(reader["taskStatus"])                     
                     });
                 }
             }
@@ -3548,7 +3554,7 @@ namespace CompanyProject.Controllers
                     Report.Add(new EmployeeHours()
                     {
                         name = name,                       
-                        hours = Convert.ToDecimal(reader["totalHours"]),                     
+                        hours = getDecimalValue(reader["totalHours"]),                     
                     });
                 }
             }
@@ -3591,7 +3597,7 @@ namespace CompanyProject.Controllers
                         taskName = getStringValue(reader["taskName"]),
                         cost = getIntValue(reader["cost"]),
                         taskDueDate = sqlDate,
-                        status = Convert.ToDecimal(reader["status"])
+                        status = getDecimalValue(reader["status"])
                        
                     });
                 }
