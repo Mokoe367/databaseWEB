@@ -1330,7 +1330,8 @@ namespace CompanyProject.Controllers
                     cmd2.Parameters.AddWithValue("@taskName", obj.taskName);
                     cmd2.Parameters.AddWithValue("@cost", obj.cost);
                     cmd2.Parameters.AddWithValue("@date", obj.taskDueDate);                   
-                    cmd2.Parameters.AddWithValue("@projID", obj.projID);                   
+                    cmd2.Parameters.AddWithValue("@projID", obj.projID);
+                    cmd2.Parameters.AddWithValue("@status", obj.status);
                     cmd2.Connection = conn;
                     cmd2.ExecuteNonQuery();
 
