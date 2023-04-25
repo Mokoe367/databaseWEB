@@ -796,7 +796,7 @@ namespace CompanyProject.Controllers
                 cmd.Connection = conn;
                 var reader = cmd.ExecuteReader();
                 reader.Read();
-                string msg = "Project Details for " + getStringValue(reader["projName"]);
+                string msg = "Project " + getStringValue(reader["projName"]);
                 
 
                 conn.Close();
