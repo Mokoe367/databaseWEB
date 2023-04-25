@@ -18,7 +18,6 @@ namespace CompanyProject.Models
         public int TaskID { get; set; }
         public string documentation { get; set; }
         public string taskName { get; set; }
-        public string documentation { get; set; }
         [Range(0.0, double.MaxValue, ErrorMessage = "Can't be less than 0")]
         public decimal hours { get; set; }     
         public int tempemployeeID { get; set; }
