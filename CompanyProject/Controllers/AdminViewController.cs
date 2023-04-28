@@ -2999,7 +2999,7 @@ namespace CompanyProject.Controllers
             string Lname = getStringValue(reader["Lname"]);
             work.fullName = Fname + " " + Mname + " " + Lname;
             work.taskName = getStringValue(reader["taskName"]);
-            work.status = getDecimalValue(reader["taskStatus"]);
+            work.status = getDecimalValue(reader["status"]);
             conn.Close();
             return View(work);
         }
